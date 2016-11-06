@@ -388,6 +388,13 @@ eventplanner.ui.dashboard = {
 };
 
 /////////////////////////////////////////////////
+/// UTILITAIRES ///////////////////////////////
+/////////////////////////////////////////////////
+eventplanner.ui.utilitaires = {
+	init : function(){}
+};
+
+/////////////////////////////////////////////////
 /// CONFIGURATION ///////////////////////////////
 /////////////////////////////////////////////////
 eventplanner.ui.configuration = {
@@ -395,6 +402,18 @@ eventplanner.ui.configuration = {
 		this.constructEventTable();
 		this.constructMatTypeTable();
 		this.constructUserTable();
+
+		$("#eventTable").bind("refreshEventTable", function(){
+			eventplanner.ui.configuration.constructEventTable();
+		});
+
+		$("#matTypeTable").bind("refreshMatTypeTable", function(){
+			eventplanner.ui.configuration.constructMatTypeTable();
+		});
+
+		$("#userTable").bind("refreshUserTable", function(){
+			eventplanner.ui.configuration.constructUserTable();
+		});
 
 		$('#configuration').delegate('.selectEventBtn', 'click', function () {
 			eventplanner.user.setOptions({key: 'eventId', value: $(this).attr('data-event-id') ,success: function(_data) {
