@@ -16,11 +16,11 @@
           </div>
       	</div>
   </div>
-  <div class="form-group">
-    <label for="eventLocalisation" class="col-sm-3 control-label" >Localisation</label>
+  <div class="form-group" id="mapDiv">
+    <label class="col-sm-3 control-label" data-template-bind='[{"attribute": "for", "value": "modalId", "formatter": "prepend", "formatOptions": "mapEvent"}]'>Localisation</label>
     <div class="col-sm-9">
-        <div id="mapEvent" class="modalMap"></div>
-    </div>
+          <div class="modalMap" data-template-bind='[{"attribute": "id", "value": "modalId", "formatter": "prepend", "formatOptions": "mapEvent"}]'></div>
+        </div>
   </div>
   <div class="form-group">
   		<label for="eventDate" class="col-sm-3 control-label" >Dates</label>

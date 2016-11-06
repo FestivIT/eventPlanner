@@ -436,10 +436,14 @@ eventplanner.ui.configuration = {
 					endDate: today
 				}
 				
-				eventplanner.ui.modal.eventConfiguration(eventData);
+				//eventplanner.ui.modal.eventConfiguration(eventData);
+				var eventModal = new eventplanner.ui.modal.EpModalEventConfiguration(eventData);
+				eventModal.open();
 			}else{
 				eventplanner.event.byId({id: eventId, success: function(_data) {
-					eventplanner.ui.modal.eventConfiguration(_data);			
+					//eventplanner.ui.modal.eventConfiguration(_data);		
+					var eventModal = new eventplanner.ui.modal.EpModalEventConfiguration(_data);
+					eventModal.open();	
 				}});
 			}
 		});
@@ -1310,10 +1314,13 @@ eventplanner.ui.modal.EpModalZoneConfiguration.prototype = Object.create(eventpl
 
 /// MODAL EVENT CONFIGURATION ///////////////////
 
-eventplanner.ui.modal.eventConfiguration = function(event){
-	eventplanner.ui.openModal("Configuration d'un évenement", "eventConfiguration", event, {
-		preShow: function(){
-			$('.input-daterange').datepicker({
+eventplanner.ui.modal.EpModalEventConfiguration = function(_event){
+	eventplanner.ui.modal.EpModal.call(this, "Configuration d'un événement", "eventConfiguration");
+	
+	this.data = _event;
+	
+	this.preShow = function(){
+			this.modal.find('.input-daterange').datepicker({
 			    format: "dd/mm/yyyy",
 			    todayBtn: true,
 			    language: "fr"
@@ -1321,52 +1328,70 @@ eventplanner.ui.modal.eventConfiguration = function(event){
 				event.preventDefault();
 				event.stopPropagation();
 			});
-		},
+		}
+	
+	this.postShow = function(){
+			this.mapEvent = eventplanner.ui.map.initializeEventMap('mapEvent' + this.id, this.data.id, this.data.localisation, 14);
+			this.eventMarker = eventplanner.ui.map.addEventMarkerOnMap(this.mapEvent, this.data, true);
 
-		postShow: function(){
-			var mapEvent = eventplanner.ui.map.initializeEventMap("mapEvent", event.id, event.localisation, 14);
-			var eventMarker = eventplanner.ui.map.addEventMarkerOnMap(mapEvent, event, true);
-
-			$('#placeOnMap').on('click', function () {
-			  $.getJSON('https://nominatim.openstreetmap.org/search?format=json&limit=1&q=' + $("#eventVille").val(), function(data) {
-			    $.each(data, function(key, val) {
-			        var newLatLng = new L.LatLng(val.lat, val.lon);
-			        eventMarker.setLatLng(newLatLng); 
-			        mapEvent.setZoom(14);
-			        mapEvent.panTo(newLatLng);
-			    });
-			  });
+			this.modal.find('#placeOnMap').on('click', this, function (event) {
+			  $.getJSON('https://nominatim.openstreetmap.org/search?format=json&limit=1&q=' + event.data.modal.find("#eventVille").val(), function(thisModal){
+					return function(data){
+						$.each(data, function(key, val) {
+					        var newLatLng = new L.LatLng(val.lat, val.lon);
+					        thisModal.eventMarker.setLatLng(newLatLng); 
+					        thisModal.mapEvent.setZoom(14);
+					        thisModal.mapEvent.panTo(newLatLng);
+					    });
+					}
+				}(event.data));
 			});
+
+
+			this.mapEvent.on('singleclick', function(thisModal){
+				return function(event) {
+					thisModal.eventMarker.setLatLng(event.latlng); 
+				}
+			}(this));
 			
-			mapEvent.on('singleclick', function(e){
-			    eventMarker.setLatLng(e.latlng); 
-			});
-
-			$('#eventForm').submit(function() {
+			this.modal.find('#eventForm').submit(this, function(event) {
 			    var eventParam = {
 			        id: $(this).find("#eventId").val(),
 			        name: $(this).find("#eventName").val(),
 			        ville: $(this).find("#eventVille").val(),
-			        localisation: eventMarker.getLatLng(),
+			        localisation: event.data.eventMarker.getLatLng(),
 			        startDate: formatDateDmy2Ymd($(this).find("#eventStartDate").val()),
 			        endDate: formatDateDmy2Ymd($(this).find("#eventEndDate").val()),
 			        configuration: {}
 			    };
 
-			    eventplanner.event.save({
+				eventplanner.event.save({
 			      event: eventParam,
-			      success: function(){
-			        eventplanner.ui.configuration.constructEventTable();
-			        eventplanner.ui.closeModal();
-			        eventplanner.ui.notification('success', "Evenement enregistré.");
-			      }
+			      success: function(thisModal){
+								return function(_data) {
+									$(".eventTable").trigger("refreshEventTable");
+							        thisModal.close();
+									eventplanner.ui.notification('success', "Zone enregistrée.");	
+								}
+							}(event.data),
+				  error: function(_data){
+			        eventplanner.ui.notification('error', "Impossible d'enregistrer l'événement. " + _data.message);
+			      }			  
 			    });
-
 			    return false;
+
 			});
 		}
-	});
 }
+
+eventplanner.ui.modal.EpModalEventConfiguration.prototype = Object.create(eventplanner.ui.modal.EpModal.prototype, {
+    constructor: {
+        value: eventplanner.ui.modal.EpModalEventConfiguration,
+        enumerable: false,
+        writable: true,
+        configurable: true
+    }
+});
 
 /// MODAL INVENTAIRE CONFIGURATION /////////////
 
