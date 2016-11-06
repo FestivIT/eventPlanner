@@ -2,8 +2,9 @@
   	<div class="panel-heading">Boussolle</div>
   	<div class="panel-body">
 	    <p id="compassStatus">Orientation: 0°</p>
-
+	    (non fonctionnel pour le moment: nécessite HTTPS)
 		<script>
+		/*
 		window.setTimeout(function () {
 		    var dir = 0,
 		        ref = 0;
@@ -42,13 +43,13 @@
 		            document.getElementById('compassStatus').textContent = 'Orientation: ' + heading + '\u00b0';
 		        });
 
-		        /*window.setInterval(function() {
-		            var angle = -dir;
-		            document.getElementById('compass').style.webkitTransform = 'rotate(' + angle + 'deg)';
-		        }, 100);
+		        // window.setInterval(function() {
+		        //    var angle = -dir;
+		        //    document.getElementById('compass').style.webkitTransform = 'rotate(' + angle + 'deg)';
+		        //}, 100);
 				
-		        document.getElementById('compass').style.width = Math.min(screen.width, screen.height) + 'px';
-		    	*/
+		        //document.getElementById('compass').style.width = Math.min(screen.width, screen.height) + 'px';
+		    	
 		    } else {
 		        document.getElementById('compassStatus').textContent = 'Sorry! The browser does not support Device Orientation API.';
 		        document.getElementById('compassStatus').style.position = 'absolute';
@@ -56,6 +57,7 @@
 		        document.getElementById('compassStatus').style.top = '50%';
 		    }
 		}, 150);
+*/
 		</script>
 	</div>
 </div>
