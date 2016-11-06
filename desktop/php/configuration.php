@@ -6,7 +6,7 @@
 		  		<button type="button" class="btn btn-success btn-xs pull-right editEventBtn" data-event-id="new"><span class="glyphicon glyphicon-plus-sign"></span> Ajouter</button>
 		  	</div>
 			
-			<table class="table table-striped table-hover table-condensed" id="eventTable">
+			<table class="table table-striped table-hover table-condensed eventTable" id="eventTable">
 				<thead>
 					<tr>
 						<th>Nom</th>
@@ -40,7 +40,7 @@
 		  		<button type="button" class="btn btn-success btn-xs pull-right editMatTypeBtn" data-matType-id="new"><span class="glyphicon glyphicon-plus-sign"></span> Ajouter</button>
 		  	</div>
 			
-			<table class="table table-striped table-hover table-condensed" id="matTypeTable">
+			<table class="table table-striped table-hover table-condensed matTypeTable" id="matTypeTable">
 				<thead>
 					<tr>
 						<th>Nom</th>
@@ -69,7 +69,7 @@
 		  		<button type="button" class="btn btn-success btn-xs pull-right editUserBtn" data-user-id="new"><span class="glyphicon glyphicon-plus-sign"></span> Ajouter</button>
 		  	</div>
 			
-			<table class="table table-striped table-hover table-condensed" id="userTable">
+			<table class="table table-striped table-hover table-condensed userTable" id="userTable">
 				<thead>
 					<tr>
 						<th>Nom</th>
