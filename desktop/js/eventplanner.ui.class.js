@@ -457,10 +457,14 @@ eventplanner.ui.configuration = {
 					options: []
 				}
 				
-				eventplanner.ui.modal.matTypeConfiguration(matTypeData);
+				//eventplanner.ui.modal.matTypeConfiguration(matTypeData);
+				var matTypeModal = new eventplanner.ui.modal.EpModalMatTypeConfiguration(matTypeData);
+				matTypeModal.open();
 			}else{
 				eventplanner.matType.byId({id: matTypeId, success: function(_data) {
-					eventplanner.ui.modal.matTypeConfiguration(_data);			
+					//eventplanner.ui.modal.matTypeConfiguration(_data);
+					var matTypeModal = new eventplanner.ui.modal.EpModalMatTypeConfiguration(_data);
+					matTypeModal.open();		
 				}});
 			}
 		});
@@ -1464,130 +1468,22 @@ eventplanner.ui.modal.EpModalEqRealConfiguration.prototype = Object.create(event
     }
 });
 
-/// MODAL EQUIPEMENT CONFIGURATION /////////////
-
-eventplanner.ui.modal.eqConfiguration = function(eq){
-	eventplanner.ui.openModal("Configuration d'un équipement", "eqConfiguration", eq, {
-		preShow: function(_eq){
-			$("#eqLogicMatTypeId").change(_eq, function(event) {
-				eventplanner.ui.modal.eqConfiguration.constructAndSelectEqReal(event.data.eqRealId);
-			});
-
-			if(_eq.eqLogicConfiguration.hasLocalisation){
-			  	$("#mapDiv").show();
-			}else{
-			  	$("#mapDiv").hide();
-			}
-
-			eventplanner.zone.byEventId({
-				eventId: userProfils.eventId,
-				success: function(_data) {
-					$("#eqLogicZoneId").loadTemplate($("#templateEqZoneOptions"), _data, {success: function(){
-						$('#eqLogicZoneId option[value="' + _eq.eqLogicZoneId + '"]').prop('selected', true);
-					}});
-			}});
-
-			eventplanner.matType.all({
-			    success: function(_data) {
-					$("#eqLogicMatTypeId").loadTemplate($("#templateEqMatTypeOptions"), _data, {success: function(){
-						$('#eqLogicMatTypeId option[value="' + _eq.eqLogicMatTypeId + '"]').prop('selected', true);
-					}});
-					eventplanner.ui.modal.eqConfiguration.constructAndSelectEqReal(_eq.eqRealId);
-			}});
-		},
-
-		postShow: function(_eq){
-			
-			
-			var mapZone = eventplanner.ui.map.initializeEventMap("mapZone", _eq.eventId, _eq.eqLogicConfiguration.localisation);
-			var eqMarker = eventplanner.ui.map.addEqMarkerOnMap(mapZone, _eq, true);
-			
-			mapZone.on('singleclick', function(e){
-			    eqMarker.setLatLng(e.latlng); 
-			});
-
-			$("#eqLogicZoneId").on('change', function() {
-			  	mapZone.panTo($('#eqLogicZoneId option:selected').data('zone-loc'));
-			});
-			
-			$("#eqLocalisation")
-				.bootstrapSwitch({
-					state: _eq.eqLogicConfiguration.hasLocalisation,
-					onText: "Oui",
-					offText: "Non"
-				})			
-				.on('switchChange.bootstrapSwitch', function(event, state) {
-					if(state){
-						$("#mapDiv").show();
-						mapZone.invalidateSize();
-						eqMarker.setLatLng($('#eqLogicZoneId option:selected').data('zone-loc'));
-						mapZone.panTo($('#eqLogicZoneId option:selected').data('zone-loc'));
-					}else{
-						$("#mapDiv").hide();
-					}
-				});
-
-			$('#eqLogicForm').submit(function() {
-			    var eqParam = {
-			        id: $(this).find("#eqLogicId").val(),
-			        eventId: $(this).find("#eqLogicEventId").val(),
-			        zoneId: $(this).find("#eqLogicZoneId").val(),
-			        matTypeId: $(this).find("#eqLogicMatTypeId").val(),
-			        eqRealId: $(this).find("#eqLogicEqRealId").val(),
-			        ip: $(this).find("#eqLogicIp").val(),
-			        comment: $(this).find("#eqLogicComment").val(),
-			        state: $(this).find("#eqLogicState").val(),
-			        configuration: {
-			        	hasLocalisation: $(this).find("#eqLocalisation").bootstrapSwitch('state'),
-			        	localisation: eqMarker.getLatLng()
-			        }
-			    };
-			   
-			    eventplanner.eqLogic.save({
-			      eqLogic: eqParam,
-			      success: function(){
-			        $(".eqTable").trigger("refreshEqTable");
-			        eventplanner.ui.closeModal();
-			        eventplanner.ui.notification('success', "Equipement enregistré.");
-			      },
-			      error: function(_data){
-			        eventplanner.ui.notification('error', "Impossible d'enregistrer l'équipement. " + _data.message);
-			      }
-			    });
-			    return false;
-			});
-		}
-	});
-}
-
-eventplanner.ui.modal.eqConfiguration.constructAndSelectEqReal = function(_idToSelect){
-  $('#eqLogicEqRealId option').remove();
-
-  $('#eqLogicEqRealId').append($("<option></option>")
-                    .attr("value", 'None')
-                    .text("Aucun"));
-
-  eventplanner.eqReal.byMatTypeId({
-    matTypeId: $('#eqLogicMatTypeId option:selected').val(),
-    success: function(_data) {
-    	$("#eqLogicEqRealId").loadTemplate($("#templateEqRealOptions"), _data, {append: true});
-      	$('#eqLogicEqRealId option[value="' + _idToSelect + '"]').prop('selected', true);
-    }
-  });
-}
-
 /// MODAL MAT TYPE CONFIGURATION ///////////////
-eventplanner.ui.modal.matTypeConfiguration = function(matType){
-	eventplanner.ui.openModal("Configuration d'un matériel", "matTypeConfiguration", matType, {
-		preShow: function(_matType){
-			_matType.options.forEach(function(option){
-	    		$("#optionList").loadTemplate($("#templateMatTypeOption"), {option: option}, {append: true});
-	    	});
-	    	$("#optionList").loadTemplate($("#templateMatTypeAddOption"), {} , {append: true});
-		},
+eventplanner.ui.modal.EpModalMatTypeConfiguration = function(_matType){
+	eventplanner.ui.modal.EpModal.call(this, "Configuration d'un type de matériel", "matTypeConfiguration");
+	
+	this.data = _matType;
+	
+	this.preShow = function(){
+			this.data.options.forEach(function(option){
+	    		this.modal.find("#optionList").loadTemplate(this.modal.find("#templateMatTypeOption"), {option: option}, {append: true});
+	    	}, this);
 
-		postShow: function(_matType){
-			$('#matTypeForm').submit(function() {
+	    	this.modal.find("#optionList").loadTemplate(this.modal.find("#templateMatTypeAddOption"), {} , {append: true});
+		}
+	
+	this.postShow = function(){
+			this.modal.find('#matTypeForm').submit(this, function(event) {
 			    var matTypeParam = {
 			        id: $(this).find("#matTypeId").val(),
 			        name: $(this).find("#matTypeName").val(),
@@ -1596,34 +1492,49 @@ eventplanner.ui.modal.matTypeConfiguration = function(matType){
 
 			    eventplanner.matType.save({
 			      matType: matTypeParam,
-			      success: function(){
-			        eventplanner.ui.configuration.constructMatTypeTable();
-			        eventplanner.ui.closeModal();
-			        eventplanner.ui.notification('success', "Type de matériel enregistré.");
-			      }
+			      success: function(thisModal){
+								return function(_data) {
+									$(".matTypeTable").trigger("refreshMatTypeTable");
+							        thisModal.close();
+									eventplanner.ui.notification('success', "Type de matériel enregistrée.");	
+								}
+							}(event.data),
+				  error: function(_data){
+			        eventplanner.ui.notification('error', "Impossible d'enregistrer le type de matériel. " + _data.message);
+			      }	
 			    });
 			    return false;
-			});
+			});			
 		}
-	});
 }
 
-/// MODAL USER CONFIGURATION ///////////////
-eventplanner.ui.modal.userConfiguration = function(user){
-	eventplanner.ui.openModal("Configuration d'un utilisateur", "userConfiguration", user, {
-		preShow: function(_user){
-			
-		},
+eventplanner.ui.modal.EpModalMatTypeConfiguration.prototype = Object.create(eventplanner.ui.modal.EpModal.prototype, {
+    constructor: {
+        value: eventplanner.ui.modal.EpModalMatTypeConfiguration,
+        enumerable: false,
+        writable: true,
+        configurable: true
+    }
+});
 
-		postShow: function(_user){
-			$("#userEnable")
+/// MODAL USER CONFIGURATION ///////////////
+eventplanner.ui.modal.EpModalUserConfiguration = function(_user){
+	eventplanner.ui.modal.EpModal.call(this, "Configuration d'un utilisateur", "userConfiguration");
+	
+	this.data = _user;
+	
+	this.preShow = function(){
+		}
+	
+	this.postShow = function(){
+			this.modal.find("#userEnable")
 				.bootstrapSwitch({
-					state: !!parseInt(_user.enable),
+					state: !!parseInt(this.data.enable),
 					onText: "Oui",
 					offText: "Non"
 				})
 
-			$('#userForm').submit(function() {
+			this.modal.find('#userForm').submit(this, function(event) {
 			    var userParam = {
 			        id: $(this).find("#userId").val(),
 			        login: $(this).find("#userLogin").val(),
@@ -1639,156 +1550,27 @@ eventplanner.ui.modal.userConfiguration = function(user){
 
 			    eventplanner.user.save({
 			      user: userParam,
-			      success: function(){
-			        eventplanner.ui.configuration.constructUserTable();
-			        eventplanner.ui.closeModal();
-			        eventplanner.ui.notification('success', "Utilisateur enregistré.");
-			      }
+			      success: function(thisModal){
+								return function(_data) {
+									$(".userTable").trigger("refreshUserTable");
+							        thisModal.close();
+									eventplanner.ui.notification('success', "Utilisateur enregistré.");	
+								}
+							}(event.data),
+				  error: function(_data){
+			        eventplanner.ui.notification('error', "Impossible d'enregistrer l'utilisateur. " + _data.message);
+			      }	
 			    });
 			    return false;
-			});
+			});			
 		}
-	});
 }
 
-/// MODAL ZONE CONFIGURATION ///////////////////
-
-eventplanner.ui.modal.zoneConfiguration = function(zone){
-	eventplanner.ui.openModal("Configuration d'une zone", "zoneConfiguration", zone, {
-		preShow: function(_zone){
-			$('.input-daterange').datepicker({
-			    format: "dd/mm/yyyy",
-			    todayBtn: true,
-			    language: "fr"
-			}).on('hide', function(event) {
-				event.preventDefault();
-				event.stopPropagation();
-			});
-			
-			eventplanner.ui.modal.zoneConfiguration.constructEqTable(_zone);
-			
-			$('#zoneForm').delegate('.editEqBtn', 'click', function () {
-				var eqId = $(this).attr('data-eq-id');
-				
-				if(eqId == 'new'){			
-					var eqData = {
-						eqLogicId: '',
-						eqLogicEventId: userProfils.eventId,
-						eqLogicState: 100,
-						eqLogicConfiguration: {hasLocalisation: false}
-					}
-					
-					var eqModal = new eventplanner.ui.modal.EpModalEqConfiguration(eqData);
-					eqModal.open();
-				}else{
-					eventplanner.eqLogic.byId({id: eqId, success: function(_data) {
-						var eqModal = new eventplanner.ui.modal.EpModalEqConfiguration(_data);
-						eqModal.open();
-					}});
-				}
-			});
-		},
-
-		postShow: function(){
-			var mapZone = eventplanner.ui.map.initializeEventMap("mapZone", zone.eventId, zone.localisation);
-			var zoneMarker = eventplanner.ui.map.addZoneMarkerOnMap(mapZone, zone, true);
-			
-			mapZone.on('singleclick', function(e){
-			    zoneMarker.setLatLng(e.latlng); 
-			});
-
-			$('#zoneForm').submit(function() {
-			    var zoneParam = {
-			        id: $(this).find("#zoneId").val(),
-			        eventId: $(this).find("#zoneEventId").val(),
-			        name: $(this).find("#zoneName").val(),
-			        localisation: zoneMarker.getLatLng(),
-			        installDate: formatDateDmy2Ymd($(this).find("#zoneInstallDate").val()),
-			        uninstallDate: formatDateDmy2Ymd($(this).find("#zoneUninstallDate").val()),
-			        state: $(this).find("#zoneState").val(),
-			        configuration: {}
-			    };
-
-			    eventplanner.zone.save({
-			      zone: zoneParam,
-			      success: function(){
-			        eventplanner.ui.zones.constructZoneTable();
-			        eventplanner.ui.closeModal();
-			        eventplanner.ui.notification('success', "Zone enregistrée.");
-			      }
-			    });
-			    return false;
-			});
-		}
-	});
-}
-
-eventplanner.ui.modal.zoneConfiguration.constructEqTable = function(zone){
-	eventplanner.eqLogic.byZoneId({
-    zoneId: zone.id,
-    success: function(_data) {
-		$("#eqTableZone tbody").loadTemplate($("#templateZoneConfigurationEqTable"), _data);
-	}});
-}
-
-/// MODAL ZONE ///////////////////
-
-eventplanner.ui.modal.zone = function(zone){
-	eventplanner.ui.openModal(zone.name, "zone", zone, {
-		preShow: function(_zone){
-			eventplanner.ui.modal.zone.constructMsgTable(_zone);
-			eventplanner.ui.modal.zone.constructEqTable(_zone);
-			eventplanner.ui.modal.zone.addTriggers(_zone);
-		},
-
-		postShow: function(_zone){
-			var mapZone = eventplanner.ui.map.initializeEventMap("mapZone", _zone.eventId, _zone.localisation, 20);
-			var zoneMarker = eventplanner.ui.map.addZoneMarkerOnMap(mapZone, _zone);
-			eventplanner.ui.modal.zone.constructEqMarkers(mapZone, _zone);
-			
-			$("body").on('shown.bs.tab','#linkCarte', function() { 
-			  mapZone.invalidateSize();
-			});
-		}
-	});
-}
-
-eventplanner.ui.modal.zone.addTriggers = function(zone){
-	$("#zoneMsgTable").bind("refreshMsgTable", zone, function(event){
-		eventplanner.ui.modal.zone.constructMsgTable(event.data);
-	});
-	
-	$("#zoneEqTable").bind("refreshEqTable", function(){
-		eventplanner.ui.modal.zone.constructEqTable(event.data);
-	});
-}
-
-eventplanner.ui.modal.zone.constructMsgTable = function(zone){
-	eventplanner.msg.byZoneId({
-    zoneId: zone.id,
-    success: function(_data) {
-		$("#zoneMsgTable tbody").loadTemplate($("#templateZoneMsgTable"), _data);
-	}});
-}
-
-eventplanner.ui.modal.zone.constructEqTable = function(zone){
-	eventplanner.eqLogic.byZoneId({
-    zoneId: zone.id,
-    success: function(_data) {
-		$("#zoneEqTable").loadTemplate($("#templateZoneEqTable"), _data);
-	}});
-}
-
-eventplanner.ui.modal.zone.constructEqMarkers = function(map, zone){
-	eventplanner.eqLogic.byZoneId({
-    zoneId: zone.id,
-    success: function(_data) {
-    	_data.forEach(function(eq){
-    		if(eq.eqLogicConfiguration.hasOwnProperty('hasLocalisation') && eq.eqLogicConfiguration.hasLocalisation){
-				var eqMarker = eventplanner.ui.map.addEqMarkerOnMap(map, eq);
-				eqMarker.bindPopup('<div><b>' + eq.matTypeName + ' - ' + eq.eqRealName + '</b>');
-			}
-    	});
-		
-	}});
-}
+eventplanner.ui.modal.EpModalUserConfiguration.prototype = Object.create(eventplanner.ui.modal.EpModal.prototype, {
+    constructor: {
+        value: eventplanner.ui.modal.EpModalUserConfiguration,
+        enumerable: false,
+        writable: true,
+        configurable: true
+    }
+});
