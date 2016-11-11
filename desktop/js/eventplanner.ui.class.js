@@ -1,44 +1,77 @@
 eventplanner.ui = {
 	onlineState: true,
-	// ETATS:
-			// 100: Equipements
-			// 	100 - 119: Préparation
-			//	120 - 139: Installation
-			//	140 - 159: Désinstallation
-			// 200: Zone
-			//	200 - 219: Installation
-			//	220 - 239: Désinstallation
-			// 300: Matériel
-			//  300
-	STATE: {
-	  	100: {text: "En attente", colorClass:'active'},
-	  	102: {text: "A Configurer", colorClass:'danger'},
-	  	102: {text: "Configuré - non testé", colorClass:'warning'},
-	  	103: {text: "Configuré - testé", colorClass:'success'},
-	  	104: {text: "Livré sur site", colorClass:'active'},
-	  	
-	  	120: {text: "A installer", colorClass:'danger'},
-	  	121: {text: "Installé - non opérationnel", colorClass:'warning'},
-	  	122: {text: "Installé - opérationnel", colorClass:'success'},
-	  	
-	  	140: {text: "A Désinstaller", colorClass:'danger'},
-	  	141: {text: "Désinstall", colorClass:'warning'},
-	  	142: {text: "Au Stock", colorClass:'success'},
-	  	
-	  	  	
-	  	200: {text: "En attente", colorClass:'active'},
-	  	201: {text: "A installer", colorClass:'warning'},
-	  	202: {text: "Terminé", colorClass:'success'},
-	  	203: {text: "Probléme", colorClass:'danger'},
-	  	  	
-	  	220: {text: "A désinstaller", colorClass:'danger'},
-	  	221: {text: "Probléme démontage", colorClass:'warning'},
-	  	221: {text: "Démonté, matériel à récuperer", colorClass:'info'},
-	  	221: {text: "Démontage terminé", colorClass:'success'},
 
-	  	300: {text: "Au stock", colorClass:'success'},
-	  	301: {text: "En Prêt", colorClass:'warning'},
-	  	399: {text: "Hors service", colorClass:'danger'},
+	STATE: {
+		stateList: [],
+		eq: {
+			text : "Equipements",
+			groups: [
+				{
+					text: "Préparation",
+					list: {
+						100: {text: "En attente", colorClass:'active'},
+					  	102: {text: "A Configurer", colorClass:'danger'},
+					  	102: {text: "Configuré - non testé", colorClass:'warning'},
+					  	103: {text: "Configuré - testé", colorClass:'success'},
+					  	104: {text: "Livré sur site", colorClass:'active'}
+					}
+				},
+				{
+					text: "Installation",
+					list: {
+						120: {text: "A installer", colorClass:'danger'},
+					  	121: {text: "Installé - non opérationnel", colorClass:'warning'},
+					  	122: {text: "Installé - opérationnel", colorClass:'success'}
+					}
+				},
+				{
+					text: "Désinstallation",
+					list: {
+						140: {text: "A Désinstaller", colorClass:'danger'},
+					  	141: {text: "Désinstall", colorClass:'warning'},
+					  	142: {text: "Au Stock", colorClass:'success'}
+					}
+				}
+			]
+		},
+
+		zone:{
+			text : "Zones",
+			groups: [
+				{
+					text: "Installation",
+					list: {
+						200: {text: "En attente", colorClass:'active'},
+					  	201: {text: "A installer", colorClass:'warning'},
+					  	202: {text: "Terminé", colorClass:'success'},
+					  	203: {text: "Probléme", colorClass:'danger'}
+					}
+				},
+				{
+					text: "Désinstallation",
+					list: {
+						220: {text: "A désinstaller", colorClass:'danger'},
+					  	221: {text: "Probléme démontage", colorClass:'warning'},
+					  	221: {text: "Démonté, matériel à récuperer", colorClass:'info'},
+					  	221: {text: "Démontage terminé", colorClass:'success'}
+					}
+				}
+			]
+		},
+
+	  	eqReal: {
+			text : "Matériels",
+			groups: [
+				{
+					text: "Disponibilité",
+					list: {
+						300: {text: "Au stock", colorClass:'success'},
+					  	301: {text: "En Prêt", colorClass:'warning'},
+					  	399: {text: "Hors service", colorClass:'danger'}
+					}
+				}
+			]
+		},
 	  	  	
 	  	'default': {text: "Inconnu", colorClass:'active'}
   	},
@@ -51,15 +84,83 @@ eventplanner.ui = {
 		this.initselectors();
 		this.search.init();
 		this.configEventMenu();
-		
-		//NAV BAR
+		this.serverListener();
+		this.initNavBar();
+		this.initTrigger();
+		this.initState();
+
+	},
+
+	initselectors: function (){
+		this.eventMenu = $("#eventDrop");
+		this.pageContainer = $("#pageContainer");
+		this.modalContainer = $("#modalContainer");
+		this.searchBox = $("#searchbox");
+	},
+
+	initNavBar: function(){
 		$("#nav-btn").click(function() {
 		  $(".navbar-collapse").collapse("toggle");
 		  return false;
 		});
 		
-		nbActiveAjaxRequest = 0;
+		$(".navBarBtn").click(function() {
+		  eventplanner.ui.loadPage($(this).data('link'));
+		});
+	},
 
+	initTrigger: function(){
+		$("body").delegate('.msgForm', 'submit', function () {
+		if($(this).find('.msgFormInput').val()==''){
+		    return false;
+		}
+			var msgParam = {
+				eventId: userProfils.eventId,
+				userId: user_id,
+				content: $(this).find('.msgFormInput').val()
+			}
+			
+			if($(this).data("zone-id")==undefined){
+				msgParam.zoneId = '';
+			}else{
+				msgParam.zoneId = $(this).data("zone-id");
+			}
+			
+			if($(this).data("eqlogic-id")==undefined){
+				msgParam.eqId = '';
+			}else{
+				msgParam.eqId = $(this).data("eqlogic-id");
+			}
+
+			$(this).find('.msgFormInput').val("");
+			
+		    eventplanner.msg.save({
+		      msg: msgParam,
+		      success: function(){
+		        $(".msgTable").trigger("refreshMsgTable");
+		        eventplanner.ui.notification('success', "Message enregistré.");
+		      },
+		      error: function(_data){
+		        eventplanner.ui.notification('error', "Impossible d'enregistrer le message. " + _data.message);
+		      }
+		    });
+		    
+			return false;
+		});
+	},
+
+	initState: function (){
+		$.each(eventplanner.ui.STATE, function(i,item){
+			$.each(item.groups, function(j, group){
+				$.each(group.list, function(stateNbr, stateParam){
+					eventplanner.ui.STATE.stateList[stateNbr] = stateParam;
+				});
+			});
+		});
+	},
+
+	serverListener: function (){
+		nbActiveAjaxRequest = 0;
 		$(document)
 		    .ajaxSend(function(event, jqxhr, settings) {
 		        if (settings.url.split('?')[0] == "core/ajax/alive.txt") return;
@@ -116,74 +217,6 @@ eventplanner.ui = {
 			        }
 			 });
 		}, 2000);
-
-		$(".navBarBtn").click(function() {
-		  eventplanner.ui.loadPage($(this).data('link'));
-		});
-		
-		$.each(eventplanner.ui.STATE, function(index, value) {
-			$('#selectStateModal .stateSelect').loadTemplate($("#templateStateSelectOptions"), {id: index, text: value.text} ,{append: true});
-		});
-		
-		$("body").delegate('.msgForm', 'submit', function () {
-		if($(this).find('.msgFormInput').val()==''){
-		    return false;
-		}
-			var msgParam = {
-				eventId: userProfils.eventId,
-				userId: user_id,
-				content: $(this).find('.msgFormInput').val()
-			}
-			
-			if($(this).data("zone-id")==undefined){
-				msgParam.zoneId = '';
-			}else{
-				msgParam.zoneId = $(this).data("zone-id");
-			}
-			
-			if($(this).data("eqlogic-id")==undefined){
-				msgParam.eqId = '';
-			}else{
-				msgParam.eqId = $(this).data("eqlogic-id");
-			}
-
-			$(this).find('.msgFormInput').val("");
-			
-		    eventplanner.msg.save({
-		      msg: msgParam,
-		      success: function(){
-		        $(".msgTable").trigger("refreshMsgTable");
-		        eventplanner.ui.notification('success', "Message enregistré.");
-		      },
-		      error: function(_data){
-		        eventplanner.ui.notification('error', "Impossible d'enregistrer le message. " + _data.message);
-		      }
-		    });
-		    
-			return false;
-		});
-
-		/*
-		
-		$(document).on('show.bs.modal', '.modal', function (event) {
-			var zIndex = Math.max.apply(null, Array.prototype.map.call(document.querySelectorAll('*'), function(el) {
-			  return +el.style.zIndex;
-			})) + 10;
-	        //var zIndex = 1040 + (10 * $('.modal:visible').length);
-	        $(this).css('z-index', zIndex);
-	        setTimeout(function() {
-	            $('.modal-backdrop').not('.modal-stack').css('z-index', zIndex - 1).addClass('modal-stack');
-	        }, 0);
-	    });
-	    
-		*/
-	},
-
-	initselectors: function (){
-		this.eventMenu = $("#eventDrop");
-		this.pageContainer = $("#pageContainer");
-		this.modalContainer = $("#modalContainer");
-		this.searchBox = $("#searchbox");
 	},
 
 	configEventMenu: function() {
@@ -772,7 +805,15 @@ eventplanner.ui.planning = {
 			$(this).find('span').toggle();
 			return false;
 		});
-		
+
+		/*
+		$('#planningTable').delegate( '.editStateBtn', 'click' ,function() {
+			var stateModal = new eventplanner.ui.modal.EpModalState({}); 
+			stateModal.open();
+			return false;
+		});
+		*/
+
 		$('#planningTable').delegate( '.planningZoneCb', 'change' ,function() {
 			var zoneId = $(this).data('zone-id');
 			$('#planningTable .planningEqCb[data-zone-id=' + zoneId + ']').prop('checked', $(this).prop('checked'));
@@ -1569,6 +1610,32 @@ eventplanner.ui.modal.EpModalUserConfiguration = function(_user){
 eventplanner.ui.modal.EpModalUserConfiguration.prototype = Object.create(eventplanner.ui.modal.EpModal.prototype, {
     constructor: {
         value: eventplanner.ui.modal.EpModalUserConfiguration,
+        enumerable: false,
+        writable: true,
+        configurable: true
+    }
+});
+
+/// MODAL STATE ////////////////////////////////
+eventplanner.ui.modal.EpModalState = function(_el){
+	eventplanner.ui.modal.EpModal.call(this, "Modifier l'état", "state");
+	this.data = _el;
+	
+	this.preShow = function(){
+			$.each(eventplanner.ui.STATE.stateList, function(thisModal){
+				return function(index, value) {
+					thisModal.modal.find('.stateSelect').loadTemplate(thisModal.modal.find("#templateStateSelectOptions"), {id: index, text: value.text} ,{append: true});
+				}
+			}(this));
+		}
+	
+	this.postShow = function(){		
+		}
+}
+
+eventplanner.ui.modal.EpModalState.prototype = Object.create(eventplanner.ui.modal.EpModal.prototype, {
+    constructor: {
+        value: eventplanner.ui.modal.EpModalState,
         enumerable: false,
         writable: true,
         configurable: true

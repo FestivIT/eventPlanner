@@ -202,47 +202,6 @@ include_file('desktop', 'commun', 'css');
 				</div>
 			</div>
 		</script>
-
-		<div class="modal fade" id="epModal" data-template-bind='[{"attribute": "data-modalid", "value": "modalId"}]' tabindex="-1" role="dialog">
-			<div class="modal-dialog modal-lg">
-				<div class="modal-content">
-					<div class="modal-header">
-						<button class="close" type="button" data-dismiss="modal" aria-hidden="true">&times;</button>
-						<h4 class="modal-title text-primary" data-content="title"></h4>
-					</div>
-					<div class="modal-body"></div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
-					</div>
-				</div>
-			</div>
-		</div>
-		
-		<div class="modal fade" id="selectStateModal" tabindex="-1" role="dialog">
-			<div class="modal-dialog modal-lg">
-				<div class="modal-content">
-					<div class="modal-header">
-						<button class="close" type="button" data-dismiss="modal" aria-hidden="true">&times;</button>
-						<h4 class="modal-title text-primary" data-content="title">Selectionner un état</h4>
-					</div>
-					<div class="modal-body">
-					  <div class="form-group">
-					      <label for="eqLogicZoneId" class="col-sm-3 control-label" >Etat:</label>
-					      <div class="col-sm-9">
-					        <select class="form-control stateSelect"></select>
-					        <script type="text/html" id="templateStateSelectOptions">
-					          <option data-template-bind='[{"attribute": "value", "value": "id"}]' data-content="text"></option>
-					        </script>
-					      </div>
-					  </div>
-					</div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
-						<button type="button" class="btn btn-primary">Valider</button>
-					</div>
-				</div>
-			</div>
-		</div>
 		<?php
 	}
 	?>

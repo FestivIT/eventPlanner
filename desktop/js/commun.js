@@ -34,8 +34,8 @@ $.addTemplateFormatter("append", function(value, template) {
 });
 
 function formatState(state){
-	if(eventplanner.ui.STATE.hasOwnProperty(state)){
-		return eventplanner.ui.STATE[state].text;
+	if(eventplanner.ui.STATE.stateList.hasOwnProperty(state)){
+		return eventplanner.ui.STATE.stateList[state].text;
 	}else{
 		return eventplanner.ui.STATE["default"].text;
 	}
@@ -45,8 +45,8 @@ $.addTemplateFormatter("formatState", function(value, template) {
 });
 
 function formatStateColorClass(state){
-	if(eventplanner.ui.STATE.hasOwnProperty(state)){
-		return eventplanner.ui.STATE[state].colorClass;
+	if(eventplanner.ui.STATE.stateList.hasOwnProperty(state)){
+		return eventplanner.ui.STATE.stateList[state].colorClass;
 	}else{
 		return eventplanner.ui.STATE["default"].colorClass;
 	}
