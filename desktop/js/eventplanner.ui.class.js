@@ -1617,14 +1617,27 @@ eventplanner.ui.modal.EpModalUserConfiguration.prototype = Object.create(eventpl
 });
 
 /// MODAL STATE ////////////////////////////////
-eventplanner.ui.modal.EpModalState = function(_el){
+eventplanner.ui.modal.EpModalState = function(_el, _type){
 	eventplanner.ui.modal.EpModal.call(this, "Modifier l'état", "state");
 	this.data = _el;
-	
+	this.type = _type;
+
 	this.preShow = function(){
-			$.each(eventplanner.ui.STATE.stateList, function(thisModal){
-				return function(index, value) {
-					thisModal.modal.find('.stateSelect').loadTemplate(thisModal.modal.find("#templateStateSelectOptions"), {id: index, text: value.text} ,{append: true});
+			$.each(eventplanner.ui.STATE, function(thisModal){
+				return function(i,item){
+					if(i == thisModal.type){
+						$.each(item.groups, function(thisModal){
+							return function(j,group){
+								thisModal.modal.find('.stateSelect').loadTemplate(thisModal.modal.find("#templateStateSelectOptgroup"), {id: j, text: group.text} ,{append: true});
+							
+								$.each(group.list, function(thisModal, groupId){
+									return function(stateNbr, stateParam){
+										thisModal.modal.find('optgroup[id=' + groupId + ']').loadTemplate(thisModal.modal.find("#templateStateSelectOptions"), {id: stateNbr, text: stateParam.text} ,{append: true});
+									}
+								}(thisModal, j));
+							}
+						}(thisModal));
+					}
 				}
 			}(this));
 		}
