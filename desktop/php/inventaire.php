@@ -6,7 +6,7 @@
 		  		<button type="button" class="btn btn-success btn-xs pull-right editEqRealBtn" data-eqReal-id="new">Ajouter</button>
 		  	</div>
 			
-			<table class="table table-striped table-hover table-condensed" id="eqRealTable">
+			<table class="table table-striped table-hover table-condensed eqRealTable" id="eqRealTable">
 				<thead>
 					<tr>
 						<th>Type</th>

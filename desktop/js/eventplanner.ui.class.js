@@ -544,12 +544,20 @@ eventplanner.ui.inventaire ={
 					eqRealState: 300
 				}
 				
-				eventplanner.ui.modal.eqRealConfiguration(eqRealData);
+				//eventplanner.ui.modal.eqRealConfiguration(eqRealData);
+				var eqRealModal = new eventplanner.ui.modal.EpModalEqRealConfiguration(eqRealData);
+				eqRealModal.open();
 			}else{
 				eventplanner.eqReal.byId({id: eqRealId, success: function(_data) {
-					eventplanner.ui.modal.eqRealConfiguration(_data);
+					//eventplanner.ui.modal.eqRealConfiguration(_data);
+					var eqRealModal = new eventplanner.ui.modal.EpModalEqRealConfiguration(_data);
+					eqRealModal.open();
 				}});
 			}
+		});
+
+		$("#eqRealTable").bind("refreshEqRealTable", function(event){
+			eventplanner.ui.inventaire.constructEqRealTable();
 		});
 
 		this.constructEqRealTable();
@@ -1395,19 +1403,29 @@ eventplanner.ui.modal.EpModalEventConfiguration.prototype = Object.create(eventp
 
 /// MODAL INVENTAIRE CONFIGURATION /////////////
 
-eventplanner.ui.modal.eqRealConfiguration = function(eqReal){
-	eventplanner.ui.openModal("Configuration d'un matériel", "eqRealConfiguration", eqReal, {
-		preShow: function(_eqReal){
+eventplanner.ui.modal.EpModalEqRealConfiguration = function(_eqReal){
+	eventplanner.ui.modal.EpModal.call(this, "Configuration d'un matériel", "eqRealConfiguration");
+	
+	this.data = _eqReal;
+	
+	this.preShow = function(){
 			eventplanner.matType.all({
-			    success: function(_data) {
-					$("#eqRealMatTypeId").loadTemplate($("#templateEqMatTypeOptions"), _data, {success: function(){
-						$('#eqRealMatTypeId option[value="' + _eqReal.eqRealMatTypeId + '"]').prop('selected', true);
-					}});
-			}});
-		},
-
-		postShow: function(_eqReal){
-			$('#eqRealForm').submit(function() {
+				success: function(thisModal){
+					return function(_data) {
+						thisModal.modal.find("#eqRealMatTypeId").loadTemplate(thisModal.modal.find("#templateEqMatTypeOptions"), _data, {
+							success: function(thisModal){
+								return function() {
+									thisModal.modal.find('#eqRealMatTypeId option[value="' + thisModal.data.eqRealMatTypeId + '"]').prop('selected', true);
+								}
+							}(thisModal)
+						});
+					}
+				}(this)
+			});
+		}
+	
+	this.postShow = function(){
+			this.modal.find('#eqRealForm').submit(this, function(event) {
 			    var eqRealParam = {
 			        id: $(this).find("#eqRealId").val(),
 			        matTypeId: $(this).find("#eqRealMatTypeId").val(),
@@ -1419,18 +1437,32 @@ eventplanner.ui.modal.eqRealConfiguration = function(eqReal){
 			   
 			    eventplanner.eqReal.save({
 			      eqReal: eqRealParam,
-			      success: function(){
-			        eventplanner.ui.inventaire.constructEqRealTable();
-			        eventplanner.ui.closeModal();
-			        eventplanner.ui.notification('success', "Matériel enregistré.");
-			      }
+			      success: function(thisModal){
+								return function(_data) {
+									$(".eqRealTable").trigger("refreshEqRealTable");
+							        thisModal.close();
+									eventplanner.ui.notification('success', "Matériel enregistrée.");	
+								}
+							}(event.data),
+				  error: function(_data){
+			        eventplanner.ui.notification('error', "Impossible d'enregistrer le matériel. " + _data.message);
+			      }			  
 			    });
 
 			    return false;
 			});
+			
 		}
-	});
 }
+
+eventplanner.ui.modal.EpModalEqRealConfiguration.prototype = Object.create(eventplanner.ui.modal.EpModal.prototype, {
+    constructor: {
+        value: eventplanner.ui.modal.EpModalEqRealConfiguration,
+        enumerable: false,
+        writable: true,
+        configurable: true
+    }
+});
 
 /// MODAL EQUIPEMENT CONFIGURATION /////////////
 
