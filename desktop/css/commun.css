@@ -21,10 +21,9 @@ body {
  color: #999;
 }
 
-/*
-#planningTable .tablesorter-hasChildRow {
- border-top: 2px solid #337ab7;
-}*/
+#planningTable .zoneRow td {
+ border-top: 1px solid #adadad;
+}
 
 .msgTable p{
 	margin: 0 0 0px;

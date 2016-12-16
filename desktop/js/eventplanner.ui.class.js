@@ -779,7 +779,7 @@ eventplanner.ui.maincourante = {
 eventplanner.ui.planning = {
 	init: function(){
 	  	$.tablesorter.themes.bootstrap = {
-		    table        : 'table  table-bordered table-condensed',
+		    table        : 'table table-condensed',
 		    caption      : 'caption',
 		    header       : 'bootstrap-header',
 		    iconSortNone : 'bootstrap-icon-unsorted',
@@ -806,17 +806,50 @@ eventplanner.ui.planning = {
 			return false;
 		});
 
-		/*
-		$('#planningTable').delegate( '.editStateBtn', 'click' ,function() {
-			var stateModal = new eventplanner.ui.modal.EpModalState({}); 
+		
+		$('#planning').delegate('.editMultipleStateBtn', 'click', function () {
+			var eqList = [];
+			var eqState = 0;
+
+			$.each($('#planningTable .planningEqCb:checked'), function( index, eqCb) {
+			  eqList.push($(eqCb).data('eqId'));
+			  if(eqState < $(eqCb).data('eqlogicState')){
+			  	eqState = $(eqCb).data('eqlogicState');
+			  }
+			});
+
+			var stateModal = new eventplanner.ui.modal.EpModalState(eqList, 'eq', eqState); 
 			stateModal.open();
+
 			return false;
 		});
-		*/
+
+		$('#planning').delegate('.editStateBtn', 'click', function () {
+			var stateModal = new eventplanner.ui.modal.EpModalState([$(this).data('eqlogicId')], 'eq', $(this).data('eqlogicState')); 
+			stateModal.open();
+
+			return false;
+		});
+
+		$('#planning').delegate('.zoneBtn', 'click', function () {
+			eventplanner.zone.byId({
+	    		id: $(this).data('zoneId'),
+	    		success: function(_data) {
+					var zoneModal = new eventplanner.ui.modal.EpModalZone(_data);
+					zoneModal.open();
+				}
+			});
+
+			return false;
+		});
 
 		$('#planningTable').delegate( '.planningZoneCb', 'change' ,function() {
 			var zoneId = $(this).data('zone-id');
 			$('#planningTable .planningEqCb[data-zone-id=' + zoneId + ']').prop('checked', $(this).prop('checked'));
+		});
+
+		$('#planningTable').bind("refreshEqTable", this, function(event){
+			event.data.constructPlanningTable();
 		});
 		
 		this.constructPlanningTable();
@@ -834,10 +867,12 @@ eventplanner.ui.planning = {
 				    	_eqsData.forEach(function(_eqData) {
 				    		var eqRow = $("<div/>").loadTemplate($("#templatePlanningTableEq"), _eqData);
 				    		eqRow.find('tr').addClass(formatStateColorClass(_eqData.eqLogicState));
+
+				    		$("#planningTable tr[data-zone-id='" + _eqData.zoneId + "'] .planningZoneNbrEq").text($("#planningTable tr[data-zone-id='" + _eqData.zoneId + "']").find('td[rowspan]').attr( "rowspan") + ' équipement(s)');
 				    		
 						    $("#planningTable tr[data-zone-id='" + _eqData.zoneId + "']")
 						    	.after(eqRow.children())
-						    	.find('td[rowspan]').attr( "rowspan", function(i, val ) {return parseInt(val)+1;})
+						    	.find('td[rowspan]').attr( "rowspan", function(i, val ) {return parseInt(val)+1;});
 						});
 						
 						$('#planningTable').trigger('update');
@@ -1050,6 +1085,30 @@ eventplanner.ui.modal.EpModalZone = function(_zone){
 		
 		this.modal.find("#zoneEqTable").bind("refreshEqTable", this, function(event){
 			event.data.constructEqTable();
+		});
+		
+		this.modal.find('.editMultipleStateBtn').on('click', function () {
+			var eqList = [];
+			var eqState = 0;
+
+			$.each($(this).closest('#equipements').find('.editStateBtn'), function( index, eqStateBtn) {
+			  eqList.push($(eqStateBtn).data('eqlogicId'));
+			  if(eqState < $(eqStateBtn).data('eqlogicState')){
+			  	eqState = $(eqStateBtn).data('eqlogicState');
+			  }
+			});
+			
+			var stateModal = new eventplanner.ui.modal.EpModalState(eqList, 'eq', eqState); 
+			stateModal.open();
+
+			return false;
+		});
+		
+		this.modal.find('#equipements').delegate('.editStateBtn', 'click', this, function (event) {
+			var stateModal = new eventplanner.ui.modal.EpModalState([$(this).data('eqlogicId')], 'eq', $(this).data('eqlogicState')); 
+			stateModal.open();
+
+			return false;
 		});
 	}
 
@@ -1603,7 +1662,7 @@ eventplanner.ui.modal.EpModalUserConfiguration = function(_user){
 			      }	
 			    });
 			    return false;
-			});			
+			});
 		}
 }
 
@@ -1617,10 +1676,12 @@ eventplanner.ui.modal.EpModalUserConfiguration.prototype = Object.create(eventpl
 });
 
 /// MODAL STATE ////////////////////////////////
-eventplanner.ui.modal.EpModalState = function(_el, _type){
+eventplanner.ui.modal.EpModalState = function(_listId, _type, _presetState){
 	eventplanner.ui.modal.EpModal.call(this, "Modifier l'état", "state");
-	this.data = _el;
+	this.data = {};
+	this.listId = _listId;
 	this.type = _type;
+	this.presetState = _presetState;
 
 	this.preShow = function(){
 			$.each(eventplanner.ui.STATE, function(thisModal){
@@ -1628,7 +1689,7 @@ eventplanner.ui.modal.EpModalState = function(_el, _type){
 					if(i == thisModal.type){
 						$.each(item.groups, function(thisModal){
 							return function(j,group){
-								thisModal.modal.find('.stateSelect').loadTemplate(thisModal.modal.find("#templateStateSelectOptgroup"), {id: j, text: group.text} ,{append: true});
+								thisModal.modal.find('#stateSelect').loadTemplate(thisModal.modal.find("#templateStateSelectOptgroup"), {id: j, text: group.text} ,{append: true});
 							
 								$.each(group.list, function(thisModal, groupId){
 									return function(stateNbr, stateParam){
@@ -1640,9 +1701,38 @@ eventplanner.ui.modal.EpModalState = function(_el, _type){
 					}
 				}
 			}(this));
+
+			this.modal.find('#stateSelect option[value="' + this.presetState + '"]').prop('selected', true);
 		}
 	
-	this.postShow = function(){		
+	this.postShow = function(){
+			this.modal.find('#stateForm').submit(this, function(event) {
+				var newState = $(this).find("#stateSelect").val();
+
+			    console.log(event.data.type + ': ' + newState + ' sur ');
+			    console.log(event.data.listId);
+
+			    switch(event.data.type){
+			    	case 'eq':
+			    		eventplanner.eqLogic.updateState({
+							listId: event.data.listId,
+							state: newState,
+							success: function(thisModal){
+										return function(_data) {
+											$(".eqTable").trigger("refreshEqTable");
+									        thisModal.close();
+											eventplanner.ui.notification('success', "Etat modifié.");	
+										}
+									}(event.data),
+							error: function(_data){
+								eventplanner.ui.notification('error', "Impossible de modifier l'état. " + _data.message);
+							}	
+							});
+			    	break;
+			    }
+			    return false;
+			});
+
 		}
 }
 

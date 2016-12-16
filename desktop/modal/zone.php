@@ -8,65 +8,67 @@
 
   <!-- Tab panes -->
   <div class="tab-content">
-    <div role="tabpanel" class="tab-pane active" id="home">
-    	<legend>Informations</legend>
-		<div class="row">
-		  <div class="col-xs-4"><label class="control-label">Etat:</label></div>
-		  <div class="col-xs-8"><span data-template-bind='[{"attribute": "class", "value": "state", "formatter": "formatStateColorClass", "formatOptions": "label label"},{"attribute": "content", "value": "state", "formatter": "formatState"}]'></span><button type="button" class="btn btn-xs btn-primary pull-right">Modifier</button></div>
+    <div role="tabpanel" class="tab-pane active row" id="home">
+		<div class="col-sm-6">
+			<legend>Informations</legend>
+			<div class="row">
+			  <div class="col-xs-4"><label class="control-label">Etat:</label></div>
+			  <div class="col-xs-8"><span data-template-bind='[{"attribute": "class", "value": "state", "formatter": "formatStateColorClass", "formatOptions": "label label"},{"attribute": "content", "value": "state", "formatter": "formatState"}]'></span><button type="button" class="btn btn-xs btn-primary pull-right editStateBtn">Modifier</button></div>
+			</div>
+			<div class="row">
+			  <div class="col-xs-4"><label class="control-label">Installation:</label></div>
+			  <div class="col-xs-8"><span class="label label-primary" data-content="installDate" data-format="formatDateYmd2Dmy"></span></div>
+			</div>		
+			<div class="row">
+			  <div class="col-xs-4"><label class="control-label">Désinstallation:</label></div>
+			  <div class="col-xs-8"><span class="label label-primary" data-content="uninstallDate" data-format="formatDateYmd2Dmy"></span></div>
+			</div>
 		</div>
-		<div class="row">
-		  <div class="col-xs-4"><label class="control-label">Installation:</label></div>
-		  <div class="col-xs-8"><span class="label label-primary" data-content="installDate" data-format="formatDateYmd2Dmy"></span></div>
-		</div>		
-		<div class="row">
-		  <div class="col-xs-4"><label class="control-label">Désinstallation:</label></div>
-		  <div class="col-xs-8"><span class="label label-primary" data-content="uninstallDate" data-format="formatDateYmd2Dmy"></span></div>
+		<div class="col-sm-6">
+			<legend>Commentaire</legend>
+			<div class="well well-sm" data-content="eqLogicComment" data-content="configuration" data-format="getConfigurationKey" data-format-options="comment"></div>
 		</div>
-		
-		<div class="well well-sm" data-content="eqLogicComment" data-content="configuration" data-format="getConfigurationKey" data-format-options="comment"></div>
-
-		
-		    
-        <div class="panel panel-primary">
-        	<div class="panel-heading"> 
-              <h3 class="panel-title">Main courante</h3>
-            </div>
-            <div>
-              <form class="form-horizontal msgForm" data-template-bind='[{"attribute": "data-zone-id", "value": "id"}]'>
-	            <div class="input-group">
-			      <input type="text" class="form-control msgFormInput" placeholder="Déposer un message...">
-			      <span class="input-group-btn">
-			        <button type="submit" class="btn btn-default">Poster</button>
-			      </span>
-			    </div>
-		      </form>
-		    </div>
-          <table class="table table-striped table-hover table-condensed msgTable" id="zoneMsgTable">
-            <tbody></tbody>
-          </table>
-          <script type="text/html" id="templateZoneMsgTable">
-          	<tr>
-          		<td>
-          			<p class="pull-right small">
-          				<span data-content="msgDate" data-format="formatDateMsg"></span> - <strong><span data-content="userName"></span></strong>
-          			</p>
-          			<strong><span data-content="matTypeName"></span> <span data-content="eqRealName"></span></strong>
-          			<p data-content="msgContent"></p>
-          		</td>
-          	</tr>
-          </script>
-        </div>
+		<div class="col-sm-12">    
+			<div class="panel panel-primary">
+				<div class="panel-heading"> 
+				  <h3 class="panel-title">Main courante</h3>
+				</div>
+				<div>
+				  <form class="form-horizontal msgForm" data-template-bind='[{"attribute": "data-zone-id", "value": "id"}]'>
+					<div class="input-group">
+					  <input type="text" class="form-control msgFormInput" placeholder="Déposer un message...">
+					  <span class="input-group-btn">
+						<button type="submit" class="btn btn-default">Poster</button>
+					  </span>
+					</div>
+				  </form>
+				</div>
+			  <table class="table table-striped table-hover table-condensed msgTable" id="zoneMsgTable">
+				<tbody></tbody>
+			  </table>
+			  <script type="text/html" id="templateZoneMsgTable">
+				<tr>
+					<td>
+						<p class="pull-right small">
+							<span data-content="msgDate" data-format="formatDateMsg"></span> - <strong><span data-content="userName"></span></strong>
+						</p>
+						<strong><span data-content="matTypeName"></span> <span data-content="eqRealName"></span></strong>
+						<p data-content="msgContent"></p>
+					</td>
+				</tr>
+			  </script>
+			</div>
+		</div>
     </div>
     
     
     <div role="tabpanel" class="tab-pane" id="equipements">
     	<legend>Equipements
-    		<button type="button" class="btn btn-xs btn-primary pull-right">Modifier tous les états</button>
+    		<button type="button" class="btn btn-xs btn-primary pull-right editMultipleStateBtn">Modifier tous les états</button>
     	</legend>
     	
 		<div class="panel-group eqTable" role="tablist" aria-multiselectable="true" id="zoneEqTable">
 		</div>
-
 		<script type="text/html" id="templateZoneEqTable">
 		  <div class="panel panel-default">
 		    <div class="panel-heading" role="tab" data-template-bind='[{"attribute": "id", "value": "eqLogicId", "formatter": "prepend", "formatOptions": "heading"}]'>
@@ -100,7 +102,7 @@
 		    			<legend>Informations</legend>
 		    			<div class="row">
 						  <div class="col-xs-2"><label class="control-label">Etat:</label></div>
-						  <div class="col-xs-10"><span data-template-bind='[{"attribute": "class", "value": "eqLogicState", "formatter": "formatStateColorClass", "formatOptions": "label label"},{"attribute": "content", "value": "eqLogicState", "formatter": "formatState"}]'></span><button type="button" class="btn btn-xs btn-primary pull-right">Modifier</button></div>
+						  <div class="col-xs-10"><span data-template-bind='[{"attribute": "class", "value": "eqLogicState", "formatter": "formatStateColorClass", "formatOptions": "label label"},{"attribute": "content", "value": "eqLogicState", "formatter": "formatState"}]'></span><button type="button" class="btn btn-xs btn-primary pull-right editStateBtn"  data-template-bind='[{"attribute": "data-eqLogic-id", "value": "eqLogicId"}, {"attribute": "data-eqLogic-state", "value": "eqLogicState"}]'>Modifier</button></div>
 						</div>
 		    			<div class="row">
 						  <div class="col-xs-2"><label class="control-label">IP:</label></div>
@@ -120,8 +122,6 @@
 		  </div>
 		</script>
     </div>
-    
-    
     <div role="tabpanel" class="tab-pane" id="carte">
       <div class="modalMap" data-template-bind='[{"attribute": "id", "value": "modalId", "formatter": "prepend", "formatOptions": "mapZone"}]'></div>
     </div>

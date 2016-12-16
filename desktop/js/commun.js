@@ -55,7 +55,9 @@ $.addTemplateFormatter("formatStateColorClass", function(value, template) {
 	if(template == undefined){
 		template = "";
 	}else{
-		template = template + "-";
+		if(template.substring(template.length-1, template.length) != " "){
+			template = template + "-";
+		}		
 	}
 	
 	var colorClass = formatStateColorClass(value);

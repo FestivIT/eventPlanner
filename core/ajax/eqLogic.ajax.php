@@ -37,6 +37,13 @@ try {
 		ajax::success(utils::o2a($eqLogic));
 	}
 
+	if (init('action') == 'updateState') {
+		$listId = json_decode(init('listId'), true);
+		$state = init('state');
+
+		ajax::success(eqLogic::updateState($listId, $state));
+	}
+
 	if (init('action') == 'byId') {
 		if(init('fullData') == 'true'){
 			$eqLogic = eqLogic::byId(init('id'), true);

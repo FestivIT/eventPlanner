@@ -152,6 +152,26 @@ class eqLogic {
 		}
 	}
 
+	public static function updateState($_listId, $_state) {
+		$values = array(
+			'state' => $_state,
+		);
+
+		$sqlIdList = '(';
+		$separator = '';
+		foreach ($_listId as $id) {
+		    $sqlIdList .= $separator . $id;
+		    $separator = ', ';
+		}
+		$sqlIdList .= ")";
+
+		$sql = 'UPDATE eqLogic 
+		SET state=:state 
+        WHERE id IN ' . $sqlIdList;
+        
+        return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL);
+	}
+
 	/*     * *********************Méthodes d'instance************************* */
 
 	public function save() {
