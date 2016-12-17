@@ -153,34 +153,68 @@ class eqLogic {
 	}
 
 	public static function updateState($_listId, $_state) {
-		$values = array(
-			'state' => $_state,
-		);
 
-		$sqlIdList = '(';
+        $sqlIdList = '(';
 		$separator = '';
-		foreach ($_listId as $id) {
-		    $sqlIdList .= $separator . $id;
-		    $separator = ', ';
+
+        foreach ($_listId as $id) {
+        	$eqLogic = eqLogic::byId($id);
+
+        	if(is_object($eqLogic)){
+        		if($eqLogic->getState() != $_state){
+	        		msg::add($eqLogic->getEventId(), $eqLogic->getZoneId(), $eqLogic->getId(), $_SESSION['user']->getId(), "Changement d'état de " . $eqLogic->getState() . " à " . $_state);
+	        		$eqLogic->setState($_state);
+	        		$eqLogic->save(false);
+
+	        		$sqlIdList .= $separator . $id;
+		    		$separator = ', ';
+        		}
+        	}
 		}
+
 		$sqlIdList .= ")";
 
-		$sql = 'UPDATE eqLogic 
-		SET state=:state 
-        WHERE id IN ' . $sqlIdList;
-        
-        return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL);
+		if($sqlIdList == '()'){
+			return array();
+		}
+
+		$sql = 'SELECT ' . DB::buildField(__CLASS__, 'eqLogic') . ', ' . DB::buildField('event', 'event') . ', ' . DB::buildField('zone', 'zone') . ', ' . DB::buildField('matType', 'matType') . ', ' . DB::buildField('eqReal', 'eqReal') . '
+			FROM eqLogic 
+				LEFT OUTER JOIN event
+				ON eqLogic.eventId = event.id
+				LEFT OUTER JOIN zone
+				ON eqLogic.zoneId = zone.id
+				LEFT OUTER JOIN eqReal
+				ON eqLogic.eqRealId = eqReal.id
+				LEFT OUTER JOIN matType
+				ON eqLogic.matTypeId = matType.id
+				WHERE eqLogic.id IN ' . $sqlIdList . '
+				ORDER BY eqLogic.matTypeId';
+		$result = DB::Prepare($sql, array(), DB::FETCH_TYPE_ALL);
+
+		// d ode les champs en JSON
+		$JSONField = ['eqLogicConfiguration', 'eventConfiguration', 'eventLocalisation', 'zoneLocalisation', 'zoneConfiguration'];
+		foreach ($result as &$eq) {
+			foreach($JSONField as $fieldName){
+				$eq[$fieldName] = json_decode($eq[$fieldName], true);
+			}
+		}
+		return $result;
 	}
 
 	/*     * *********************Méthodes d'instance************************* */
 
-	public function save() {
+	public function save($_addMsg = true) {
 		if($this->getId() == null){
 			DB::save($this);
-			msg::add($this->getEventId(), $this->getZoneId(), $this->getId(), $_SESSION['user']->getId(), "Création de l'équipement.");
+			if($_addMsg){
+				msg::add($this->getEventId(), $this->getZoneId(), $this->getId(), $_SESSION['user']->getId(), "Création de l'équipement.");
+			}
 		}else{
 			DB::save($this);
-			msg::add($this->getEventId(), $this->getZoneId(), $this->getId(), $_SESSION['user']->getId(), "Mise à jour de l'équipement.");
+			if($_addMsg){
+				msg::add($this->getEventId(), $this->getZoneId(), $this->getId(), $_SESSION['user']->getId(), "Mise à jour de l'équipement.");
+			}
 		}
 		return $this;
 	}
