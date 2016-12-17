@@ -805,7 +805,6 @@ eventplanner.ui.planning = {
 			$(this).find('span').toggle();
 			return false;
 		});
-
 		
 		$('#planning').delegate('.editMultipleStateBtn', 'click', function () {
 			var eqList = [];
@@ -828,6 +827,16 @@ eventplanner.ui.planning = {
 			var stateModal = new eventplanner.ui.modal.EpModalState([$(this).data('eqlogicId')], 'eq', $(this).data('eqlogicState')); 
 			stateModal.open();
 
+			return false;
+		});
+
+		$('#planning .showAllZone').click(this, function (event) {
+			event.data.showAllZone();
+			return false;
+		});
+
+		$('#planning .hideAllZone').click(this, function (event) {
+			event.data.hideAllZone();
 			return false;
 		});
 
@@ -878,6 +887,18 @@ eventplanner.ui.planning = {
 						$('#planningTable').trigger('update');
 				}});			
 		}});
+	},
+
+	showAllZone: function(){
+		$('#planningTable .toggle').closest('tr').nextUntil('tr:not(.tablesorter-childRow)').children('td').show();
+		$('#planningTable .toggle .glyphicon-triangle-right').hide();
+		$('#planningTable .toggle .glyphicon-triangle-bottom').show();
+	},
+
+	hideAllZone: function(){
+		$('#planningTable .toggle').closest('tr').nextUntil('tr:not(.tablesorter-childRow)').children('td').hide();
+		$('#planningTable .toggle .glyphicon-triangle-bottom').hide();
+		$('#planningTable .toggle .glyphicon-triangle-right').show();
 	}
 };
 
@@ -1709,8 +1730,8 @@ eventplanner.ui.modal.EpModalState = function(_listId, _type, _presetState){
 			this.modal.find('#stateForm').submit(this, function(event) {
 				var newState = $(this).find("#stateSelect").val();
 
-			    console.log(event.data.type + ': ' + newState + ' sur ');
-			    console.log(event.data.listId);
+			    //console.log(event.data.type + ': ' + newState + ' sur ');
+			    //console.log(event.data.listId);
 
 			    switch(event.data.type){
 			    	case 'eq':

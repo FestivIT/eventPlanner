@@ -1,6 +1,8 @@
 <div class="panel panel-primary" id='planning'>
   	<div class="panel-heading">
   		Planning
+  		<button type="button" class="btn btn-xs btn-info showAllZone">Déplier tout</button>
+  		<button type="button" class="btn btn-xs btn-info hideAllZone">Replier tout</button>
   		<button type="button" class="btn btn-success btn-xs pull-right editMultipleStateBtn">Changer l'état</button>
   	</div>
 		<table id="planningTable" class="eqTable"> <!-- bootstrap classes added by the uitheme widget -->
