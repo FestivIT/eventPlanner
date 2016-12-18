@@ -2,7 +2,7 @@ eventplanner.ui = {
 	onlineState: true,
 
 	STATE: {
-		stateList: [],
+		stateList: {},
 		eq: {
 			text : "Equipements",
 			groups: [
