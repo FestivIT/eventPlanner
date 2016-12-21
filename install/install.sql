@@ -132,6 +132,21 @@ CREATE TABLE `msg` (
 -- --------------------------------------------------------
 
 --
+-- Structure de la table `mission`
+--
+
+CREATE TABLE `mission` (
+  `id` int(11) NOT NULL,
+  `eventId` int(11) NOT NULL,
+  `comment` text NOT NULL,
+  `state` int(3) NOT NULL,
+  `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `configuration` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
 -- Structure de la table `user`
 --
 
