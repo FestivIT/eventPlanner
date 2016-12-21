@@ -7,6 +7,7 @@ class eqLink {
 	/*     * *************************Attributs****************************** */
 
 	private $id;
+	private $eventId;
 	private $eqLogicId1;
 	private $eqLogicId2;
 	private $type;
@@ -152,6 +153,9 @@ class eqLink {
 	public function getId() {
 		return $this->id;
 	}
+	public function getEventId() {
+		return $this->eventId;
+	}
 	public function getEqLogicId1() {
 		return $this->eqLogicId1;
 	}
@@ -167,6 +171,9 @@ class eqLink {
 
 	public function setId($id) {
 		$this->id = $id;
+	}
+	public function setEventId($eventId) {
+		$this->eventId = $eventId;
 	}
 	public function setEqLogicId1($eqLogicId1) {
 		$this->eqLogicId1 = $eqLogicId1;

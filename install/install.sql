@@ -76,6 +76,7 @@ CREATE TABLE `eqReal` (
 
 CREATE TABLE `eqLink` (
   `id` int(11) NOT NULL,
+  `eventId` int(11) NOT NULL,
   `eqLogicId1` int(11) NOT NULL,
   `eqLogicId2` int(11) NOT NULL,
   `type` int(3) NOT NULL,
