@@ -67,6 +67,24 @@ CREATE TABLE `eqReal` (
 
 -- --------------------------------------------------------
 
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `eqLink`
+--
+
+CREATE TABLE `eqLink` (
+  `id` int(11) NOT NULL,
+  `eqLogicId1` int(11) NOT NULL,
+  `eqLogicId2` int(11) NOT NULL,
+  `type` int(3) NOT NULL,
+  `configuration` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8
+
+-- --------------------------------------------------------
+
+
 --
 -- Structure de la table `event`
 --

@@ -9,5 +9,6 @@ include_file('core', 'zone', 'class.js');
 include_file('core', 'msg', 'class.js');
 include_file('core', 'eqLogic', 'class.js');
 include_file('core', 'eqReal', 'class.js');
+include_file('core', 'eqLink', 'class.js');
 include_file('core', 'matType', 'class.js');
 ?>
