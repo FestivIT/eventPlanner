@@ -41,19 +41,19 @@ eventplanner.ui = {
 				{
 					text: "Installation",
 					list: {
-						200: {text: "En attente", colorClass:'active'},
-					  	201: {text: "A installer", colorClass:'warning'},
-					  	202: {text: "Terminé", colorClass:'success'},
-					  	203: {text: "Probléme", colorClass:'danger'}
+						200: {text: "En attente", colorClass:'active', mapIconColor:'blue'},
+					  	201: {text: "A installer", colorClass:'warning', mapIconColor:'orange'},
+					  	202: {text: "Terminé", colorClass:'success', mapIconColor:'green'},
+					  	203: {text: "Probléme", colorClass:'danger', mapIconColor:'red'}
 					}
 				},
 				{
 					text: "Désinstallation",
 					list: {
-						220: {text: "A désinstaller", colorClass:'danger'},
-					  	221: {text: "Probléme démontage", colorClass:'warning'},
-					  	221: {text: "Démonté, matériel à récuperer", colorClass:'info'},
-					  	221: {text: "Démontage terminé", colorClass:'success'}
+						220: {text: "A désinstaller", colorClass:'danger', mapIconColor:'red'},
+					  	221: {text: "Probléme démontage", colorClass:'warning', mapIconColor:'orange'},
+					  	221: {text: "Démonté, matériel à récuperer", colorClass:'info', mapIconColor:'blue'},
+					  	221: {text: "Démontage terminé", colorClass:'success', mapIconColor:'green'}
 					}
 				}
 			]
@@ -68,6 +68,21 @@ eventplanner.ui = {
 						300: {text: "Au stock", colorClass:'success'},
 					  	301: {text: "En Prêt", colorClass:'warning'},
 					  	399: {text: "Hors service", colorClass:'danger'}
+					}
+				}
+			]
+		},
+
+
+	  	mission: {
+			text : "Missions",
+			groups: [
+				{
+					text: "Disponibilité",
+					list: {
+						400: {text: "Attribuée", colorClass:'danger'},
+						401: {text: "En cours", colorClass:'warning'},
+					  	499: {text: "Terminée", colorClass:'success'}
 					}
 				}
 			]
