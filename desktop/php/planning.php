@@ -1,11 +1,12 @@
 <div class="panel panel-primary" id='planning'>
   	<div class="panel-heading">
+  		<button type="button" class="btn btn-xs btn-info showAllZone"><span class="glyphicon glyphicon-triangle-bottom small"></span></button>
+  		<button type="button" class="btn btn-xs btn-info hideAllZone"><span class="glyphicon glyphicon-triangle-right small"></span></button>
   		Planning
-  		<button type="button" class="btn btn-xs btn-info showAllZone">Déplier tout</button>
-  		<button type="button" class="btn btn-xs btn-info hideAllZone">Replier tout</button>
-  		<button type="button" class="btn btn-success btn-xs pull-right editMultipleStateBtn">Changer l'état</button>
+  		<button type="button" class="btn btn-success btn-xs pull-right editMultipleStateBtn">Etat équipements</button> 
+  		<button type="button" class="btn btn-success btn-xs pull-right editMultipleZoneStateBtn">Etat zones</button>
   	</div>
-		<table id="planningTable" class="eqTable"> <!-- bootstrap classes added by the uitheme widget -->
+		<table id="planningTable" class="eqTable zoneTable"> <!-- bootstrap classes added by the uitheme widget -->
 		  <thead>
 		    <tr>
 		      <th style="width: 150px;">Zone</th>
@@ -52,9 +53,9 @@
 					<td data-content="installDate" data-format="formatDateYmd2Dmy"></td>
 					<td data-content="uninstallDate" data-format="formatDateYmd2Dmy"></td>
 					<td data-content="comment"></td>
-					<td><span data-template-bind='[{"attribute": "class", "value": "state", "formatter": "formatStateColorClass", "formatOptions": "label label"},{"attribute": "content", "value": "state", "formatter": "formatState"}]'></span></td>
+					<td><button type="button" style="width: 100%;font-weight: bold;" data-template-bind='[{"attribute": "class", "value": "state", "formatter": "formatStateColorClass", "formatOptions": "editZoneStateBtn btn btn-xs btn"},{"attribute": "content", "value": "state", "formatter": "formatState"}, {"attribute": "data-zone-id", "value": "id"}, {"attribute": "data-zone-state", "value": "state"}]'></span></td>
 					<td>
-						<input type="checkbox" class="planningZoneCb" data-template-bind='[{"attribute": "data-zone-id", "value": "id"}]'>
+						<input type="checkbox" class="planningZoneCb" data-template-bind='[{"attribute": "data-zone-id", "value": "id"}, {"attribute": "data-zone-state", "value": "state"}]'>
 					</td>
 			</tr>
 	</script>

@@ -870,6 +870,23 @@ eventplanner.ui.planning = {
 			return false;
 		});
 
+		$('#planning').delegate('.editMultipleZoneStateBtn', 'click', function () {
+			var zoneList = [];
+			var zoneState = 0;
+
+			$.each($('#planningTable .planningZoneCb:checked'), function( index, zoneCb) {
+			  zoneList.push($(zoneCb).data('zoneId'));
+			  if(zoneState < $(zoneCb).data('zoneState')){
+			  	zoneState = $(zoneCb).data('zoneState');
+			  }
+			});
+
+			var stateModal = new eventplanner.ui.modal.EpModalState(zoneList, 'zone', zoneState); 
+			stateModal.open();
+
+			return false;
+		});
+
 		$('#planning').delegate('.editStateBtn', 'click', function () {
 			var stateModal = new eventplanner.ui.modal.EpModalState([$(this).data('eqlogicId')], 'eq', $(this).data('eqlogicState')); 
 			stateModal.open();
@@ -877,6 +894,13 @@ eventplanner.ui.planning = {
 			return false;
 		});
 
+		$('#planning').delegate('.editZoneStateBtn', 'click', function () {
+			var stateModal = new eventplanner.ui.modal.EpModalState([$(this).data('zoneId')], 'zone', $(this).data('zoneState')); 
+			stateModal.open();
+
+			return false;
+		});
+		
 		$('#planning .showAllZone').click(this, function (event) {
 			event.data.showAllZone();
 			return false;
@@ -905,6 +929,10 @@ eventplanner.ui.planning = {
 		});
 
 		$('#planningTable').bind("refreshEqTable", this, function(event){
+			event.data.constructPlanningTable();
+		});
+
+		$('#planningTable').bind("refreshZoneTable", this, function(event){
 			event.data.constructPlanningTable();
 		});
 		
@@ -1098,6 +1126,13 @@ eventplanner.ui.mission ={
 				}});
 			}
 		});
+
+		$('#mission').delegate('.editStateBtn', 'click', function () {
+			var stateModal = new eventplanner.ui.modal.EpModalState([$(this).data('missionId')], 'mission', $(this).data('missionState')); 
+			stateModal.open();
+
+			return false;
+		});
 	
 		$("#missionTable").bind("refreshMissionTable", function(){
 			eventplanner.ui.mission.constructMissionTable();
@@ -1200,6 +1235,19 @@ eventplanner.ui.modal.EpModalZone = function(_zone){
 		
 		this.modal.find("#zoneEqTable").bind("refreshEqTable", this, function(event){
 			event.data.constructEqTable();
+		});
+
+		this.modal.find("#zone").bind("refreshZoneTable", this, function(event){
+			//event.data.constructEqTable();
+			// PROBLEME POUR NE RAFRAICHIR QUE LA DONNEE QUI VA BIEN...
+			event.data.constructMsgTable();
+		});
+
+		this.modal.find('#zone').delegate('.editStateBtn', 'click', this, function (event) {
+			var stateModal = new eventplanner.ui.modal.EpModalState([$(this).data('zoneId')], 'zone', $(this).data('zoneState')); 
+			stateModal.open();
+
+			return false;
 		});
 		
 		this.modal.find('.editMultipleStateBtn').on('click', function () {

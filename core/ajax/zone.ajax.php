@@ -50,6 +50,13 @@ try {
 		ajax::success(utils::o2a($zones));
 	}
 
+	if (init('action') == 'updateState') {
+		$listId = json_decode(init('listId'), true);
+		$state = init('state');
+
+		ajax::success(zone::updateState($listId, $state));
+	}
+
 	throw new Exception('Aucune methode correspondante à : ' . init('action'));
 	/*     * *********Catch exeption*************** */
 } catch (Exception $e) {

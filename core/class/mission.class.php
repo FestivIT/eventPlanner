@@ -194,7 +194,48 @@ class mission {
 	}
 
 	public static function updateState($_listId, $_state) {
-	
+
+        $sqlIdList = '(';
+		$separator = '';
+
+        foreach ($_listId as $id) {
+        	$mission = mission::byId($id);
+
+        	if(is_object($mission)){
+        		if($mission->getState() != $_state){
+	        		//msg::add($eqLogic->getEventId(), $eqLogic->getZoneId(), $eqLogic->getId(), $_SESSION['user']->getId(), "Changement d'état de " . $eqLogic->getState() . " à " . $_state);
+	        		$mission->setState($_state);
+	        		$mission->save(false);
+
+	        		$sqlIdList .= $separator . $id;
+		    		$separator = ', ';
+        		}
+        	}
+		}
+
+		$sqlIdList .= ")";
+
+		if($sqlIdList == '()'){
+			return array();
+		}
+
+         $sql = 'SELECT ' . DB::buildField(__CLASS__) . '
+	        FROM mission
+	        WHERE id IN ' . $sqlIdList;
+         $result = DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL);
+         
+         // d ode les champs en JSON
+         $JSONField = ['users', 'zones', 'configuration'];
+         foreach ($result as &$mission) {
+		 	foreach($JSONField as $fieldName){
+		 		$mission[$fieldName] = json_decode($mission[$fieldName], true);
+		 	}
+		 }
+
+         foreach ($result as &$mission) {
+		 	$mission = mission::listToObjects($mission);
+		 }
+         return $result;
 	}
 
 	private static function listToObjects($mission){

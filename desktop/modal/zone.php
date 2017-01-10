@@ -1,19 +1,19 @@
 <div>
   <!-- Nav tabs -->
   <ul class="nav nav-tabs" role="tablist">
-    <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab" id="linkHome">Zone</a></li>
+    <li role="presentation" class="active"><a href="#zone" aria-controls="zone" role="tab" data-toggle="tab" id="linkHome">Zone</a></li>
     <li role="presentation"><a href="#equipements" aria-controls="equipements" role="tab" data-toggle="tab" id="linkEquipement">Equipements</a></li>
     <li role="presentation"><a href="#carte" aria-controls="carte" role="tab" data-toggle="tab" id="linkCarte">Carte</a></li>
   </ul>
 
   <!-- Tab panes -->
   <div class="tab-content">
-    <div role="tabpanel" class="tab-pane active row" id="home">
+    <div role="tabpanel" class="tab-pane active row zoneTable" id="zone">
 		<div class="col-sm-6">
 			<legend>Informations</legend>
 			<div class="row">
 			  <div class="col-xs-4"><label class="control-label">Etat:</label></div>
-			  <div class="col-xs-8"><span data-template-bind='[{"attribute": "class", "value": "state", "formatter": "formatStateColorClass", "formatOptions": "label label"},{"attribute": "content", "value": "state", "formatter": "formatState"}]'></span><button type="button" class="btn btn-xs btn-primary pull-right editStateBtn">Modifier</button></div>
+			  <div class="col-xs-8"><button type="button" style="font-weight: bold;" data-template-bind='[{"attribute": "class", "value": "state", "formatter": "formatStateColorClass", "formatOptions": "editStateBtn btn btn-xs btn"},{"attribute": "content", "value": "state", "formatter": "formatState"}, {"attribute": "data-zone-id", "value": "id"}, {"attribute": "data-zone-state", "value": "state"}]'></span></div>
 			</div>
 			<div class="row">
 			  <div class="col-xs-4"><label class="control-label">Installation:</label></div>

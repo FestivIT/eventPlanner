@@ -46,6 +46,40 @@ class zone {
 		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
 	}
 
+	public static function updateState($_listId, $_state) {
+
+        $sqlIdList = '(';
+		$separator = '';
+
+        foreach ($_listId as $id) {
+        	$zone = zone::byId($id);
+
+        	if(is_object($zone)){
+        		if($zone->getState() != $_state){
+	        		msg::add($zone->getEventId(), $zone->getId(), null, $_SESSION['user']->getId(), "Changement d'état de " . $zone->getState() . " à " . $_state);
+	        		$zone->setState($_state);
+	        		$zone->save(false);
+
+	        		$sqlIdList .= $separator . $id;
+		    		$separator = ', ';
+        		}
+        	}
+		}
+
+		$sqlIdList .= ")";
+
+		if($sqlIdList == '()'){
+			return array();
+		}
+
+		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
+		        FROM zone
+		        WHERE id IN ' . $sqlIdList;    			
+         $result = DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL);
+
+         return $result;
+	}
+
 	/*     * *********************Méthodes d'instance************************* */
 
 	public function save() {

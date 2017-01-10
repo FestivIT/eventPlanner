@@ -129,7 +129,7 @@ class eqReal {
    				LEFT OUTER JOIN matType
          		ON eqReal.matTypeId = matType.id
     			WHERE eqReal.id IN ' . $sqlIdList;
-         $result = DB::Prepare($sql, $values, DB::FETCH_TYPE_ROW);
+         $result = DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL);
          
          // décode les champs en JSON
          $JSONField = ['matTypeOptions'];
