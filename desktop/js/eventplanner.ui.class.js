@@ -1973,6 +1973,40 @@ eventplanner.ui.modal.EpModalState = function(_listId, _type, _presetState){
 							}	
 							});
 			    	break;
+
+			    	case 'zone':
+			    		eventplanner.zone.updateState({
+							listId: event.data.listId,
+							state: newState,
+							success: function(thisModal){
+										return function(_data) {
+											$(".zoneTable").trigger("refreshZoneTable");
+									        thisModal.close();
+											eventplanner.ui.notification('success', "Etat modifié.");	
+										}
+									}(event.data),
+							error: function(_data){
+								eventplanner.ui.notification('error', "Impossible de modifier l'état. " + _data.message);
+							}	
+							});
+			    	break;
+
+			    	case 'mission':
+			    		eventplanner.mission.updateState({
+							listId: event.data.listId,
+							state: newState,
+							success: function(thisModal){
+										return function(_data) {
+											$(".missionTable").trigger("refreshMissionTable");
+									        thisModal.close();
+											eventplanner.ui.notification('success', "Etat modifié.");	
+										}
+									}(event.data),
+							error: function(_data){
+								eventplanner.ui.notification('error', "Impossible de modifier l'état. " + _data.message);
+							}	
+							});
+			    	break;
 			    }
 			    return false;
 			});
