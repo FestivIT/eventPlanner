@@ -73,7 +73,7 @@ $.addTemplateFormatter("formatStateColorClass", function(value, template) {
 function formatDateMsg(date){
 	var theDate = new Date(date.replace(' ', 'T'));
 	var days = ["Dimanche","Lundi","Mardi", "Mercredi","Jeudi","Vendredi","Samedi"];
-	return days[theDate.getDay()] + " " + theDate.getDate() + '/' + theDate.getMonth() + ' ' + theDate.getHours() + ':' + theDate.getMinutes();
+	return days[theDate.getDay()] + " " + theDate.getDate() + '/' + (theDate.getMonth() + 1) + ' ' + theDate.getHours() + ':' + theDate.getMinutes();
 }
 $.addTemplateFormatter("formatDateMsg", function(value, template) {
     return formatDateMsg(value);
