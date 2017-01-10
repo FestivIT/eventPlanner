@@ -728,7 +728,7 @@ eventplanner.ui.map = {
 	addZoneMarkerOnMap: function(map, zone, dragable){
 		dragable = typeof dragable !== 'undefined' ? dragable : false;
 		
-		var zoneMarker = L.marker(zone.localisation, {draggable:dragable, title: zone.name, icon: L.AwesomeMarkers.icon({icon: 'glyphicon-arrow-down',markerColor: 'red'})});
+		var zoneMarker = L.marker(zone.localisation, {draggable:dragable, title: zone.name, icon: L.AwesomeMarkers.icon({icon: 'glyphicon-arrow-down',markerColor: eventplanner.ui.STATE.stateList[zone.state].mapIconColor})});
 		zoneMarker.addTo(map);
 		zoneMarker.zoneData = zone;
 
