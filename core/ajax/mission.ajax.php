@@ -87,6 +87,16 @@ try {
 		}	
 	}
 
+	if (init('action') == 'byUserIdMaxState') {
+		if(init('fullData') == 'true'){
+			$mission = mission::byUserIdMaxState(init('userId'),init('maxState'), true);
+			ajax::success($mission);
+		}else{
+			$mission = mission::byUserIdMaxState(init('userId'),init('maxState'), false);
+			ajax::success(utils::o2a($mission));
+		}	
+	}
+
 	throw new Exception('Aucune methode correspondante à : ' . init('action'));
 	/*     * *********Catch exeption*************** */
 } catch (Exception $e) {

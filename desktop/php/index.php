@@ -163,6 +163,7 @@ include_file('desktop', 'commun', 'css');
 	                <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="map"><i class="fa fa-globe white"></i>&nbsp;&nbsp;Carte</a></li>
 	                <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="planning"><i class="glyphicon glyphicon-calendar"></i>&nbsp;&nbsp;Planning</a></li>
 	                <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="maincourante"><i class="glyphicon glyphicon-pencil"></i>&nbsp;&nbsp;Main courante</a></li>
+	                <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="mission"><i class="glyphicon glyphicon-list-alt"></i>&nbsp;&nbsp;Missions</a></li>
 	                <li class="divider hidden-xs"></li>
 	                <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="equipements"><i class="glyphicon glyphicon-hdd"></i>&nbsp;&nbsp;Equipements</a></li>
 	                <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="zones"><i class="glyphicon glyphicon-map-marker"></i>&nbsp;&nbsp;Zones</a></li>

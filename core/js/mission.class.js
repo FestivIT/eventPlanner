@@ -161,3 +161,27 @@ eventplanner.mission.byUserId = function(_params) {
     };
     $.ajax(paramsAJAX);
 };
+
+eventplanner.mission.byUserIdMaxState = function(_params) {
+    var paramsRequired = ['userId', 'maxState'];
+    var paramsSpecifics = {};
+
+    try {
+        eventplanner.private.checkParamsRequired(_params || {}, paramsRequired);
+    } catch (e) {
+        (_params.error || paramsSpecifics.error || eventplanner.private.default_params.error)(e);
+        return;
+    }
+
+    var params = $.extend({}, eventplanner.private.default_params, paramsSpecifics, _params || {});
+
+    var paramsAJAX = eventplanner.private.getParamsAJAX(params);
+    paramsAJAX.url = 'core/ajax/mission.ajax.php';
+    paramsAJAX.data = {
+        action: 'byUserIdMaxState',
+        userId: _params.userId,
+        maxState: _params.maxState,
+        fullData: true
+    };
+    $.ajax(paramsAJAX);
+};

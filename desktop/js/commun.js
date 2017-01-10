@@ -79,6 +79,31 @@ $.addTemplateFormatter("formatDateMsg", function(value, template) {
     return formatDateMsg(value);
 });
 
+function formatList(list, template, itemName){
+	var items = "";
+
+	$.each(list, function( index, item ) {
+	  itemToAdd = $(template);
+
+	  if(itemName != ''){
+	  	itemToAdd.text(item[itemName]);
+	  }else{
+	  	itemToAdd.text(item);
+	  }
+
+	  items += itemToAdd.prop('outerHTML') + ' ';
+	});
+
+	return items;
+}
+$.addTemplateFormatter("formatList", function(list, template) {
+    return formatList(list, template, '');
+});
+
+$.addTemplateFormatter("formatListWithName", function(list, template) {
+    return formatList(list, template, 'name');
+});
+
 function formatDateYmd2Dmy(date){
 	return date.split("-").reverse().join("/");
 }

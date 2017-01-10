@@ -408,6 +408,24 @@ eventplanner.ui.dashboard = {
 				eventplanner.ui.loadPage('map');
 			}});
 		});
+
+		$('#dashboard').delegate('.selectMissionBtn', 'click', function () {
+			eventplanner.mission.byId({id: $(this).attr('data-mission-id'), success: function(_data) {
+				var missionConfModal = new eventplanner.ui.modal.EpModalMissionConfiguration(_data);
+					missionConfModal.open();		
+			}});
+		});
+
+		$("#missionList").bind("refreshMissionTable", function(){
+			eventplanner.ui.dashboard.constructMissionList();
+		});
+
+		$("#eventList").bind("refreshEventTable", function(){
+			eventplanner.ui.configuration.constructEventList();
+		});
+		
+		this.constructEventList();
+		this.constructMissionList();
 	},
 
 	constructeventList: function(){
@@ -417,6 +435,13 @@ eventplanner.ui.dashboard = {
 			success: function(_data) {
 				$("#eventList").loadTemplate($("#templateEventList"), _data);
 			}});
+	constructMissionList: function (){
+		eventplanner.mission.byUserIdMaxState({
+		    userId: user_id,
+		    maxState: 498,	// Tout sauf Terminé
+		    success: function(_data) {
+				$("#missionList").loadTemplate($("#templateMissionList"), _data);
+		}});
 	}
 };
 
@@ -1022,6 +1047,53 @@ eventplanner.ui.zones ={
 	}
 }
 
+
+/////////////////////////////////////////////////
+/// MISSION /////////////////////////////////////
+/////////////////////////////////////////////////
+eventplanner.ui.mission ={
+	init: function(){
+		$('#mission').delegate('.editMissionBtn', 'click', function () {
+			var missionId = $(this).attr('data-mission-id');
+			
+			if(missionId == 'new'){
+				eventplanner.event.byId({
+				    id: userProfils.eventId,
+				    success: function(_data) {
+						var missionData = {
+							id: '',
+							eventId: _data.id,
+							state: 400
+						}
+						
+						var missionConfModal = new eventplanner.ui.modal.EpModalMissionConfiguration(missionData);
+						missionConfModal.open();
+				}});
+			}else{
+				eventplanner.mission.byId({id: missionId, success: function(_data) {
+					var missionConfModal = new eventplanner.ui.modal.EpModalMissionConfiguration(_data);
+						missionConfModal.open();		
+				}});
+			}
+		});
+	
+		$("#missionTable").bind("refreshMissionTable", function(){
+			eventplanner.ui.mission.constructMissionTable();
+		});
+		
+		this.constructMissionTable();
+	},
+	
+	constructMissionTable: function(){
+		eventplanner.mission.byEventId({
+		    eventId: userProfils.eventId,
+		    success: function(_data) {
+				$("#missionTable > tbody").loadTemplate($("#templateMissionTable"), _data);
+				$('#missionTable').trigger('update');
+		}});
+	}
+}
+
 /////////////////////////////////////////////////
 /// MODAL////////////////////////////////////////
 /////////////////////////////////////////////////
@@ -1583,6 +1655,118 @@ eventplanner.ui.modal.EpModalEqRealConfiguration = function(_eqReal){
 eventplanner.ui.modal.EpModalEqRealConfiguration.prototype = Object.create(eventplanner.ui.modal.EpModal.prototype, {
     constructor: {
         value: eventplanner.ui.modal.EpModalEqRealConfiguration,
+        enumerable: false,
+        writable: true,
+        configurable: true
+    }
+});
+
+/// MODAL MISSION CONFIGURATION /////////////
+
+eventplanner.ui.modal.EpModalMissionConfiguration = function(_mission){
+	eventplanner.ui.modal.EpModal.call(this, "Configuration d'une mission", "missionConfiguration");
+	
+	this.data = _mission;
+	
+	this.preShow = function(){
+		eventplanner.zone.byEventId({
+			eventId: userProfils.eventId,
+			success: function(thisModal){
+						return function(_data) {
+							thisModal.modal.find("#missionZoneSelect").loadTemplate($("#templateZoneOptions"), _data, {success: function(thisModal){
+								return function() {
+									$.each(thisModal.data.zones, function(thisModal){
+										return function(i,item){
+											thisModal.modal.find('#missionZoneSelect option[value="' + item.id + '"]').prop('selected', true);
+										}
+									}(thisModal));
+								}
+							}(thisModal)});
+						}
+					}(this)
+			});
+
+		eventplanner.user.all({
+			success: function(thisModal){
+						return function(_data) {
+							thisModal.modal.find("#missionUserSelect").loadTemplate($("#templateUserOptions"), _data, {success: function(thisModal){
+								return function() {
+									$.each(thisModal.data.users, function(thisModal){
+										return function(i,item){
+											thisModal.modal.find('#missionUserSelect option[value="' + item.id + '"]').prop('selected', true);
+										}
+									}(thisModal));
+								}
+							}(thisModal)});
+						}
+					}(this)
+			});
+
+		$.each(eventplanner.ui.STATE, function(thisModal){
+				return function(i,item){
+					if(i == "mission"){
+						$.each(item.groups, function(thisModal){
+							return function(j,group){
+								thisModal.modal.find('#stateSelect').loadTemplate(thisModal.modal.find("#templateStateSelectOptgroup"), {id: j, text: group.text} ,{append: true});
+							
+								$.each(group.list, function(thisModal, groupId){
+									return function(stateNbr, stateParam){
+										thisModal.modal.find('optgroup[id=' + groupId + ']').loadTemplate(thisModal.modal.find("#templateStateSelectOptions"), {id: stateNbr, text: stateParam.text} ,{append: true});
+									}
+								}(thisModal, j));
+							}
+						}(thisModal));
+					}
+				}
+			}(this));
+
+		this.modal.find('#stateSelect option[value="' + this.data.state + '"]').prop('selected', true);
+	}
+	
+	this.postShow = function(){
+			this.modal.find('#missionForm').submit(this, function(event) {
+			    var missionParam = {
+			        id: $(this).find("#missionId").val(),
+			        name: $(this).find("#missionName").val(),
+			        comment: $(this).find("#missionComment").val(),
+			        eventId: $(this).find("#missionEventId").val(),
+			        state: $(this).find("#stateSelect").val(),
+			        zones: [],
+			        users: [],
+			        configuration: {}
+			    };
+
+			    $(this).find("#missionZoneSelect option:selected" ).each(function() {
+			      missionParam.zones.push(this.value);
+			    });
+
+			    $(this).find("#missionUserSelect option:selected" ).each(function() {
+			      missionParam.users.push(this.value);
+			    });
+			   
+			   	eventplanner.mission.save({
+			      mission: missionParam,
+			      success: function(thisModal){
+								return function(_data) {
+									$(".missionTable").trigger("refreshMissionTable");
+							        thisModal.close();
+									eventplanner.ui.notification('success', "Mission enregistrée.");	
+								}
+							}(event.data),
+				  error: function(_data){
+			        eventplanner.ui.notification('error', "Impossible d'enregistrer la mission. " + _data.message);
+			      }			  
+			    });
+				
+			    return false;
+			});
+			
+		}
+}
+
+eventplanner.ui.modal.EpModalMissionConfiguration.prototype = Object.create(eventplanner.ui.modal.EpModal.prototype, {
+    constructor: {
+        value: eventplanner.ui.modal.EpModalMissionConfiguration,
         enumerable: false,
         writable: true,
         configurable: true
