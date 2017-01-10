@@ -11,6 +11,7 @@
 					<tr>
 						<th>Type</th>
 						<th>Matériel</th>
+						<th>Etat</th>
 						<th>Actions</th>
 					</tr>
 				</thead>
@@ -41,6 +42,7 @@
 				<tr>
 					<th scope="row" data-content="matTypeName"></th>
 					<td data-content="eqRealName"></td>
+					<td><button type="button" style="font-weight: bold;" data-template-bind='[{"attribute": "class", "value": "eqRealState", "formatter": "formatStateColorClass", "formatOptions": "editStateBtn btn btn-xs btn"},{"attribute": "content", "value": "eqRealState", "formatter": "formatState"}, {"attribute": "data-eqReal-id", "value": "eqRealId"}, {"attribute": "data-eqReal-state", "value": "eqRealState"}]'></span></td>
 					<td><button type="button" class="btn btn-warning btn-xs editEqRealBtn"  data-template-bind='[{"attribute": "data-eqReal-id", "value": "eqRealId"}]'>Modifier</button></td>
 				</tr>
 			</script>

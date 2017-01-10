@@ -50,6 +50,13 @@ try {
 		throw new Exception('Matériel introuvable: id=' . init('id'));
 	}
 
+	if (init('action') == 'updateState') {
+		$listId = json_decode(init('listId'), true);
+		$state = init('state');
+
+		ajax::success(eqReal::updateState($listId, $state));
+	}
+
 	if (init('action') == 'byMatTypeId') {
 		if(init('fullData') == 'true'){
 			$eqReal = eqReal::byMatTypeId(init('matTypeId'), true);

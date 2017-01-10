@@ -633,6 +633,13 @@ eventplanner.ui.inventaire ={
 			}
 		});
 
+		$('#inventaire').delegate('.editStateBtn', 'click', function () {
+			var stateModal = new eventplanner.ui.modal.EpModalState([$(this).data('eqrealId')], 'eqReal', $(this).data('eqrealState')); 
+			stateModal.open();
+
+			return false;
+		});
+
 		$("#eqRealTable").bind("refreshEqRealTable", function(event){
 			eventplanner.ui.inventaire.constructEqRealTable();
 		});
@@ -1940,6 +1947,23 @@ eventplanner.ui.modal.EpModalState = function(_listId, _type, _presetState){
 							success: function(thisModal){
 										return function(_data) {
 											$(".eqTable").trigger("refreshEqTable");
+									        thisModal.close();
+											eventplanner.ui.notification('success', "Etat modifié.");	
+										}
+									}(event.data),
+							error: function(_data){
+								eventplanner.ui.notification('error', "Impossible de modifier l'état. " + _data.message);
+							}	
+							});
+			    	break;
+
+			    	case 'eqReal':
+			    		eventplanner.eqReal.updateState({
+							listId: event.data.listId,
+							state: newState,
+							success: function(thisModal){
+										return function(_data) {
+											$(".eqRealTable").trigger("refreshEqRealTable");
 									        thisModal.close();
 											eventplanner.ui.notification('success', "Etat modifié.");	
 										}

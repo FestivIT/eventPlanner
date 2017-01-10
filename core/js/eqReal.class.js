@@ -88,3 +88,25 @@ eventplanner.eqReal.byMatTypeId = function(_params) {
     };
     $.ajax(paramsAJAX);
 };
+
+eventplanner.eqReal.updateState = function(_params) {
+    var paramsRequired = ['listId','state'];
+    var paramsSpecifics =  {};
+
+    try {
+        eventplanner.private.checkParamsRequired(_params || {}, paramsRequired);
+    } catch (e) {
+        (_params.error || paramsSpecifics.error || eventplanner.private.default_params.error)(e);
+        return;
+    }
+
+    var params = $.extend({}, eventplanner.private.default_params, paramsSpecifics, _params || {});
+    var paramsAJAX = eventplanner.private.getParamsAJAX(params);
+    paramsAJAX.url = 'core/ajax/eqReal.ajax.php';
+    paramsAJAX.data = {
+        action: 'updateState',
+        listId: json_encode(_params.listId),
+        state: _params.state
+    };
+    $.ajax(paramsAJAX);
+};

@@ -98,6 +98,47 @@ class eqReal {
 		}
 	}
 
+	public static function updateState($_listId, $_state) {
+
+        $sqlIdList = '(';
+		$separator = '';
+
+        foreach ($_listId as $id) {
+        	$eqReal = eqReal::byId($id);
+
+        	if(is_object($eqReal)){
+        		if($eqReal->getState() != $_state){
+	        		//msg::add($eqLogic->getEventId(), $eqLogic->getZoneId(), $eqLogic->getId(), $_SESSION['user']->getId(), "Changement d'état de " . $eqLogic->getState() . " à " . $_state);
+	        		$eqReal->setState($_state);
+	        		$eqReal->save(false);
+
+	        		$sqlIdList .= $separator . $id;
+		    		$separator = ', ';
+        		}
+        	}
+		}
+
+		$sqlIdList .= ")";
+
+		if($sqlIdList == '()'){
+			return array();
+		}
+
+		$sql = 'SELECT ' . DB::buildField(__CLASS__, 'eqReal') . ', ' . DB::buildField('matType', 'matType') . '
+				FROM eqReal 
+   				LEFT OUTER JOIN matType
+         		ON eqReal.matTypeId = matType.id
+    			WHERE eqReal.id IN ' . $sqlIdList;
+         $result = DB::Prepare($sql, $values, DB::FETCH_TYPE_ROW);
+         
+         // décode les champs en JSON
+         $JSONField = ['matTypeOptions'];
+	 	 foreach($JSONField as $fieldName){
+		 		$result[$fieldName] = json_decode($result[$fieldName], true);
+		 }
+         return $result;
+	}
+
 	/*     * *********************Méthodes d'instance************************* */
 
 	public function save() {
