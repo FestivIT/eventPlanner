@@ -413,8 +413,6 @@ eventplanner.ui.search = {
 /////////////////////////////////////////////////
 eventplanner.ui.dashboard = {
 	init: function(){
-		this.constructeventList();
-
 		$('#dashboard').delegate('.selectEventBtn', 'click', function () {
 			eventplanner.user.setOptions({key: 'eventId', value: $(this).attr('data-event-id') ,success: function(_data) {
 				userProfils.eventId = _data.options.eventId;
@@ -443,13 +441,15 @@ eventplanner.ui.dashboard = {
 		this.constructMissionList();
 	},
 
-	constructeventList: function(){
+	constructEventList: function(){
 		eventplanner.event.byDayInterval({
-			dayBefore: 60,
-			dayAfter: 60,
+			dayBefore: 360,
+			dayAfter: 360,
 			success: function(_data) {
 				$("#eventList").loadTemplate($("#templateEventList"), _data);
 			}});
+	},
+
 	constructMissionList: function (){
 		eventplanner.mission.byUserIdMaxState({
 		    userId: user_id,
