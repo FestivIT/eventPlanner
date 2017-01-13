@@ -824,3 +824,22 @@ function ZipErrorMessage($code) {
 			return 'An unknown error has occurred(' . intval($code) . ')';
 	}
 }
+
+$STATE = json_decode(file_get_contents(dirname(__FILE__) . '/../../core/config/stateList.json'));
+$STATE->stateList = array();
+
+foreach ($STATE as $items) {
+	if(is_object($items) and property_exists($items, 'groups')){
+	    foreach ($items->groups as $group) {
+	    	foreach ($group->list as $key => $etat) {
+		    	$STATE->stateList[$key] = $etat;
+		    }
+	    }
+	}
+}
+
+function getStateText($state){
+	global $STATE;
+
+	return $STATE->stateList[$state]->text;
+}

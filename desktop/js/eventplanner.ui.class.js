@@ -1,108 +1,21 @@
 eventplanner.ui = {
 	onlineState: true,
 
-	STATE: {
-		stateList: {},
-		eq: {
-			text : "Equipements",
-			groups: [
-				{
-					text: "Préparation",
-					list: {
-						100: {text: "En attente", colorClass:'active'},
-					  	102: {text: "A Configurer", colorClass:'danger'},
-					  	102: {text: "Configuré - non testé", colorClass:'warning'},
-					  	103: {text: "Configuré - testé", colorClass:'success'},
-					  	104: {text: "Livré sur site", colorClass:'active'}
-					}
-				},
-				{
-					text: "Installation",
-					list: {
-						120: {text: "A installer", colorClass:'danger'},
-					  	121: {text: "Installé - non opérationnel", colorClass:'warning'},
-					  	122: {text: "Installé - opérationnel", colorClass:'success'}
-					}
-				},
-				{
-					text: "Désinstallation",
-					list: {
-						140: {text: "A Désinstaller", colorClass:'danger'},
-					  	141: {text: "Désinstall", colorClass:'warning'},
-					  	142: {text: "Au Stock", colorClass:'success'}
-					}
-				}
-			]
-		},
-
-		zone:{
-			text : "Zones",
-			groups: [
-				{
-					text: "Installation",
-					list: {
-						200: {text: "En attente", colorClass:'active', mapIconColor:'blue'},
-					  	201: {text: "A installer", colorClass:'warning', mapIconColor:'orange'},
-					  	202: {text: "Terminé", colorClass:'success', mapIconColor:'green'},
-					  	203: {text: "Probléme", colorClass:'danger', mapIconColor:'red'}
-					}
-				},
-				{
-					text: "Désinstallation",
-					list: {
-						220: {text: "A désinstaller", colorClass:'danger', mapIconColor:'red'},
-					  	221: {text: "Probléme démontage", colorClass:'warning', mapIconColor:'orange'},
-					  	221: {text: "Démonté, matériel à récuperer", colorClass:'info', mapIconColor:'blue'},
-					  	221: {text: "Démontage terminé", colorClass:'success', mapIconColor:'green'}
-					}
-				}
-			]
-		},
-
-	  	eqReal: {
-			text : "Matériels",
-			groups: [
-				{
-					text: "Disponibilité",
-					list: {
-						300: {text: "Au stock", colorClass:'success'},
-					  	301: {text: "En Prêt", colorClass:'warning'},
-					  	399: {text: "Hors service", colorClass:'danger'}
-					}
-				}
-			]
-		},
-
-
-	  	mission: {
-			text : "Missions",
-			groups: [
-				{
-					text: "Disponibilité",
-					list: {
-						400: {text: "Attribuée", colorClass:'danger'},
-						401: {text: "En cours", colorClass:'warning'},
-					  	499: {text: "Terminée", colorClass:'success'}
-					}
-				}
-			]
-		},
-	  	  	
-	  	'default': {text: "Inconnu", colorClass:'active'}
-  	},
+	STATE: {},
 
   	init: function() {
   		eventplanner.private.default_params.error = function(_data){
   			eventplanner.ui.notification('error', _data.message);
   		}
   		
-		this.initselectors();
-		this.search.init();
-		this.configEventMenu();
-		this.serverListener();
-		this.initNavBar();
-		this.initTrigger();
-		this.initState();
+		return $.when(	this.initselectors(),
+						this.search.init(),
+						this.configEventMenu(),
+						this.serverListener(),
+						this.initNavBar(),
+						this.initTrigger(),
+						this.initState()
+		);
 
 	},
 
@@ -126,9 +39,10 @@ eventplanner.ui = {
 
 	initTrigger: function(){
 		$("body").delegate('.msgForm', 'submit', function () {
-		if($(this).find('.msgFormInput').val()==''){
-		    return false;
-		}
+			if($(this).find('.msgFormInput').val()==''){
+			    return false;
+			}
+
 			var msgParam = {
 				eventId: userProfils.eventId,
 				userId: user_id,
@@ -149,7 +63,7 @@ eventplanner.ui = {
 
 			$(this).find('.msgFormInput').val("");
 			
-		    eventplanner.msg.save({
+		    return eventplanner.msg.save({
 		      msg: msgParam,
 		      success: function(){
 		        $(".msgTable").trigger("refreshMsgTable");
@@ -165,10 +79,14 @@ eventplanner.ui = {
 	},
 
 	initState: function (){
-		$.each(eventplanner.ui.STATE, function(i,item){
-			$.each(item.groups, function(j, group){
-				$.each(group.list, function(stateNbr, stateParam){
-					eventplanner.ui.STATE.stateList[stateNbr] = stateParam;
+		return $.getJSON( "core/config/stateList.json", function( data ) {
+			eventplanner.ui.STATE = data;
+
+			$.each(eventplanner.ui.STATE, function(i,item){
+				$.each(item.groups, function(j, group){
+					$.each(group.list, function(stateNbr, stateParam){
+						eventplanner.ui.STATE.stateList[stateNbr] = stateParam;
+					});
 				});
 			});
 		});
@@ -323,13 +241,13 @@ eventplanner.ui.search = {
 
 	init: function(){
 		eventplanner.ui.searchBox.typeahead('destroy');
-		this.constructSearchData();
+		return this.constructSearchData();
 	},
 
 	constructSearchData: function(){
 		this.data = [];
 
-		eventplanner.zone.byEventId({
+		return eventplanner.zone.byEventId({
 		    eventId: userProfils.eventId,
 		    success: function(_zonesData) {
 		    	_zonesData.forEach(function(_zoneData){

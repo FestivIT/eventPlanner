@@ -1,16 +1,16 @@
 $( document ).ready(function() {
-	eventplanner.ui.init();
-
-	var page = getUrlParameter("p");
-	if(page != false){
-		if(eventplanner.ui.hasOwnProperty(page) && eventplanner.ui[page].hasOwnProperty('init')){
-			eventplanner.ui.loadPage(page);
+	$.when(eventplanner.ui.init()).then(function (){
+		var page = getUrlParameter("p");
+		if(page != false){
+			if(eventplanner.ui.hasOwnProperty(page) && eventplanner.ui[page].hasOwnProperty('init')){
+				eventplanner.ui.loadPage(page);
+			}else{
+				eventplanner.ui.loadPage("dashboard");
+			}
 		}else{
 			eventplanner.ui.loadPage("dashboard");
 		}
-	}else{
-		eventplanner.ui.loadPage("dashboard");
-	}
+	});
 });
 
 $.addTemplateFormatter("getConfigurationKey", function(value, template) {

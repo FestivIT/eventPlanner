@@ -13,6 +13,7 @@ include_file('core', 'utils', 'class');
 //include_file('core', 'log', 'class');
 
 
+
 function eventPlannerCoreAutoload($classname) {
 	try {
 		include_file('core', $classname, 'class');
