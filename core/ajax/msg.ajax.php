@@ -90,6 +90,17 @@ try {
 		}	
 	}
 
+
+	if (init('action') == 'byEventIdSinceDate') {
+		if(init('fullData') == 'true'){
+			$msg = msg::byEventIdSinceDate(init('date'), init('eventId'), true);
+			ajax::success($msg);
+		}else{
+			$msg = msg::byEventIdSinceDate(init('date'), init('eventId'), false);
+			ajax::success(utils::o2a($msg));
+		}	
+	}
+
 	throw new Exception('Aucune methode correspondante à : ' . init('action'));
 	/*     * *********Catch exeption*************** */
 } catch (Exception $e) {

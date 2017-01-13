@@ -1,6 +1,6 @@
 eventplanner.ui = {
 	onlineState: true,
-
+	lastMsgDate: '2017-01-01 00:00:00',
 	STATE: {},
 
   	init: function() {
@@ -9,12 +9,12 @@ eventplanner.ui = {
   		}
   		
 		return $.when(	this.initselectors(),
+						this.initState(),
 						this.search.init(),
 						this.configEventMenu(),
 						this.serverListener(),
 						this.initNavBar(),
-						this.initTrigger(),
-						this.initState()
+						this.initTrigger()
 		);
 
 	},
@@ -24,6 +24,14 @@ eventplanner.ui = {
 		this.pageContainer = $("#pageContainer");
 		this.modalContainer = $("#modalContainer");
 		this.searchBox = $("#searchbox");
+	},
+
+	initData: function (){
+		//get all data and last eventplanner.ui.lastMsgDate
+	},
+
+	setNewData: function(){
+
 	},
 
 	initNavBar: function(){
@@ -96,7 +104,7 @@ eventplanner.ui = {
 		nbActiveAjaxRequest = 0;
 		$(document)
 		    .ajaxSend(function(event, jqxhr, settings) {
-		        if (settings.url.split('?')[0] == "core/ajax/alive.txt") return;
+		        if (settings.hasOwnProperty('data') && settings.data.indexOf("action=byEventIdSinceDate") !== -1) return;
 		                
 		        if (nbActiveAjaxRequest == 0) {
 		        	$.showLoading();
@@ -105,7 +113,7 @@ eventplanner.ui = {
 		    	nbActiveAjaxRequest++;
 		    })
 		    .ajaxComplete(function(event, jqxhr, settings) {
-		        if (settings.url.split('?')[0] == "core/ajax/alive.txt") return;
+		        if (settings.hasOwnProperty('data') && settings.data.indexOf("action=byEventIdSinceDate") !== -1) return;
 		        
 		        nbActiveAjaxRequest--;
 			    if (nbActiveAjaxRequest <= 0) {
@@ -115,41 +123,28 @@ eventplanner.ui = {
 		    })
 		
 		setInterval(function(){ 
-			$.ajax({url: "core/ajax/alive.txt",
-			        type: "HEAD",
-			        timeout:1000,
-			        statusCode: {
-			            200: function (response) {
-			            	if(!eventplanner.ui.onlineState){
-			            		eventplanner.ui.onlineState = true;
-			            		$('.navbar').removeClass('navbar-inverse').addClass('navbar-default');
-			                	eventplanner.ui.notification('success', "Connexion avec le serveur OK.");
-			            	}
-			            },
-			            400: function (response) {
-			            	if(eventplanner.ui.onlineState){
-			            		eventplanner.ui.onlineState = false;
-			                	$('.navbar').removeClass('navbar-default').addClass('navbar-inverse');
-			                	eventplanner.ui.notification('error', "Perte de la connexion avec le serveur.");
-			            	}
-			            },
-			            404: function (response) {
-			            	if(eventplanner.ui.onlineState){
-			            		eventplanner.ui.onlineState = false;
-			                	$('.navbar').removeClass('navbar-default').addClass('navbar-inverse');
-			                	eventplanner.ui.notification('error', "Perte de la connexion avec le serveur.");
-			            	}
-			            },
-			            0: function (response) {
-			                if(eventplanner.ui.onlineState){
-			            		eventplanner.ui.onlineState = false;
-			                	$('.navbar').removeClass('navbar-default').addClass('navbar-inverse');
-			                	eventplanner.ui.notification('error', "Perte de la connexion avec le serveur.");
-			            	}
-			            }              
-			        }
-			 });
-		}, 2000);
+			eventplanner.msg.byEventIdSinceDate({
+			    eventId: userProfils.eventId,
+			    date: eventplanner.ui.lastMsgDate,
+			    success: function(_data, _date) {
+			    	if(!eventplanner.ui.onlineState){
+	            		eventplanner.ui.onlineState = true;
+	            		$('.navbar').removeClass('navbar-inverse').addClass('navbar-default');
+	                	eventplanner.ui.notification('success', "Connexion avec le serveur OK.");
+	            	}
+
+			    	eventplanner.ui.setNewData(_data);
+			    	eventplanner.ui.lastMsgDate = _date;
+				},
+				error: function(_data){
+			        if(eventplanner.ui.onlineState){
+	            		eventplanner.ui.onlineState = false;
+	                	$('.navbar').removeClass('navbar-default').addClass('navbar-inverse');
+	                	eventplanner.ui.notification('error', "Perte de la connexion avec le serveur.");
+	            	}
+			    }
+			});
+		}, 5000);
 	},
 
 	configEventMenu: function() {

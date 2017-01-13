@@ -104,6 +104,37 @@ class msg {
 		}
 	}
 
+	public static function byEventIdSinceDate($_date, $_eventId, $_fullData = false) {
+		$values = array(
+			'eventId' => $_eventId
+		);
+
+		if($_fullData){
+			$sql = 'SELECT ' . DB::buildField(__CLASS__, 'msg') . ', ' . DB::buildField('event', 'event') . ', ' . DB::buildField('zone', 'zone') . ', ' . DB::buildField('eqLogic', 'eqLogic') . ', ' . DB::buildField('matType', 'matType') . ', ' . DB::buildField('eqReal', 'eqReal') . ', ' . DB::buildField('user', 'user') . '
+					FROM msg 
+       				LEFT OUTER JOIN event
+             		ON msg.eventId = event.id
+       				LEFT OUTER JOIN zone
+             		ON msg.zoneId = zone.id
+       				LEFT OUTER JOIN eqLogic
+             		ON msg.eqId = eqLogic.id
+       				LEFT OUTER JOIN eqReal
+             		ON eqLogic.eqRealId = eqReal.id
+       				LEFT OUTER JOIN matType
+             		ON eqLogic.matTypeId = matType.id
+       				LEFT OUTER JOIN user
+             		ON msg.userId = user.id
+	        		WHERE msg.eventId=:eventId AND msg.date > \'' . $_date . '\' 
+             		ORDER BY msg.date DESC';
+             return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL);
+		}else{
+			$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
+	        FROM msg
+	        WHERE eventId=:eventId';
+			return DB::Prepare($sql, $values, DB::FETCH_TYPE_ROW, PDO::FETCH_CLASS, __CLASS__);
+		}
+	}
+
 	public static function byZoneId($_zoneId, $_fullData = false) {
 		$values = array(
 			'zoneId' => $_zoneId,
@@ -197,13 +228,14 @@ class msg {
 		}
 	}
 
-	public static function add($_eventId, $_zoneId, $_eqId, $_userId, $_content) {
+	public static function add($_eventId, $_zoneId, $_eqId, $_userId, $_content, $_data) {
 		$message = new msg();
 		$message->setEventId($_eventId);
 		$message->setzoneId($_zoneId);
 		$message->setEqId($_eqId);
 		$message->setUserId($_userId);
 		$message->setContent($_content);
+		$message->setData($_data);
 		$message->save();
 	}
 
@@ -244,7 +276,7 @@ class msg {
 		return $this->content;
 	}
 	public function getData() {
-		return $this->content;
+		return json_decode($this->data, true);
 	}
 
 	public function setId($id) {
@@ -269,7 +301,7 @@ class msg {
 		$this->content = $content;
 	}
 	public function setData($data) {
-		$this->data = $data;
+		$this->data = json_encode(utils::o2a($data), JSON_UNESCAPED_UNICODE);
 	}
 
 }

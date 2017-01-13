@@ -117,7 +117,7 @@ eventplanner.private.getParamsAJAX = function(_params) {
                     result = false;
                 }
 
-                _params.success(result);
+                _params.success(result, data.date);
             }
             _params.post_success(data);
         },

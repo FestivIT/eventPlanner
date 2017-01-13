@@ -44,6 +44,7 @@ class ajax {
 		$isError = !(null === $_errorCode);
 		$return = array(
 			'state' => $isError ? 'error' : 'ok',
+			'date' => date('Y-m-d H:i:s'),
 			'result' => $_data,
 		);
 		if ($isError) {
