@@ -168,13 +168,13 @@ include_file('desktop', 'commun', 'css');
 	                <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="equipements"><i class="glyphicon glyphicon-hdd"></i>&nbsp;&nbsp;Equipements</a></li>
 	                <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="zones"><i class="glyphicon glyphicon-map-marker"></i>&nbsp;&nbsp;Zones</a></li>
 	                <li class="divider hidden-xs"></li>
-	                <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in"><i class="glyphicon glyphicon-info-sign"></i>&nbsp;&nbsp;Infos Evenement</a></li>
+	                <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="eventinfos"><i class="glyphicon glyphicon-info-sign"></i>&nbsp;&nbsp;Infos Evenement</a></li>
 	              </ul>
 	            </li>
 	            <li class="dropdown">
 	                <a class="dropdown-toggle" id="accountDrop" href="#" role="button" data-toggle="dropdown"><i class="glyphicon glyphicon-folder-open"></i>&nbsp;&nbsp;Mon compte <b class="caret"></b></a>
 	                <ul class="dropdown-menu">
-	                  	<li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in"><i class="glyphicon glyphicon-briefcase"></i>&nbsp;&nbsp;Mes infos</a></li>
+	                  	<li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="userinfos"><i class="glyphicon glyphicon-briefcase"></i>&nbsp;&nbsp;Mes infos</a></li>
 	                	<li class="divider hidden-xs"></li>
 	                	<li><a href="<?php echo $homeLink; ?>&logout=1" data-toggle="collapse" data-target=".navbar-collapse.in"><i class="glyphicon glyphicon-off"></i>&nbsp;&nbsp;Se déconnecter</a></li>
 	                </ul>
