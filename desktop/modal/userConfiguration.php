@@ -2,13 +2,13 @@
   <div class="form-group">
       <label for="name" class="col-sm-3 control-label" >Nom</label>
       <div class="col-sm-9">
-        <input type="text" class="form-control" id="userName" placeholder="Nom" data-value="name">
+        <input type="text" class="form-control" id="userName" placeholder="Nom" data-value="userName">
       </div>
   </div>
   <div class="form-group">
       <label for="login" class="col-sm-3 control-label" >Login</label>
       <div class="col-sm-9">
-        <input type="text" class="form-control" id="userLogin" placeholder="Login" data-value="login">
+        <input type="text" class="form-control" id="userLogin" placeholder="Login" data-value="userLogin">
       </div>
   </div>
   <div class="form-group">
@@ -19,7 +19,7 @@
   </div>
   <div class="form-group">
     <div class="col-sm-offset-3 col-sm-9">
-      <input type="text" id="userId" style="display: none;" data-value="id">
+      <input type="text" id="userId" style="display: none;" data-value="userId">
       <button type="submit" class="btn btn-success">Sauvegarder</button>
     </div>
   </div>
