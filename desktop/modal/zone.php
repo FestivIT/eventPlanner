@@ -13,20 +13,20 @@
 			<legend>Informations</legend>
 			<div class="row">
 			  <div class="col-xs-4"><label class="control-label">Etat:</label></div>
-			  <div class="col-xs-8"><button type="button" style="font-weight: bold;" data-template-bind='[{"attribute": "class", "value": "state", "formatter": "formatStateColorClass", "formatOptions": "editStateBtn btn btn-xs btn"},{"attribute": "content", "value": "state", "formatter": "formatState"}, {"attribute": "data-zone-id", "value": "id"}, {"attribute": "data-zone-state", "value": "state"}]'></span></div>
+			  <div class="col-xs-8"><button type="button" style="font-weight: bold;" data-template-bind='[{"attribute": "class", "value": "zoneState", "formatter": "formatStateColorClass", "formatOptions": "editStateBtn btn btn-xs btn"},{"attribute": "content", "value": "zoneState", "formatter": "formatState"}, {"attribute": "data-zone-id", "value": "zoneId"}, {"attribute": "data-zone-state", "value": "zoneState"}]'></span></div>
 			</div>
 			<div class="row">
 			  <div class="col-xs-4"><label class="control-label">Installation:</label></div>
-			  <div class="col-xs-8"><span class="label label-primary" data-content="installDate" data-format="formatDateYmd2Dmy"></span></div>
+			  <div class="col-xs-8"><span class="label label-primary" data-content="zoneInstallDate" data-format="formatDateYmd2Dmy"></span></div>
 			</div>		
 			<div class="row">
 			  <div class="col-xs-4"><label class="control-label">Désinstallation:</label></div>
-			  <div class="col-xs-8"><span class="label label-primary" data-content="uninstallDate" data-format="formatDateYmd2Dmy"></span></div>
+			  <div class="col-xs-8"><span class="label label-primary" data-content="zoneUninstallDate" data-format="formatDateYmd2Dmy"></span></div>
 			</div>
 		</div>
 		<div class="col-sm-6">
 			<legend>Commentaire</legend>
-			<div class="well well-sm" data-content="eqLogicComment" data-content="configuration" data-format="getConfigurationKey" data-format-options="comment"></div>
+			<div class="well well-sm" data-content="zoneConfiguration" data-format="getConfigurationKey" data-format-options="comment"></div>
 		</div>
 		<div class="col-sm-12">    
 			<div class="panel panel-primary">
@@ -34,7 +34,7 @@
 				  <h3 class="panel-title">Main courante</h3>
 				</div>
 				<div>
-				  <form class="form-horizontal msgForm" data-template-bind='[{"attribute": "data-zone-id", "value": "id"}]'>
+				  <form class="form-horizontal msgForm" data-template-bind='[{"attribute": "data-zone-id", "value": "zoneId"}]'>
 					<div class="input-group">
 					  <input type="text" class="form-control msgFormInput" placeholder="Déposer un message...">
 					  <span class="input-group-btn">

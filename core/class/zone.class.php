@@ -29,9 +29,10 @@ class zone {
 	}
 
 	public static function all() {
+
 		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-	    FROM zone
-	    ORDER BY `name`';
+    	FROM zone
+    	ORDER BY `name`';
 		return DB::Prepare($sql, array(), DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
 	}
 
@@ -39,10 +40,11 @@ class zone {
 		$values = array(
 			'eventId' => $_eventId,
 		);
+
 		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-        FROM zone
-        WHERE eventId=:eventId
-	    ORDER BY `name`';
+    	FROM zone
+    	WHERE eventId=:eventId 
+    	ORDER BY `name`';
 		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
 	}
 
@@ -75,9 +77,7 @@ class zone {
 		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
 		        FROM zone
 		        WHERE id IN ' . $sqlIdList;    			
-         $result = DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL);
-
-         return $result;
+        return DB::Prepare($sql, array(), DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
 	}
 
 	/*     * *********************Méthodes d'instance************************* */

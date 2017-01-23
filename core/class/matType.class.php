@@ -25,11 +25,11 @@ class matType {
 
 	public static function all() {
 		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-        FROM matType
-        ORDER By name';
+       	FROM matType
+	   	ORDER BY `name`';
 		return DB::Prepare($sql, array(), DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
 	}
-
+	
 	/*     * *********************Méthodes d'instance************************* */
 
 	public function save() {
@@ -52,6 +52,8 @@ class matType {
 	}
 	public function getOptions() {
 		return $this->options;
+		// ? return json_decode($this->options, true);
+		
 	}
 
 	public function setId($id) {
@@ -62,6 +64,7 @@ class matType {
 	}
 	public function setOptions($options) {
 		$this->options = $options;
+		// ? $this->options = json_encode($options, JSON_UNESCAPED_UNICODE);
 	}
 }
 ?>

@@ -5,7 +5,7 @@
         <select class="form-control" id="eqLogicZoneId"></select>
         <script type="text/html" id="templateEqZoneOptions">
         
-          <option data-template-bind='[{"attribute": "value", "value": "id"}, {"attribute": "data-zone-loc", "value": "localisation", "formatter": "JSONStringify"}]' data-content="name"></option>
+          <option data-template-bind='[{"attribute": "value", "value": "zoneId"}, {"attribute": "data-zone-loc", "value": "zoneLocalisation", "formatter": "JSONStringify"}]' data-content="zoneName"></option>
         </script>
       </div>
   </div>
@@ -14,7 +14,7 @@
       <div class="col-sm-9">
         <select class="form-control" id="eqLogicMatTypeId"></select>
         <script type="text/html" id="templateEqMatTypeOptions">
-          <option data-value="id" data-content="name"></option>
+          <option data-value="matTypeId" data-content="matTypeName"></option>
         </script>
       </div>
   </div>

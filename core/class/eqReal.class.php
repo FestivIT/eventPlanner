@@ -16,90 +16,36 @@ class eqReal {
 
 	/*     * ***********************Méthodes statiques*************************** */
 
-	public static function byId($_id, $_fullData = false) {
+	public static function byId($_id) {
 		$values = array(
 			'id' => $_id,
 		);
-		
-		if($_fullData){
-			$sql = 'SELECT ' . DB::buildField(__CLASS__, 'eqReal') . ', ' . DB::buildField('matType', 'matType') . '
-					FROM eqReal 
-       				LEFT OUTER JOIN matType
-             		ON eqReal.matTypeId = matType.id
-        			WHERE eqReal.id=:id';
-             $result = DB::Prepare($sql, $values, DB::FETCH_TYPE_ROW);
-             
-             // décode les champs en JSON
-             $JSONField = ['matTypeOptions'];
-		 	 foreach($JSONField as $fieldName){
-			 		$result[$fieldName] = json_decode($result[$fieldName], true);
-			 }
-             return $result;
-		}else{
-			$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-	        FROM eqReal
-	        WHERE id=:id';
-			return DB::Prepare($sql, $values, DB::FETCH_TYPE_ROW, PDO::FETCH_CLASS, __CLASS__);
-		}
+
+		$sql = 'SELECT ' . DB::buildField(__CLASS__) . ' 
+	    FROM eqReal 
+	    WHERE id=:id';
+		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ROW, PDO::FETCH_CLASS, __CLASS__);
 	}
 
-	public static function byMatTypeId($_matTypeId, $_fullData = false) {
+	public static function byMatTypeId($_matTypeId) {
 		$values = array(
 			'matTypeId' => $_matTypeId,
 		);
-		
-		if($_fullData){
-			$sql = 'SELECT ' . DB::buildField(__CLASS__, 'eqReal') . ', ' . DB::buildField('matType', 'matType') . '
-					FROM eqReal 
-       				LEFT OUTER JOIN matType
-             		ON eqReal.matTypeId = matType.id
-        			WHERE eqReal.matTypeId=:matTypeId
-       				ORDER BY eqReal.name';
-             $result = DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL);
-             
-             // décode les champs en JSON
-             $JSONField = ['matTypeOptions'];
-             foreach ($result as &$eq) {
-			 	foreach($JSONField as $fieldName){
-			 		$eq[$fieldName] = json_decode($eq[$fieldName], true);
-			 	}
-			 }
-             return $result;
-		}else{
-			$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-	        FROM eqReal
-	        WHERE matTypeId=:matTypeId';
-			return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
-		}
-	}
 
-	public static function all($_fullData = false) {
-		if($_fullData){
-			$sql = 'SELECT ' . DB::buildField(__CLASS__, 'eqReal') . ', ' . DB::buildField('matType', 'matType') . '
-					FROM eqReal 
-       				LEFT OUTER JOIN matType
-             		ON eqReal.matTypeId = matType.id
-       				ORDER BY eqReal.matTypeId';
-            $result = DB::Prepare($sql, array(), DB::FETCH_TYPE_ALL);
-             
-            // décode les champs en JSON
-            $JSONField = ['matTypeOptions'];
-            foreach ($result as &$eq) {
-				foreach($JSONField as $fieldName){
-			 		$eq[$fieldName] = json_decode($eq[$fieldName], true);
-			 	}
-			}
-			 
-            return $result;
-		}else{
-			$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-	        FROM eqReal';
-			return DB::Prepare($sql, array(), DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
-		}
+		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
+	    FROM eqReal
+	    WHERE matTypeId=:matTypeId';
+		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
 	}
-
+	
+	public static function all() {
+		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
+        FROM eqReal
+		ORDER BY `matTypeId`';
+		return DB::Prepare($sql, array(), DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
+	}
+	
 	public static function updateState($_listId, $_state) {
-
         $sqlIdList = '(';
 		$separator = '';
 
@@ -123,20 +69,13 @@ class eqReal {
 		if($sqlIdList == '()'){
 			return array();
 		}
-
-		$sql = 'SELECT ' . DB::buildField(__CLASS__, 'eqReal') . ', ' . DB::buildField('matType', 'matType') . '
-				FROM eqReal 
-   				LEFT OUTER JOIN matType
-         		ON eqReal.matTypeId = matType.id
-    			WHERE eqReal.id IN ' . $sqlIdList;
-         $result = DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL);
-         
-         // décode les champs en JSON
-         $JSONField = ['matTypeOptions'];
-	 	 foreach($JSONField as $fieldName){
-		 		$result[$fieldName] = json_decode($result[$fieldName], true);
-		 }
-         return $result;
+		
+		// retourne les éléments modifiés
+		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
+        FROM eqReal
+        WHERE id IN ' . $sqlIdList . ' 
+		ORDER BY `matTypeId`';
+		return DB::Prepare($sql, array(), DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
 	}
 
 	/*     * *********************Méthodes d'instance************************* */

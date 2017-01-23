@@ -5,13 +5,15 @@ try {
 	include_file('core', 'authentification', 'php');
 
 	if (!isConnect()) {
-		throw new Exception(__('401 - Accès non autorisé', __FILE__));
+		throw new Exception('401 - Accès non autorisé');
 	}
 
 	ajax::init();
-
+	
 	if (init('action') == 'all') {
-		ajax::success(utils::o2a(matType::all()));		
+		$matType = utils::addPrefixToArray(utils::o2a(matType::all()), 'matType', true);
+
+		ajax::success($matType);
 	}
 
 	if (init('action') == 'save') {
@@ -28,20 +30,11 @@ try {
 
 		utils::a2o($matType, $matType_json);
 		$matType->save();
+		$matType->refresh();
 
-		ajax::success(utils::o2a($matType));
+		ajax::success(utils::addPrefixToArray(utils::o2a($matType), 'matType'));
 	}
-
-	if (init('action') == 'byId') {
-		$matType = matType::byId(init('id'));
-		if (isset($matType) && is_object($matType)) {
-			ajax::success(utils::o2a($matType));
-		}
-
-		throw new Exception('MatType introuvable: id=' . init('id'));
-	}
-
-
+	
 	throw new Exception('Aucune methode correspondante à : ' . init('action'));
 	/*     * *********Catch exeption*************** */
 } catch (Exception $e) {

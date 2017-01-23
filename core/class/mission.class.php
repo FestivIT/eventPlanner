@@ -19,178 +19,58 @@ class mission {
 
 	/*     * ***********************Méthodes statiques*************************** */
 
-	public static function byId($_id, $_fullData = false) {
+	public static function byId($_id) {
 		$values = array(
 			'id' => $_id,
 		);
 
-		if($_fullData){
-			$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-		        FROM mission
-	        	WHERE id=:id
-			    ORDER BY `date`';
-             $result = DB::Prepare($sql, $values, DB::FETCH_TYPE_ROW);
-             
-             // d ode les champs en JSON
-            $JSONField = ['users', 'zones', 'configuration'];
-		 	foreach($JSONField as $fieldName){
-		 		$result[$fieldName] = json_decode($result[$fieldName], true);
-		 	}
-
-             return mission::listToObjects($result);
-		}else{
-			$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-	        	FROM mission
-	        	WHERE id=:id
-			    ORDER BY `date`';
-			return DB::Prepare($sql, $values, DB::FETCH_TYPE_ROW, PDO::FETCH_CLASS, __CLASS__);
-		}
+		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
+        	FROM mission
+        	WHERE id=:id';
+		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ROW, PDO::FETCH_CLASS, __CLASS__);
 	}
 
-	public static function all($_fullData = false) {
-		if($_fullData){
-			$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-		        FROM mission
-			    ORDER BY `date`';
-             $result = DB::Prepare($sql, array(), DB::FETCH_TYPE_ALL);
-             
-             // d ode les champs en JSON
-             $JSONField = ['users', 'zones', 'configuration'];
-             foreach ($result as &$mission) {
-			 	foreach($JSONField as $fieldName){
-			 		$mission[$fieldName] = json_decode($mission[$fieldName], true);
-			 	}
-			 }
-
-			 foreach ($result as &$mission) {
-			 	$mission = mission::listToObjects($mission);
-			 }
-             return $result;
-		}else{
-			$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-	        FROM mission
-		    ORDER BY `date`';
-			return DB::Prepare($sql, array(), DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
-		}
+	public static function all() {
+		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
+        FROM mission
+	    ORDER BY `date`';
+		return DB::Prepare($sql, array(), DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
 	}
 
-	public static function byEventId($_eventId, $_fullData = false) {
+	public static function byEventId($_eventId) {
 		$values = array(
 			'eventId' => $_eventId,
 		);
-		if($_fullData){
-			$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-		        FROM mission
-		        WHERE eventId=:eventId
-			    ORDER BY `date`';
-             $result = DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL);
-             
-             // d ode les champs en JSON
-             $JSONField = ['users', 'zones', 'configuration'];
-             foreach ($result as &$mission) {
-			 	foreach($JSONField as $fieldName){
-			 		$mission[$fieldName] = json_decode($mission[$fieldName], true);
-			 	}
-			 }
 
-             foreach ($result as &$mission) {
-			 	$mission = mission::listToObjects($mission);
-			 }
-             return $result;
-		}else{
-			$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-	        FROM mission
-	        WHERE eventId=:eventId
-		    ORDER BY `date`';
-			return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
-		}
+		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
+        FROM mission
+        WHERE eventId=:eventId
+	    ORDER BY `date`';
+		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
 	}
 
-	public static function byZoneId($_zoneId, $_fullData = false) {
-		if($_fullData){
-			$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-		        FROM mission
-		        WHERE `zones` LIKE \'%\"' . $_zoneId . '\"%\'
-			    ORDER BY `date`';
-             $result = DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL);
-             
-             // d ode les champs en JSON
-             $JSONField = ['users', 'zones', 'configuration'];
-             foreach ($result as &$mission) {
-			 	foreach($JSONField as $fieldName){
-			 		$mission[$fieldName] = json_decode($mission[$fieldName], true);
-			 	}
-			 }
-
-             foreach ($result as &$mission) {
-			 	$mission = mission::listToObjects($mission);
-			 }
-             return $result;
-		}else{
-			$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-	        FROM mission
-	        WHERE `zones` LIKE \'%\"' . $_zoneId . '\"%\'
-		    ORDER BY `date`';
-			return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
-		}
+	public static function byZoneId($_zoneId) {
+		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
+        FROM mission
+        WHERE `zones` LIKE \'%\"' . $_zoneId . '\"%\'
+	    ORDER BY `date`';
+		return DB::Prepare($sql, array(), DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
 	}
 
-	public static function byUserId($_userId, $_fullData = false) {
-		if($_fullData){
-			$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-		        FROM mission
-		        WHERE `users` LIKE \'%\"' . $_userId . '\"%\'
-			    ORDER BY `date`';
-             $result = DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL);
-             
-             // d ode les champs en JSON
-             $JSONField = ['users', 'zones', 'configuration'];
-             foreach ($result as &$mission) {
-			 	foreach($JSONField as $fieldName){
-			 		$mission[$fieldName] = json_decode($mission[$fieldName], true);
-			 	}
-			 }
-
-             foreach ($result as &$mission) {
-			 	$mission = mission::listToObjects($mission);
-			 }
-             return $result;
-		}else{
-			$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-	        FROM mission
-	        WHERE `users` LIKE \'%\"' . $_userId . '\"%\'
-		    ORDER BY `date`';
-			return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
-		}
+	public static function byUserId($_userId) {
+		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
+        FROM mission
+        WHERE `users` LIKE \'%\"' . $_userId . '\"%\'
+	    ORDER BY `date`';
+		return DB::Prepare($sql, array(), DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
 	}
 
 	public static function byUserIdMaxState($_userId, $_maxState, $_fullData = false) {
-		if($_fullData){
-			$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-		        FROM mission
-		        WHERE `users` LIKE \'%\"' . $_userId . '\"%\' AND `state` <= ' . $_maxState . '
-			    ORDER BY `date`';
-             $result = DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL);
-             
-             // d ode les champs en JSON
-             $JSONField = ['users', 'zones', 'configuration'];
-             foreach ($result as &$mission) {
-			 	foreach($JSONField as $fieldName){
-			 		$mission[$fieldName] = json_decode($mission[$fieldName], true);
-			 	}
-			 }
-
-             foreach ($result as &$mission) {
-			 	$mission = mission::listToObjects($mission);
-			 }
-             return $result;
-		}else{
-			$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-	        FROM mission
-	        WHERE `users` LIKE \'%\"' . $_userId . '\"%\'
-		    ORDER BY `date`';
-			return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
-		}
+		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
+        FROM mission
+        WHERE `users` LIKE \'%\"' . $_userId . '\"%\' AND `state` <= ' . $_maxState . '
+	    ORDER BY `date`';
+		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
 	}
 
 	public static function updateState($_listId, $_state) {
@@ -203,9 +83,12 @@ class mission {
 
         	if(is_object($mission)){
         		if($mission->getState() != $_state){
-	        		//msg::add($eqLogic->getEventId(), $eqLogic->getZoneId(), $eqLogic->getId(), $_SESSION['user']->getId(), "Changement d'état de " . $eqLogic->getState() . " à " . $_state);
+        			$old_state = $mission->getState();
+
 	        		$mission->setState($_state);
 	        		$mission->save(false);
+
+	        		msg::add($mission->getEventId(), null, null, $_SESSION['user']->getId(), "Mission [" . $mission->getName() . "]: Changement d'état de '" . getStateText($oldState) . "' à '" . getStateText($_state) . "'", $mission);
 
 	        		$sqlIdList .= $separator . $id;
 		    		$separator = ', ';
@@ -219,41 +102,12 @@ class mission {
 			return array();
 		}
 
-         $sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-	        FROM mission
-	        WHERE id IN ' . $sqlIdList;
-         $result = DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL);
-         
-         // d ode les champs en JSON
-         $JSONField = ['users', 'zones', 'configuration'];
-         foreach ($result as &$mission) {
-		 	foreach($JSONField as $fieldName){
-		 		$mission[$fieldName] = json_decode($mission[$fieldName], true);
-		 	}
-		 }
-
-         foreach ($result as &$mission) {
-		 	$mission = mission::listToObjects($mission);
-		 }
-         return $result;
-	}
-
-	private static function listToObjects($mission){
-		
-		foreach($mission['users'] as &$user){
-		 	$userObj = user::byId($user);
-		 	if(is_object($userObj)){
-		 		$user = utils::o2a($userObj);
-		 	}
-		}
-
-		foreach($mission['zones'] as &$zone){
-		 	$zoneObj = zone::byId($zone);
-		 	if(is_object($zoneObj)){
-		 		$zone = utils::o2a($zoneObj);
-		 	}
-		}
-		return $mission;
+		// retourne les éléments modifiés
+		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
+        FROM mission
+        WHERE id IN ' . $sqlIdList . ' 
+		ORDER BY `date`';
+		return DB::Prepare($sql, array(), DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
 	}
 
 	/*     * *********************Méthodes d'instance************************* */
@@ -262,12 +116,12 @@ class mission {
 		if($this->getId() == null){
 			DB::save($this);
 			if($_addMsg){
-				msg::add($this->getEventId(), null, null, $_SESSION['user']->getId(), "Création de la mission.");
+				msg::add($this->getEventId(), null, null, $_SESSION['user']->getId(), "Création de la mission.", $this);
 			}
 		}else{
 			DB::save($this);
 			if($_addMsg){
-				msg::add($this->getEventId(), null, null, $_SESSION['user']->getId(), "Mise à jour de la mission.");
+				msg::add($this->getEventId(), null, null, $_SESSION['user']->getId(), "Mise à jour de la mission.", $this);
 			}
 		}
 		return $this;

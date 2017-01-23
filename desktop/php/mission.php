@@ -22,14 +22,14 @@
 			</table>
 			<script type="text/html" id="templateMissionTable">
 				<tr>
-					<th scope="row" data-content="name"></th>
-					<td data-template-bind='[{"attribute": "content", "value": "users", "formatter": "formatListWithName", "formatOptions": "<span class=\"label label-info\"></span>"}]'></td>
-					<td data-template-bind='[{"attribute": "content", "value": "zones", "formatter": "formatListWithName", "formatOptions": "<span class=\"label label-default\"></span>"}]'></td>
-					<td data-content="date" data-format="formatDateMsg"></td>
-					<td><button type="button" style="font-weight: bold;" data-template-bind='[{"attribute": "class", "value": "state", "formatter": "formatStateColorClass", "formatOptions": "editStateBtn btn btn-xs btn"},{"attribute": "content", "value": "state", "formatter": "formatState"}, {"attribute": "data-mission-id", "value": "id"}, {"attribute": "data-mission-state", "value": "state"}]'></span></td>
+					<th scope="row" data-content="missionName"></th>
+					<td data-template-bind='[{"attribute": "content", "value": "missionUsers", "formatter": "formatListWithUserName", "formatOptions": "<span class=\"label label-info\"></span>"}]'></td>
+					<td data-template-bind='[{"attribute": "content", "value": "missionZones", "formatter": "formatListWithZoneName", "formatOptions": "<span class=\"label label-default\"></span>"}]'></td>
+					<td data-content="missionDate" data-format="formatDateMsg"></td>
+					<td><button type="button" style="font-weight: bold;" data-template-bind='[{"attribute": "class", "value": "missionState", "formatter": "formatStateColorClass", "formatOptions": "editStateBtn btn btn-xs btn"},{"attribute": "content", "value": "missionState", "formatter": "formatState"}, {"attribute": "data-mission-id", "value": "missionId"}, {"attribute": "data-mission-state", "value": "missionState"}]'></span></td>
 					<td class="col-xs-4" style="text-align: right;">
-						<button type="button" class="btn btn-warning btn-xs editMissionBtn" data-template-bind='[{"attribute": "data-mission-id", "value": "id"}]' title="Modifier"><span class="glyphicon glyphicon-pencil"></span></button> 
-						<button type="button" class="btn btn-danger btn-xs deleteMissionBtn" data-template-bind='[{"attribute": "data-mission-id", "value": "id"}]' title="Supprimer"><span class="glyphicon glyphicon-remove"></span></button>
+						<button type="button" class="btn btn-warning btn-xs editMissionBtn" data-template-bind='[{"attribute": "data-mission-id", "value": "missionId"}]' title="Modifier"><span class="glyphicon glyphicon-pencil"></span></button> 
+						<button type="button" class="btn btn-danger btn-xs deleteMissionBtn" data-template-bind='[{"attribute": "data-mission-id", "value": "missionId"}]' title="Supprimer"><span class="glyphicon glyphicon-remove"></span></button>
 					</td>
 				</tr>
 			</script>

@@ -5,18 +5,15 @@ try {
 	include_file('core', 'authentification', 'php');
 
 	if (!isConnect()) {
-		throw new Exception(__('401 - Accès non autorisé', __FILE__));
+		throw new Exception('401 - Accès non autorisé');
 	}
 
 	ajax::init();
 
 	if (init('action') == 'all') {
-		if(init('fullData') == 'true'){
-			$msg = msg::all(true);
-			ajax::success($msg);
-		}else{
-			ajax::success(utils::o2a(msg::all(false)));
-		}		
+		$msg = utils::addPrefixToArray(utils::o2a(msg::byEventId($_SESSION['user']->getOptions('eventId'))), 'msg', true);
+
+		ajax::success($msg);
 	}
 
 	if (init('action') == 'save') {
@@ -33,72 +30,15 @@ try {
 
 		utils::a2o($msg, $msg_json);
 		$msg->save();
-
-		ajax::success(utils::o2a($msg));
+		$msg->refresh(); // récupération de la date automatiquement ajoutée dans la BDD
+		
+		ajax::success(utils::addPrefixToArray(utils::o2a($msg), 'msg'));
 	}
 
-	if (init('action') == 'byId') {
-		if(init('fullData') == 'true'){
-			$msg = msg::byId(init('id'), true);
-			ajax::success($msg);
-		}else{
-			$msg = msg::byId(init('id'), false);
-			if (isset($msg) && is_object($msg)) {
-				ajax::success(utils::o2a($msg));
-			}
-		}
-		throw new Exception('Msg introuvable: id=' . init('id'));
-	}
+	if (init('action') == 'sinceDate') {
+		$msg = utils::addPrefixToArray(utils::o2a(msg::byEventIdSinceDate(init('date'), $_SESSION['user']->getOptions('eventId'))), 'msg', true);
 
-	if (init('action') == 'byEventId') {
-		if(init('fullData') == 'true'){
-			$msg = msg::byEventId(init('eventId'), true);
-			ajax::success($msg);
-		}else{
-			$msg = msg::byEventId(init('eventId'), false);
-			ajax::success(utils::o2a($msg));
-		}	
-	}
-
-	if (init('action') == 'byZoneId') {
-		if(init('fullData') == 'true'){
-			$msg = msg::byZoneId(init('zoneId'), true);
-			ajax::success($msg);
-		}else{
-			$msg = msg::byZoneId(init('zoneId'), false);
-			ajax::success(utils::o2a($msg));
-		}	
-	}
-
-	if (init('action') == 'byEqId') {
-		if(init('fullData') == 'true'){
-			$msg = msg::byEqId(init('eqId'), true);
-			ajax::success($msg);
-		}else{
-			$msg = msg::byEqId(init('eqId'), false);
-			ajax::success(utils::o2a($msg));
-		}	
-	}
-
-	if (init('action') == 'byUserId') {
-		if(init('fullData') == 'true'){
-			$msg = msg::byUserId(init('userId'), true);
-			ajax::success($msg);
-		}else{
-			$msg = msg::byUserId(init('userId'), false);
-			ajax::success(utils::o2a($msg));
-		}	
-	}
-
-
-	if (init('action') == 'byEventIdSinceDate') {
-		if(init('fullData') == 'true'){
-			$msg = msg::byEventIdSinceDate(init('date'), init('eventId'), true);
-			ajax::success($msg);
-		}else{
-			$msg = msg::byEventIdSinceDate(init('date'), init('eventId'), false);
-			ajax::success(utils::o2a($msg));
-		}	
+		ajax::success($msg);
 	}
 
 	throw new Exception('Aucune methode correspondante à : ' . init('action'));

@@ -19,137 +19,43 @@ class eqLogic {
 
 	/*     * ***********************Méthodes statiques*************************** */
 
-	public static function byId($_id, $_fullData = false) {
+	public static function byId($_id) {
 		$values = array(
 			'id' => $_id,
 		);
 
-		if($_fullData){
-			$sql = 'SELECT ' . DB::buildField(__CLASS__, 'eqLogic') . ', ' . DB::buildField('event', 'event') . ', ' . DB::buildField('zone', 'zone') . ', ' . DB::buildField('matType', 'matType') . ', ' . DB::buildField('eqReal', 'eqReal') . '
-					FROM eqLogic 
-       				LEFT OUTER JOIN event
-             		ON eqLogic.eventId = event.id
-       				LEFT OUTER JOIN zone
-             		ON eqLogic.zoneId = zone.id
-       				LEFT OUTER JOIN eqReal
-             		ON eqLogic.eqRealId = eqReal.id
-       				LEFT OUTER JOIN matType
-             		ON eqLogic.matTypeId = matType.id
-        			WHERE eqLogic.id=:id';
-             $result = DB::Prepare($sql, $values, DB::FETCH_TYPE_ROW);
-             
-             // d ode les champs en JSON
-             $JSONField = ['eqLogicConfiguration', 'eventConfiguration', 'eventLocalisation', 'zoneLocalisation', 'zoneConfiguration'];
-		 	 foreach($JSONField as $fieldName){
-			 		$result[$fieldName] = json_decode($result[$fieldName], true);
-			 }
-             return $result;
-		}else{
-			$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-	        FROM eqLogic
-	        WHERE id=:id';
-			return DB::Prepare($sql, $values, DB::FETCH_TYPE_ROW, PDO::FETCH_CLASS, __CLASS__);
-		}
+		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
+        FROM eqLogic
+        WHERE id=:id';
+		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ROW, PDO::FETCH_CLASS, __CLASS__);
 	}
 
-	public static function all($_fullData = false) {
-		if($_fullData){
-			$sql = 'SELECT ' . DB::buildField(__CLASS__, 'eqLogic') . ', ' . DB::buildField('event', 'event') . ', ' . DB::buildField('zone', 'zone') . ', ' . DB::buildField('matType', 'matType') . ', ' . DB::buildField('eqReal', 'eqReal') . '
-					FROM eqLogic 
-       				LEFT OUTER JOIN event
-             		ON eqLogic.eventId = event.id
-       				LEFT OUTER JOIN zone
-             		ON eqLogic.zoneId = zone.id
-       				LEFT OUTER JOIN eqReal
-             		ON eqLogic.eqRealId = eqReal.id
-       				LEFT OUTER JOIN matType
-             		ON eqLogic.matTypeId = matType.id
-       				ORDER BY eqLogic.matTypeId';
-             $result = DB::Prepare($sql, array(), DB::FETCH_TYPE_ALL);
-             
-             // d ode les champs en JSON
-             $JSONField = ['eqLogicConfiguration', 'eventConfiguration', 'eventLocalisation', 'zoneLocalisation', 'zoneConfiguration'];
-             foreach ($result as &$eq) {
-			 	foreach($JSONField as $fieldName){
-			 		$eq[$fieldName] = json_decode($eq[$fieldName], true);
-			 	}
-			 }
-             return $result;
-		}else{
-			$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-	        FROM eqLogic';
-			return DB::Prepare($sql, array(), DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
-		}
+	public static function all() {
+		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
+        FROM eqLogic';
+		return DB::Prepare($sql, array(), DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
 	}
 
-	public static function byEventId($_eventId, $_fullData = false) {
+	public static function byEventId($_eventId) {
 		$values = array(
 			'eventId' => $_eventId,
 		);
-		if($_fullData){
-			$sql = 'SELECT ' . DB::buildField(__CLASS__, 'eqLogic') . ', ' . DB::buildField('event', 'event') . ', ' . DB::buildField('zone', 'zone') . ', ' . DB::buildField('matType', 'matType') . ', ' . DB::buildField('eqReal', 'eqReal') . '
-					FROM eqLogic 
-       				LEFT OUTER JOIN event
-             		ON eqLogic.eventId = event.id
-       				LEFT OUTER JOIN zone
-             		ON eqLogic.zoneId = zone.id
-       				LEFT OUTER JOIN eqReal
-             		ON eqLogic.eqRealId = eqReal.id
-       				LEFT OUTER JOIN matType
-             		ON eqLogic.matTypeId = matType.id
-        			WHERE eqLogic.eventId=:eventId
-       				ORDER BY eqLogic.matTypeId';
-             $result = DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL);
-             
-             // d ode les champs en JSON
-             $JSONField = ['eqLogicConfiguration', 'eventConfiguration', 'eventLocalisation', 'zoneLocalisation', 'zoneConfiguration'];
-             foreach ($result as &$eq) {
-			 	foreach($JSONField as $fieldName){
-			 		$eq[$fieldName] = json_decode($eq[$fieldName], true);
-			 	}
-			 }
-             return $result;
-		}else{
-			$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-	        FROM eqLogic
-	        WHERE eventId=:eventId';
-			return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
-		}
+
+		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
+        FROM eqLogic
+        WHERE eventId=:eventId';
+		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
 	}
 
-	public static function byZoneId($_zoneId, $_fullData = false) {
+	public static function byZoneId($_zoneId) {
 		$values = array(
 			'zoneId' => $_zoneId,
 		);
-		if($_fullData){
-			$sql = 'SELECT ' . DB::buildField(__CLASS__, 'eqLogic') . ', ' . DB::buildField('event', 'event') . ', ' . DB::buildField('zone', 'zone') . ', ' . DB::buildField('matType', 'matType') . ', ' . DB::buildField('eqReal', 'eqReal') . '
-					FROM eqLogic 
-       				LEFT OUTER JOIN event
-             		ON eqLogic.eventId = event.id
-       				LEFT OUTER JOIN zone
-             		ON eqLogic.zoneId = zone.id
-       				LEFT OUTER JOIN eqReal
-             		ON eqLogic.eqRealId = eqReal.id
-       				LEFT OUTER JOIN matType
-             		ON eqLogic.matTypeId = matType.id
-        			WHERE eqLogic.zoneId=:zoneId
-       				ORDER BY eqLogic.matTypeId';
-             $result = DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL);
-             
-             // d ode les champs en JSON
-             $JSONField = ['eqLogicConfiguration', 'eventConfiguration', 'eventLocalisation', 'zoneLocalisation', 'zoneConfiguration'];
-             foreach ($result as &$eq) {
-			 	foreach($JSONField as $fieldName){
-			 		$eq[$fieldName] = json_decode($eq[$fieldName], true);
-			 	}
-			 }
-             return $result;
-		}else{
-			$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-	        FROM eqLogic
-	        WHERE zoneId=:zoneId';
-			return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
-		}
+
+		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
+        FROM eqLogic
+        WHERE zoneId=:zoneId';
+		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
 	}
 
 	public static function updateState($_listId, $_state) {
@@ -162,8 +68,12 @@ class eqLogic {
 
         	if(is_object($eqLogic)){
         		if($eqLogic->getState() != $_state){
-	        		msg::add($eqLogic->getEventId(), $eqLogic->getZoneId(), $eqLogic->getId(), $_SESSION['user']->getId(), "Changement d'état de " . $eqLogic->getState() . " à " . $_state);
-	        		$eqLogic->setState($_state);
+        			$oldState = $eqLogic->getState();
+        			$eqLogic->setState($_state);
+        			$eqLogic->save(false);
+        			
+	        		msg::add($eqLogic->getEventId(), $eqLogic->getZoneId(), $eqLogic->getId(), $_SESSION['user']->getId(), "Changement d'état de '" . getStateText($oldState) . "' à '" . getStateText($eqLogic->getState()) . "'", $eqLogic);
+	        		
 	        		$eqLogic->save(false);
 
 	        		$sqlIdList .= $separator . $id;
@@ -178,28 +88,10 @@ class eqLogic {
 			return array();
 		}
 
-		$sql = 'SELECT ' . DB::buildField(__CLASS__, 'eqLogic') . ', ' . DB::buildField('event', 'event') . ', ' . DB::buildField('zone', 'zone') . ', ' . DB::buildField('matType', 'matType') . ', ' . DB::buildField('eqReal', 'eqReal') . '
-			FROM eqLogic 
-				LEFT OUTER JOIN event
-				ON eqLogic.eventId = event.id
-				LEFT OUTER JOIN zone
-				ON eqLogic.zoneId = zone.id
-				LEFT OUTER JOIN eqReal
-				ON eqLogic.eqRealId = eqReal.id
-				LEFT OUTER JOIN matType
-				ON eqLogic.matTypeId = matType.id
-				WHERE eqLogic.id IN ' . $sqlIdList . '
-				ORDER BY eqLogic.matTypeId';
-		$result = DB::Prepare($sql, array(), DB::FETCH_TYPE_ALL);
-
-		// d ode les champs en JSON
-		$JSONField = ['eqLogicConfiguration', 'eventConfiguration', 'eventLocalisation', 'zoneLocalisation', 'zoneConfiguration'];
-		foreach ($result as &$eq) {
-			foreach($JSONField as $fieldName){
-				$eq[$fieldName] = json_decode($eq[$fieldName], true);
-			}
-		}
-		return $result;
+		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
+		        FROM zone
+		        WHERE id IN ' . $sqlIdList;    			
+        return DB::Prepare($sql, array(), DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
 	}
 
 	/*     * *********************Méthodes d'instance************************* */

@@ -5,7 +5,7 @@ try {
 	include_file('core', 'authentification', 'php');
 
 	if (!isConnect()) {
-		throw new Exception(__('401 - Accès non autorisé', __FILE__));
+		throw new Exception('401 - Accès non autorisé');
 	}
 
 	ajax::init();

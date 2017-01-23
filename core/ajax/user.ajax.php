@@ -17,16 +17,20 @@ try {
 		}
 		ajax::success();
 	}
+	
+	if (init('action') == 'isConnect') {
+		if (isConnect()) {
+			ajax::success(true);
+		}else{
+			throw new Exception('Utilisateur non identifié.');
+		}
+	}
 
 	if (!isConnect()) {
-		throw new Exception(__('401 - Acc�s non autorisé', __FILE__), -1234);
+		throw new Exception('401 - Accès non autorisé');
 	}
 
 	ajax::init();
-
-	if (init('action') == 'isConnect') {
-		ajax::success();
-	}
 
 	if (init('action') == 'refresh') {
 		@session_start();
@@ -41,12 +45,9 @@ try {
 	}
 
 	if (init('action') == 'all') {
-		$users = array();
-		foreach (user::all() as $user) {
-			$user_info = utils::o2a($user);
-			$users[] = $user_info;
-		}
-		ajax::success($users);
+		$user = utils::addPrefixToArray(utils::o2a(user::all()), 'user', true);
+
+		ajax::success($user);
 	}
 
 	if (init('action') == 'save') {
@@ -63,12 +64,13 @@ try {
 
 		utils::a2o($user, $user_json);
 		$user->save();
+		$user->refresh();
 
 		@session_start();
 		$_SESSION['user']->refresh();
 		@session_write_close();
 
-		ajax::success(utils::o2a($user));
+		ajax::success(utils::addPrefixToArray(utils::o2a($user), 'user'));
 	}
 
 	if (init('action') == 'remove') {
@@ -97,7 +99,7 @@ try {
 			$_SESSION['user']->refresh();
 			@session_write_close();
 
-			ajax::success(utils::o2a($user));
+			ajax::success(utils::addPrefixToArray(utils::o2a($user), 'user'));
 		}
 
 		throw new Exception('User inconnu');
@@ -112,7 +114,7 @@ try {
 		throw new Exception('User introuvable: id=' . init('id'));
 	}
 
-	throw new Exception('Aucune methode correspondante � : ' . init('action'));
+	throw new Exception('Aucune methode correspondante  : ' . init('action'));
 	/*     * *********Catch exeption*************** */
 } catch (Exception $e) {
 	ajax::error(displayExeption($e), $e->getCode());

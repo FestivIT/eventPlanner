@@ -5,13 +5,15 @@ try {
 	include_file('core', 'authentification', 'php');
 
 	if (!isConnect()) {
-		throw new Exception(__('401 - Accès non autorisé', __FILE__));
+		throw new Exception('401 - Accès non autorisé');
 	}
 
 	ajax::init();
 
 	if (init('action') == 'all') {
-		ajax::success(utils::o2a(zone::all()));
+		$zone = utils::addPrefixToArray(utils::o2a(zone::byEventId($_SESSION['user']->getOptions('eventId'))), 'zone', true);
+
+		ajax::success($zone);
 	}
 
 	if (init('action') == 'save') {
@@ -28,33 +30,16 @@ try {
 
 		utils::a2o($zone, $zone_json);
 		$zone->save();
+		$zone->refresh();
 
-		ajax::success(utils::o2a($zone));
-	}
-
-	if (init('action') == 'byId') {
-		
-		$zone = zone::byId(init('id'));
-
-		if (isset($zone) && is_object($zone)) {
-			ajax::success(utils::o2a($zone));
-		}
-
-		throw new Exception('Zone introuvable: id=' . init('id'));
-	}
-
-	if (init('action') == 'byEventId') {
-		
-		$zones = zone::byEventId(init('eventId'));
-
-		ajax::success(utils::o2a($zones));
+		ajax::success(utils::addPrefixToArray(utils::o2a($zone), 'zone'));
 	}
 
 	if (init('action') == 'updateState') {
 		$listId = json_decode(init('listId'), true);
 		$state = init('state');
 
-		ajax::success(zone::updateState($listId, $state));
+		ajax::success(utils::addPrefixToArray(zone::updateState($listId, $state), 'zone'));
 	}
 
 	throw new Exception('Aucune methode correspondante à : ' . init('action'));

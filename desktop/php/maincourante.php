@@ -50,7 +50,7 @@
 		<tr>
 			<td>
 	  			<p class="pull-right small">
-	  				<span data-content="msgDate" data-format="formatDateMsg"></span> - <strong><span data-content="userName"></span></strong>
+	  				<span data-content="msgDate" data-format="formatDateMsg"></span> - <strong><span class="label label-info" data-content="userName"></span></strong>
 	  			</p>
 	  			<p>
 	  				<label class="label label-default" data-content="zoneName"></label>

@@ -7,7 +7,6 @@ class utils {
 	/*     * *************************Attributs****************************** */
 
 	/*     * ***********************Methode static*************************** */
-
 	public static function formatDateYmd2Dmy($date){
 		$newdate = new DateTime($date);
 		return $newdate->format('d/m/Y');
@@ -99,6 +98,28 @@ class utils {
 				}
 			}
 		}
+	}
+	
+	public static function addPrefixToArray($_array, $_prefix, $_isList = false){
+		if($_isList){
+			$newArray = array();
+
+			foreach ($_array as $item) {
+				$newItem = array();
+				foreach ($item as $key => $value) {
+				    $newItem[$_prefix . ucfirst($key)] = $value;
+				}
+
+				array_push($newArray, $newItem);
+			}
+		}else{
+			$newArray = array();
+			foreach ($_array as $key => $value) {
+			    $newArray[$_prefix . ucfirst($key)] = $value;
+			}
+		}		
+		
+		return $newArray;
 	}
 
 	public static function processJsonObject($_class, $_ajaxList, $_dbList = null) {

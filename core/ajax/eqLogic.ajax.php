@@ -5,18 +5,15 @@ try {
 	include_file('core', 'authentification', 'php');
 
 	if (!isConnect()) {
-		throw new Exception(__('401 - Accès non autorisé', __FILE__));
+		throw new Exception('401 - Accès non autorisé');
 	}
 
 	ajax::init();
 
 	if (init('action') == 'all') {
-		if(init('fullData') == 'true'){
-			$eqLogic = eqLogic::all(true);
-			ajax::success($eqLogic);
-		}else{
-			ajax::success(utils::o2a(eqLogic::all(false)));
-		}		
+		$eqLogic = utils::addPrefixToArray(utils::o2a(eqLogic::byEventId($_SESSION['user']->getOptions('eventId'))), 'eqLogic', true);
+
+		ajax::success($eqLogic);
 	}
 
 	if (init('action') == 'save') {
@@ -33,48 +30,16 @@ try {
 
 		utils::a2o($eqLogic, $eqLogic_json);
 		$eqLogic->save();
+		$eqLogic->refresh();
 
-		ajax::success(utils::o2a($eqLogic));
+		ajax::success(utils::addPrefixToArray(utils::o2a($eqLogic), 'eqLogic'));
 	}
 
 	if (init('action') == 'updateState') {
 		$listId = json_decode(init('listId'), true);
 		$state = init('state');
 
-		ajax::success(eqLogic::updateState($listId, $state));
-	}
-
-	if (init('action') == 'byId') {
-		if(init('fullData') == 'true'){
-			$eqLogic = eqLogic::byId(init('id'), true);
-			ajax::success($eqLogic);
-		}else{
-			$eqLogic = eqLogic::byId(init('id'), false);
-			if (isset($eqLogic) && is_object($eqLogic)) {
-				ajax::success(utils::o2a($eqLogic));
-			}
-		}
-		throw new Exception('Msg introuvable: id=' . init('id'));
-	}
-
-	if (init('action') == 'byEventId') {
-		if(init('fullData') == 'true'){
-			$eqLogic = eqLogic::byEventId(init('eventId'), true);
-			ajax::success($eqLogic);
-		}else{
-			$eqLogic = eqLogic::byEventId(init('eventId'), false);
-			ajax::success(utils::o2a($eqLogic));
-		}	
-	}
-
-	if (init('action') == 'byZoneId') {
-		if(init('fullData') == 'true'){
-			$eqLogic = eqLogic::byZoneId(init('zoneId'), true);
-			ajax::success($eqLogic);
-		}else{
-			$eqLogic = eqLogic::byZoneId(init('zoneId'), false);
-			ajax::success(utils::o2a($eqLogic));
-		}	
+		ajax::success(utils::addPrefixToArray(eqLogic::updateState($listId, $state), 'eqLogic'));		
 	}
 
 	throw new Exception('Aucune methode correspondante à : ' . init('action'));

@@ -34,6 +34,7 @@ class event {
 		return DB::Prepare($sql, array(), DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
 	}
 
+	// A SUPRIMER APRES IMPLEMENTATION EN JS
 	public static function byDayInterval($_dayBefore, $_dayAfter) {
 		$values = array(
 			'dayBefore' => $_dayBefore,

@@ -5,18 +5,15 @@ try {
 	include_file('core', 'authentification', 'php');
 
 	if (!isConnect()) {
-		throw new Exception(__('401 - Accès non autorisé', __FILE__));
+		throw new Exception('401 - Accès non autorisé');
 	}
 
 	ajax::init();
 
 	if (init('action') == 'all') {
-		if(init('fullData') == 'true'){
-			$eqReal = eqReal::all(true);
-			ajax::success($eqReal);
-		}else{
-			ajax::success(utils::o2a(eqReal::all(false)));
-		}	
+		$eqReal = utils::addPrefixToArray(utils::o2a(eqReal::all()), 'eqReal', true);
+
+		ajax::success($eqReal);
 	}
 
 	if (init('action') == 'save') {
@@ -33,38 +30,16 @@ try {
 
 		utils::a2o($eqReal, $eqReal_json);
 		$eqReal->save();
+		$eqReal->refresh();
 
-		ajax::success(utils::o2a($eqReal));
-	}
-
-	if (init('action') == 'byId') {
-		if(init('fullData') == 'true'){
-			$eqReal = eqReal::byId(init('id'), true);
-			ajax::success($eqReal);
-		}else{
-			$eqReal = eqReal::byId(init('id'), false);
-			if (isset($eqReal) && is_object($eqReal)) {
-				ajax::success(utils::o2a($eqReal));
-			}
-		}
-		throw new Exception('Matériel introuvable: id=' . init('id'));
+		ajax::success(utils::addPrefixToArray(utils::o2a($eqReal), 'eqReal'));
 	}
 
 	if (init('action') == 'updateState') {
 		$listId = json_decode(init('listId'), true);
 		$state = init('state');
 
-		ajax::success(eqReal::updateState($listId, $state));
-	}
-
-	if (init('action') == 'byMatTypeId') {
-		if(init('fullData') == 'true'){
-			$eqReal = eqReal::byMatTypeId(init('matTypeId'), true);
-			ajax::success($eqReal);
-		}else{
-			$eqReal = eqReal::byMatTypeId(init('matTypeId'), false);
-			ajax::success(utils::o2a($eqReal));
-		}
+		ajax::success(utils::addPrefixToArray(eqReal::updateState($listId, $state), 'eqReal'));
 	}
 
 	throw new Exception('Aucune methode correspondante à : ' . init('action'));

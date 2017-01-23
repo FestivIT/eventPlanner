@@ -1,14 +1,21 @@
 $( document ).ready(function() {
-	$.when(eventplanner.ui.init()).then(function (){
-		var page = getUrlParameter("p");
-		if(page != false){
-			if(eventplanner.ui.hasOwnProperty(page) && eventplanner.ui[page].hasOwnProperty('init')){
-				eventplanner.ui.loadPage(page);
-			}else{
-				eventplanner.ui.loadPage("dashboard");
-			}
-		}else{
-			eventplanner.ui.loadPage("dashboard");
+	eventplanner.user.isConnect(
+		{success: function(_data){
+			$.when(eventplanner.ui.init()).then(function (){
+				var page = getUrlParameter("p");
+				if(page != false){
+					if(eventplanner.ui.hasOwnProperty(page) && eventplanner.ui[page].hasOwnProperty('init')){
+						eventplanner.ui.loadPage(page);
+					}else{
+						eventplanner.ui.loadPage("dashboard");
+					}
+				}else{
+					eventplanner.ui.loadPage("dashboard");
+				}
+			});
+		},
+		error: function(_data){
+			eventplanner.ui.notification('warning', _data.message);
 		}
 	});
 });
@@ -71,9 +78,13 @@ $.addTemplateFormatter("formatStateColorClass", function(value, template) {
 });
 
 function formatDateMsg(date){
-	var theDate = new Date(date.replace(' ', 'T'));
-	var days = ["Dimanche","Lundi","Mardi", "Mercredi","Jeudi","Vendredi","Samedi"];
-	return days[theDate.getDay()] + " " + theDate.getDate() + '/' + (theDate.getMonth() + 1) + ' ' + theDate.getHours() + ':' + theDate.getMinutes();
+	if(date != null){
+		var theDate = new Date(date.replace(' ', 'T'));
+		var days = ["Dimanche","Lundi","Mardi", "Mercredi","Jeudi","Vendredi","Samedi"];
+		return days[theDate.getDay()] + " " + theDate.getDate() + '/' + (theDate.getMonth() + 1) + ' ' + theDate.getHours() + ':' + theDate.getMinutes();
+	}else{
+		return '';
+	}
 }
 $.addTemplateFormatter("formatDateMsg", function(value, template) {
     return formatDateMsg(value);
@@ -81,27 +92,31 @@ $.addTemplateFormatter("formatDateMsg", function(value, template) {
 
 function formatList(list, template, itemName){
 	var items = "";
-
-	$.each(list, function( index, item ) {
-	  itemToAdd = $(template);
-
-	  if(itemName != ''){
-	  	itemToAdd.text(item[itemName]);
-	  }else{
-	  	itemToAdd.text(item);
-	  }
-
-	  items += itemToAdd.prop('outerHTML') + ' ';
-	});
-
+	if(is_array(list)){
+		$.each(list, function( index, item ) {
+		  itemToAdd = $(template);
+	
+		  if(itemName != ''){
+		  	itemToAdd.text(item[itemName]);
+		  }else{
+		  	itemToAdd.text(item);
+		  }
+	
+		  items += itemToAdd.prop('outerHTML') + ' ';
+		});
+	}
 	return items;
 }
 $.addTemplateFormatter("formatList", function(list, template) {
     return formatList(list, template, '');
 });
 
-$.addTemplateFormatter("formatListWithName", function(list, template) {
-    return formatList(list, template, 'name');
+$.addTemplateFormatter("formatListWithUserName", function(list, template) {
+    return formatList(list, template, 'userName');
+});
+
+$.addTemplateFormatter("formatListWithZoneName", function(list, template) {
+    return formatList(list, template, 'zoneName');
 });
 
 function formatDateYmd2Dmy(date){

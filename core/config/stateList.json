@@ -121,7 +121,7 @@
 	"mission": {
 		"text": "Missions",
 		"groups": [{
-			"text": "Disponibilité",
+			"text": "Etat",
 			"list": {
 				"400": {
 					"text": "Attribuée",

@@ -5,13 +5,15 @@ try {
 	include_file('core', 'authentification', 'php');
 
 	if (!isConnect()) {
-		throw new Exception(__('401 - Accès non autorisé', __FILE__));
+		throw new Exception('401 - Accès non autorisé');
 	}
 
 	ajax::init();
 
 	if (init('action') == 'all') {
-		ajax::success(utils::o2a(event::all()));
+		$event = utils::addPrefixToArray(utils::o2a(event::all()), 'event', true);
+
+		ajax::success($event);
 	}
 
 	if (init('action') == 'save') {
@@ -28,21 +30,12 @@ try {
 
 		utils::a2o($event, $event_json);
 		$event->save();
+		$event->refresh();
 
-		ajax::success(utils::o2a($event));
+		ajax::success(utils::addPrefixToArray(utils::o2a($event), 'event'));
 	}
 
-	if (init('action') == 'byId') {
-		
-		$event = event::byId(init('id'));
-
-		if (isset($event) && is_object($event)) {
-			ajax::success(utils::o2a($event));
-		}
-
-		throw new Exception('Evenement introuvable: id=' . init('id'));
-	}
-
+	// A SUPPRIMER
 	if (init('action') == 'byDayInterval') {
 		ajax::success(utils::o2a(event::byDayInterval(init('dayBefore'),init('dayAfter'))));
 	}
