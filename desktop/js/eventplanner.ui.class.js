@@ -346,7 +346,7 @@ eventplanner.ui.dashboard = {
 	init: function(){
 		$('#dashboard').delegate('.selectEventBtn', 'click', function () {
 			eventplanner.user.setOptions({key: 'eventId', value: $(this).attr('data-event-id') ,success: function(_data) {
-				userProfils.eventId = _data.options.eventId;
+				userProfils.eventId = _data.userOptions.eventId;
 				eventplanner.ui.configEventMenu();
 				eventplanner.ui.search.init();
 				eventplanner.ui.loadPage('map');
@@ -468,9 +468,11 @@ eventplanner.ui.configuration = {
 					enable: true
 				}
 				
-				eventplanner.ui.modal.userConfiguration(userData);
+				var userModal = new eventplanner.ui.modal.EpModalUserConfiguration(userData);
+				userModal.open();
 			}else{
-				eventplanner.ui.modal.userConfiguration(eventplanner.user.byId(userId));	
+				var userModal = new eventplanner.ui.modal.EpModalUserConfiguration(eventplanner.user.byId(userId));	
+				userModal.open();
 			}
 		});
 	},
@@ -1732,7 +1734,7 @@ eventplanner.ui.modal.EpModalUserConfiguration = function(_user){
 	this.postShow = function(){
 			this.modal.find("#userEnable")
 				.bootstrapSwitch({
-					state: !!parseInt(this.data.enable),
+					state: !!parseInt(this.data.userEnable),
 					onText: "Oui",
 					offText: "Non"
 				})
