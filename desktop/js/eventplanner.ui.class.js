@@ -78,6 +78,10 @@ eventplanner.ui = {
 		if(_data.hasOwnProperty('mission')){
 			$(".missionTable").trigger("refreshMissionTable");
 		}
+
+		if(_data.hasOwnProperty('matType') || _data.hasOwnProperty('eqReal') || _data.hasOwnProperty('zone') || _data.hasOwnProperty('eqLogic')){
+			eventplanner.ui.search.constructSearchData();
+		}
 	},
 
 	initNavBar: function(){
