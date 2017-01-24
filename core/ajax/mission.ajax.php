@@ -39,7 +39,8 @@ try {
 		$listId = json_decode(init('listId'), true);
 		$state = init('state');
 
-		ajax::success(utils::addPrefixToArray(mission::updateState($listId, $state), 'mission'));
+		$mission = utils::addPrefixToArray(utils::o2a(mission::updateState($listId, $state)), 'mission', true);
+		ajax::success($mission);
 	}
 
 	throw new Exception('Aucune methode correspondante à : ' . init('action'));

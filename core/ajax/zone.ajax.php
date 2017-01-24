@@ -39,7 +39,8 @@ try {
 		$listId = json_decode(init('listId'), true);
 		$state = init('state');
 
-		ajax::success(utils::addPrefixToArray(zone::updateState($listId, $state), 'zone'));
+		$zone = utils::addPrefixToArray(utils::o2a(zone::updateState($listId, $state)), 'zone', true);
+		ajax::success($zone);
 	}
 
 	throw new Exception('Aucune methode correspondante à : ' . init('action'));

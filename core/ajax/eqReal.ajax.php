@@ -39,7 +39,8 @@ try {
 		$listId = json_decode(init('listId'), true);
 		$state = init('state');
 
-		ajax::success(utils::addPrefixToArray(eqReal::updateState($listId, $state), 'eqReal'));
+		$eqReal = utils::addPrefixToArray(utils::o2a(eqReal::updateState($listId, $state)), 'eqReal', true);
+		ajax::success($eqReal);	
 	}
 
 	throw new Exception('Aucune methode correspondante à : ' . init('action'));

@@ -42,18 +42,18 @@ class msg {
 
 		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
         FROM msg
-        WHERE eventId=:eventId';
+        WHERE eventId=:eventId OR eventId IS NULL';
 		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
 	}
 
-	public static function byEventIdSinceDate($_date, $_eventId) {
+	public static function byEventIdSinceId($_id, $_eventId) {
 		$values = array(
 			'eventId' => $_eventId
 		);
 
 		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
         FROM msg
-        WHERE eventId=:eventId AND date > \'' . $_date . '\' ';
+        WHERE (eventId=:eventId OR eventId IS NULL) AND id > \'' . $_id . '\' ';
 		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
 	}
 
@@ -90,22 +90,54 @@ class msg {
 		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
 	}
 
-	public static function add($_eventId, $_zoneId, $_eqId, $_userId, $_content, $_data) {
+	public static function add($_eventId, $_zoneId, $_eqId, $_userId, $_content, $_type, $_op, $_data) {
+		switch ($_op) {
+		    case 'add':
+		    case 'update':
+		    case 'remove':
+		    break;
+
+		    default:
+		        throw new Exception('Opération [' . $_op . '] inconnue. Utiliser add, remove ou update!');
+		    break;
+		}
+
+		if (!class_exists($_type)) {
+		    throw new Exception('Type [' . $_type . '] inconnu!');
+		}
+		
+		$data = array(
+						'type' => $_type,
+						'op' => $_op,
+						'content' => utils::addPrefixToArray(utils::o2a($_data), $_type) // ajout des prefixs
+					);
+
+
 		$message = new msg();
 		$message->setEventId($_eventId);
 		$message->setzoneId($_zoneId);
 		$message->setEqId($_eqId);
 		$message->setUserId($_userId);
 		$message->setContent($_content);
-		$message->setData($_data);
-		$message->save();
+		$message->setData($data);
+		$message->save(false);
 	}
 
 
 	/*     * *********************Méthodes d'instance************************* */
 
-	public function save() {
-		return DB::save($this);
+	public function save($_addMsgData = true) {
+		if($_addMsgData){
+				$data = array(
+					'type' => 'msg',
+					'op' => 'add',
+					'content' => array()
+				);
+				$this->setData($data);
+			}
+		
+		DB::save($this);
+		return $this;
 	}
 
 	public function remove() {
@@ -163,8 +195,11 @@ class msg {
 		$this->content = $content;
 	}
 	public function setData($data) {
-		$this->data = json_encode(utils::o2a($data), JSON_UNESCAPED_UNICODE);
+		if(is_object($data)){
+			$this->data = json_encode(utils::o2a($data), JSON_UNESCAPED_UNICODE);
+		}else{
+			$this->data = json_encode($data, JSON_UNESCAPED_UNICODE);
+		}
 	}
-
 }
 ?>

@@ -2,14 +2,14 @@
   <div class="form-group">
     	<label for="eventName" class="col-sm-3 control-label">Nom</label>
     	<div class="col-sm-9">
-    		<input type="text" class="form-control" id="eventName" placeholder="Nom - Edition" data-value="name">
+    		<input type="text" class="form-control" id="eventName" placeholder="Nom - Edition" data-value="eventName">
     	</div>
   </div>
   <div class="form-group">
 		<label for="eventVille" class="col-sm-3 control-label" >Ville</label>
 		<div class="col-sm-9">
       		<div class="input-group">
-            <input type="text" class="form-control" id="eventVille" placeholder="Ville" data-value="ville">
+            <input type="text" class="form-control" id="eventVille" placeholder="Ville" data-value="eventVille">
             <span class="input-group-btn">
               <button class="btn btn-secondary" type="button" id="placeOnMap">Placer sur la carte</button>
             </span>
@@ -27,16 +27,16 @@
   		<div class="col-sm-9">
 			<div class="input-group">
 				<div class="input-daterange input-group" id="datepicker">
-				    <input type="text" class="input-sm form-control" id="eventStartDate" placeholder="Début" data-value="startDate" data-format="formatDateYmd2Dmy" data-format-target="value"/>
+				    <input type="text" class="input-sm form-control" id="eventStartDate" placeholder="Début" data-value="eventStartDate" data-format="formatDateYmd2Dmy" data-format-target="value"/>
 				    <span class="input-group-addon">à</span>
-				    <input type="text" class="input-sm form-control" id="eventEndDate" placeholder="Fin" data-value="endDate" data-format="formatDateYmd2Dmy" data-format-target="value"/>
+				    <input type="text" class="input-sm form-control" id="eventEndDate" placeholder="Fin" data-value="eventEndDate" data-format="formatDateYmd2Dmy" data-format-target="value"/>
 				</div>
 			</div>
 		</div>
   </div>
   <div class="form-group">
     <div class="col-sm-offset-3 col-sm-9">
-      <input type="text" id="eventId" style="display: none;" data-value="id" >
+      <input type="text" id="eventId" style="display: none;" data-value="eventId" >
       <button type="submit" class="btn btn-success">Sauvegarder</button>
     </div>
   </div>

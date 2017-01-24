@@ -72,9 +72,7 @@ class eqLogic {
         			$eqLogic->setState($_state);
         			$eqLogic->save(false);
         			
-	        		msg::add($eqLogic->getEventId(), $eqLogic->getZoneId(), $eqLogic->getId(), $_SESSION['user']->getId(), "Changement d'état de '" . getStateText($oldState) . "' à '" . getStateText($eqLogic->getState()) . "'", $eqLogic);
-	        		
-	        		$eqLogic->save(false);
+	        		msg::add($eqLogic->getEventId(), $eqLogic->getZoneId(), $eqLogic->getId(), $_SESSION['user']->getId(), "Changement d'état de '" . getStateText($oldState) . "' à '" . getStateText($eqLogic->getState()) . "'", 'eqLogic', 'update', $eqLogic);
 
 	        		$sqlIdList .= $separator . $id;
 		    		$separator = ', ';
@@ -89,7 +87,7 @@ class eqLogic {
 		}
 
 		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-		        FROM zone
+		        FROM eqLogic
 		        WHERE id IN ' . $sqlIdList;    			
         return DB::Prepare($sql, array(), DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
 	}
@@ -100,12 +98,12 @@ class eqLogic {
 		if($this->getId() == null){
 			DB::save($this);
 			if($_addMsg){
-				msg::add($this->getEventId(), $this->getZoneId(), $this->getId(), $_SESSION['user']->getId(), "Création de l'équipement.");
+				msg::add($this->getEventId(), $this->getZoneId(), $this->getId(), $_SESSION['user']->getId(), "Création de l'équipement.", 'eqLogic', 'add', $this);
 			}
 		}else{
 			DB::save($this);
 			if($_addMsg){
-				msg::add($this->getEventId(), $this->getZoneId(), $this->getId(), $_SESSION['user']->getId(), "Mise à jour de l'équipement.");
+				msg::add($this->getEventId(), $this->getZoneId(), $this->getId(), $_SESSION['user']->getId(), "Mise à jour de l'équipement.", 'eqLogic', 'update', $this);
 			}
 		}
 		return $this;

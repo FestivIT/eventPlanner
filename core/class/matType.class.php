@@ -32,8 +32,19 @@ class matType {
 	
 	/*     * *********************Méthodes d'instance************************* */
 
-	public function save() {
-		return DB::save($this);
+	public function save($_addMsg = true) {
+		if($this->getId() == null){
+			DB::save($this);
+			if($_addMsg){
+				msg::add(null, null, null, $_SESSION['user']->getId(), "Création du type de matériel: " . $this->getName(), 'matType', 'add', $this);
+			}
+		}else{
+			DB::save($this);
+			if($_addMsg){
+				msg::add(null, null, null, $_SESSION['user']->getId(), "Mise à jour du type de matériel: " . $this->getName(), 'matType', 'update', $this);
+			}
+		}
+		return $this;
 	}
 
 	public function remove() {

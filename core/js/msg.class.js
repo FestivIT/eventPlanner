@@ -1,36 +1,60 @@
 eventplanner.msg = {
     dataReady: $.Deferred(),
     container: {},
-    lastMsgDate: '',
+    lastMsgId: 0,
 
     // Chargement initial des données depuis le serveur
     load: function(){
         var params = {
+            initialLoad: true,
             success: function(_data, _date) {
-                _data.forEach(function(element) {
-                    eventplanner.msg.container[element.msgId] = element;
-                });
-                eventplanner.msg.lastMsgDate = _date;
                 eventplanner.msg.dataReady.resolve();
             }
         };
 
-        var params = $.extend({}, eventplanner.private.default_params, params || {});
-
-        var paramsAJAX = eventplanner.private.getParamsAJAX(params);
-        paramsAJAX.url = 'core/ajax/msg.ajax.php';
-        paramsAJAX.data = {
-            action: 'all'
-        };
-        $.ajax(paramsAJAX);
+        this.lastMsgId = 0; // reset du lastId
+        this.getLastMsg(params);
 
         return eventplanner.msg.dataReady;
     },
 
     // récupération de la liste des message depuis la dernière réception réussie
-    sinceDate: function(_params) {
-        var paramsRequired = ['date'];
-        var paramsSpecifics = {};
+    getLastMsg: function(_params) {
+        var paramsRequired = [];
+        var paramsSpecifics =  {
+            pre_success: function(initialLoad){
+                return function(_data){
+                    if(_data.state == 'ok'){
+                        var elementToUpdate = {};
+
+                        // Mise à jour de la liste des message
+                        _data.result.forEach(function(element) {
+                            eventplanner.msg.container[element.msgId] = element;
+                            eventplanner.msg.lastMsgId = Math.max(eventplanner.msg.lastMsgId,element.msgId);
+
+                            if(!initialLoad && is_object(element.msgData) && element.msgData.hasOwnProperty('type')){
+                                // Construction d'un objet contenant les type/id à updater
+                                if(is_array(elementToUpdate[element.msgData.type])){
+                                    elementToUpdate[element.msgData.type].push(element.msgData.content[element.msgData.type + 'Id']);
+                                }else{
+                                    elementToUpdate[element.msgData.type] = [element.msgData.content[element.msgData.type + 'Id']]
+                                }
+
+                                // Process data que pour les données autre que les msg
+                                if(element.msgData.type != 'msg'){
+                                    eventplanner.msg.processMsgData(element.msgData);
+                                }
+                            }
+                        });
+
+                        if(Object.keys(elementToUpdate).length > 0){
+                            eventplanner.ui.updateUI(elementToUpdate);
+                        }
+                    }
+                    return _data;
+                }
+            }(_params.initialLoad)
+        };
 
         try {
             eventplanner.private.checkParamsRequired(_params || {}, paramsRequired);
@@ -44,10 +68,27 @@ eventplanner.msg = {
         var paramsAJAX = eventplanner.private.getParamsAJAX(params);
         paramsAJAX.url = 'core/ajax/msg.ajax.php';
         paramsAJAX.data = {
-            action: 'sinceDate',
-            date: _params.date
+            action: 'sinceId',
+            id: this.lastMsgId
         };
         return $.ajax(paramsAJAX);
+    },
+
+    processMsgData: function(_data){
+        switch(_data.op) {
+            case 'add':
+                var itemId = _data.content[_data.type + 'Id'];                    
+                eventplanner[_data.type].container[itemId] = _data.content;
+            break;
+            
+            case 'update':
+                var itemId = _data.content[_data.type + 'Id'];
+                eventplanner[_data.type].container[itemId] = _data.content;
+            break;
+            
+            case 'remove':
+            break;
+        }
     },
 
     // enregistrement d'un message

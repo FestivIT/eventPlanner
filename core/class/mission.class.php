@@ -88,7 +88,7 @@ class mission {
 	        		$mission->setState($_state);
 	        		$mission->save(false);
 
-	        		msg::add($mission->getEventId(), null, null, $_SESSION['user']->getId(), "Mission [" . $mission->getName() . "]: Changement d'état de '" . getStateText($oldState) . "' à '" . getStateText($_state) . "'", $mission);
+	        		msg::add($mission->getEventId(), null, null, $_SESSION['user']->getId(), "Mission [" . $mission->getName() . "]: Changement d'état de '" . getStateText($oldState) . "' à '" . getStateText($_state) . "'", 'mission', 'update', $mission);
 
 	        		$sqlIdList .= $separator . $id;
 		    		$separator = ', ';
@@ -116,12 +116,12 @@ class mission {
 		if($this->getId() == null){
 			DB::save($this);
 			if($_addMsg){
-				msg::add($this->getEventId(), null, null, $_SESSION['user']->getId(), "Création de la mission.", $this);
+				msg::add($this->getEventId(), null, null, $_SESSION['user']->getId(), "Création de la mission.", 'mission', 'add', $this);
 			}
 		}else{
 			DB::save($this);
 			if($_addMsg){
-				msg::add($this->getEventId(), null, null, $_SESSION['user']->getId(), "Mise à jour de la mission.", $this);
+				msg::add($this->getEventId(), null, null, $_SESSION['user']->getId(), "Mise à jour de la mission.", 'mission', 'update', $this);
 			}
 		}
 		return $this;

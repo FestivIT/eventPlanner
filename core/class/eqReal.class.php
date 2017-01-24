@@ -54,9 +54,12 @@ class eqReal {
 
         	if(is_object($eqReal)){
         		if($eqReal->getState() != $_state){
-	        		//msg::add($eqLogic->getEventId(), $eqLogic->getZoneId(), $eqLogic->getId(), $_SESSION['user']->getId(), "Changement d'état de " . $eqLogic->getState() . " à " . $_state);
+		    		$old_state = $eqReal->getState();
+
 	        		$eqReal->setState($_state);
 	        		$eqReal->save(false);
+
+	        		msg::add(null, null, null, $_SESSION['user']->getId(), "Matériel [" . $eqReal->getName() . "]: Changement d'état de '" . getStateText($oldState) . "' à '" . getStateText($_state) . "'", 'eqReal', 'update', $eqReal);
 
 	        		$sqlIdList .= $separator . $id;
 		    		$separator = ', ';
@@ -80,8 +83,19 @@ class eqReal {
 
 	/*     * *********************Méthodes d'instance************************* */
 
-	public function save() {
-		return DB::save($this);
+	public function save($_addMsg = true) {
+		if($this->getId() == null){
+			DB::save($this);
+			if($_addMsg){
+				msg::add(null, null, null, $_SESSION['user']->getId(), "Création du matériel: " . $this->getName(), 'eqReal', 'add', $this);
+			}
+		}else{
+			DB::save($this);
+			if($_addMsg){
+				msg::add(null, null, null, $_SESSION['user']->getId(), "Mise à jour du matériel: " . $this->getName(), 'eqReal', 'update', $this);
+			}
+		}
+		return $this;
 	}
 
 	public function remove() {

@@ -5,7 +5,7 @@
 	  	  <div class="form-group">
 		    	<label for="matTypeName" class="col-sm-3 control-label" >Nom</label>
 		    	<div class="col-sm-9">
-		    		<input type="text" class="form-control" id="matTypeName" placeholder="NS5, SWITCH, ..." data-value="name">
+		    		<input type="text" class="form-control" id="matTypeName" placeholder="NS5, SWITCH, ..." data-value="matTypeName">
 		    	</div>
 		  </div>
   	  </div>
@@ -29,7 +29,7 @@
 	</div>
 	<div class="form-group">
 		<div class="col-sm-offset-3 col-sm-9">
-			<input type="text" id="matTypeId" style="display: none;" data-value="id">
+			<input type="text" id="matTypeId" style="display: none;" data-value="matTypeId">
 			<button type="submit" class="btn btn-success">Sauvegarder</button>
 		</div>
 	</div>

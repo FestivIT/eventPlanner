@@ -58,10 +58,12 @@ class zone {
 
         	if(is_object($zone)){
         		if($zone->getState() != $_state){
-	        		msg::add($zone->getEventId(), $zone->getId(), null, $_SESSION['user']->getId(), "Changement d'état de " . $zone->getState() . " à " . $_state);
-	        		$zone->setState($_state);
-	        		$zone->save(false);
-
+        			$oldState = $zone->getState();
+        			$zone->setState($_state);
+        			$zone->save(false);
+        			
+	        		msg::add($zone->getEventId(), $zone->getId(), null, $_SESSION['user']->getId(), "Changement d'état de '" . getStateText($oldState) . "' à '" . getStateText($zone->getState()) . "'", 'zone', 'update', $zone);
+	     
 	        		$sqlIdList .= $separator . $id;
 		    		$separator = ', ';
         		}
@@ -81,14 +83,18 @@ class zone {
 	}
 
 	/*     * *********************Méthodes d'instance************************* */
-
-	public function save() {
+	
+	public function save($_addMsg = true) {
 		if($this->getId() == null){
 			DB::save($this);
-			msg::add($this->getEventId(), $this->getId(), null, $_SESSION['user']->getId(), "Création de la zone.");
+			if($_addMsg){
+				msg::add($this->getEventId(), $this->getId(), null, $_SESSION['user']->getId(), "Création de la zone.", 'zone', 'add', $this);
+			}
 		}else{
 			DB::save($this);
-			msg::add($this->getEventId(), $this->getId(), null, $_SESSION['user']->getId(), "Mise à jour de la zone.");
+			if($_addMsg){
+				msg::add($this->getEventId(), $this->getId(), null, $_SESSION['user']->getId(), "Mise à jour de la zone.", 'zone', 'update', $this);
+			}
 		}
 		return $this;
 	}

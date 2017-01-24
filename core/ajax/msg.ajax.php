@@ -35,8 +35,8 @@ try {
 		ajax::success(utils::addPrefixToArray(utils::o2a($msg), 'msg'));
 	}
 
-	if (init('action') == 'sinceDate') {
-		$msg = utils::addPrefixToArray(utils::o2a(msg::byEventIdSinceDate(init('date'), $_SESSION['user']->getOptions('eventId'))), 'msg', true);
+	if (init('action') == 'sinceId') {
+		$msg = utils::addPrefixToArray(utils::o2a(msg::byEventIdSinceId(init('id'), $_SESSION['user']->getOptions('eventId'))), 'msg', true);
 
 		ajax::success($msg);
 	}

@@ -130,8 +130,19 @@ class user {
 		}
 	}
 
-	public function save() {
-		return DB::save($this);
+	public function save($_addMsg = true) {
+		if($this->getId() == null){
+			DB::save($this);
+			if($_addMsg){
+				msg::add(null, null, null, $_SESSION['user']->getId(), "Création de l'utilisateur: " . $this->getName(), 'user', 'add', $this);
+			}
+		}else{
+			DB::save($this);
+			if($_addMsg){
+				msg::add(null, null, null, $_SESSION['user']->getId(), "Mise à jour de l'utilisateur: " . $this->getName(), 'user', 'update', $this);
+			}
+		}
+		return $this;
 	}
 
 	public function remove() {

@@ -48,17 +48,36 @@ eventplanner.ui = {
 		);
 	},
 
-	setNewData: function(_data){
-		if(_data.length > 0){
-			eventplanner.msg.updateData(_data);
-			$(".msgTable").trigger("refreshMsgTable");
+	updateUI: function(_data){
+		$(".msgTable").trigger("refreshMsgTable");
+
+		if(_data.hasOwnProperty('event')){
+			$(".eventTable").trigger("refreshEventTable");
 		}
-		//console.log(_data);
-		// gestion des nouvelles données reçues...
 
-		// enregistrement dans les container
+		if(_data.hasOwnProperty('user')){
+			$(".userTable").trigger("refreshUserTable");
+		}
 
-		// actualisation de l'interface...
+		if(_data.hasOwnProperty('matType')){
+			$(".matTypeTable").trigger("refreshMatTypeTable");
+		}
+
+		if(_data.hasOwnProperty('eqReal')){
+			$(".eqRealTable").trigger("refreshEqRealTable");
+		}
+
+		if(_data.hasOwnProperty('zone')){
+			$(".zoneTable").trigger("refreshZoneTable");
+		}
+
+		if(_data.hasOwnProperty('eqLogic')){
+			$(".eqTable").trigger("refreshEqTable");
+		}
+
+		if(_data.hasOwnProperty('mission')){
+			$(".missionTable").trigger("refreshMissionTable");
+		}
 	},
 
 	initNavBar: function(){
@@ -103,7 +122,8 @@ eventplanner.ui = {
 		    eventplanner.msg.save({
 		      msg: msgParam,
 		      success: function(){
-		        $(".msgTable").trigger("refreshMsgTable");
+		        //$(".msgTable").trigger("refreshMsgTable");
+		        eventplanner.ui.checkNewMsg();
 		        eventplanner.ui.notification('success', "Message enregistré.");
 		      },
 		      error: function(_data){
@@ -129,11 +149,30 @@ eventplanner.ui = {
 		});
 	},
 
+	checkNewMsg: function(){
+		eventplanner.msg.getLastMsg({
+		    success: function(_data, _date) {
+		    	if(!eventplanner.ui.onlineState){
+            		eventplanner.ui.onlineState = true;
+            		$('.navbar').removeClass('navbar-inverse').addClass('navbar-default');
+                	eventplanner.ui.notification('success', "Connexion avec le serveur OK.");
+            	}
+			},
+			error: function(_data){
+		        if(eventplanner.ui.onlineState){
+            		eventplanner.ui.onlineState = false;
+                	$('.navbar').removeClass('navbar-default').addClass('navbar-inverse');
+                	eventplanner.ui.notification('error', "Perte de la connexion avec le serveur.");
+            	}
+		    }
+		});
+	},
+
 	serverListener: function (){
 		nbActiveAjaxRequest = 0;
 		$(document)
 		    .ajaxSend(function(event, jqxhr, settings) {
-		        if (settings.hasOwnProperty('data') && settings.data.indexOf("action=sinceDate") !== -1) return;
+		        if (settings.hasOwnProperty('data') && settings.data.indexOf("action=sinceId") !== -1) return;
 		                
 		        if (nbActiveAjaxRequest == 0) {
 		        	$.showLoading();
@@ -142,7 +181,7 @@ eventplanner.ui = {
 		    	nbActiveAjaxRequest++;
 		    })
 		    .ajaxComplete(function(event, jqxhr, settings) {
-		        if (settings.hasOwnProperty('data') && settings.data.indexOf("action=sinceDate") !== -1) return;
+		        if (settings.hasOwnProperty('data') && settings.data.indexOf("action=sinceId") !== -1) return;
 		        
 		        nbActiveAjaxRequest--;
 			    if (nbActiveAjaxRequest <= 0) {
@@ -152,26 +191,7 @@ eventplanner.ui = {
 		    })
 		
 		setInterval(function(){ 
-			eventplanner.msg.sinceDate({
-			    date: eventplanner.msg.lastMsgDate,
-			    success: function(_data, _date) {
-			    	if(!eventplanner.ui.onlineState){
-	            		eventplanner.ui.onlineState = true;
-	            		$('.navbar').removeClass('navbar-inverse').addClass('navbar-default');
-	                	eventplanner.ui.notification('success', "Connexion avec le serveur OK.");
-	            	}
-
-			    	eventplanner.ui.setNewData(_data);
-			    	eventplanner.msg.lastMsgDate = _date;
-				},
-				error: function(_data){
-			        if(eventplanner.ui.onlineState){
-	            		eventplanner.ui.onlineState = false;
-	                	$('.navbar').removeClass('navbar-default').addClass('navbar-inverse');
-	                	eventplanner.ui.notification('error', "Perte de la connexion avec le serveur.");
-	            	}
-			    }
-			});
+			eventplanner.ui.checkNewMsg();
 		}, 5000);
 	},
 
@@ -427,10 +447,10 @@ eventplanner.ui.configuration = {
 				var today = new Date().toISOString().slice(0,10); 
 				
 				var eventData = {
-					id: '',
-					localisation: [48.856614, 2.352222],
-					startDate: today,
-					endDate: today
+					eventId: '',
+					eventLocalisation: [48.856614, 2.352222],
+					eventStartDate: today,
+					eventEndDate: today
 				}
 				
 				var eventModal = new eventplanner.ui.modal.EpModalEventConfiguration(eventData);
@@ -446,8 +466,8 @@ eventplanner.ui.configuration = {
 			
 			if(matTypeId == 'new'){
 				var matTypeData = {
-					id: '',
-					options: []
+					matTypeId: '',
+					matTypeOptions: []
 				}
 				
 				//eventplanner.ui.modal.matTypeConfiguration(matTypeData);
@@ -464,8 +484,8 @@ eventplanner.ui.configuration = {
 			
 			if(userId == 'new'){
 				var userData = {
-					id: '',
-					enable: true
+					userId: '',
+					userEnable: true
 				}
 				
 				var userModal = new eventplanner.ui.modal.EpModalUserConfiguration(userData);
@@ -565,11 +585,13 @@ eventplanner.ui.inventaire ={
 /// MAP /////////////////////////////////////////
 /////////////////////////////////////////////////
 eventplanner.ui.map = {
+	llMap: {},
 	zonesMarkers: {},
-
+	
 	init: function(){
 		var currentEvent = eventplanner.event.byId(userProfils.eventId);
-		map = eventplanner.ui.map.initializeEventMap("map", currentEvent.eventId, currentEvent.eventLocalisation);
+		var llMap = this.initializeEventMap("map", currentEvent.eventId, currentEvent.eventLocalisation);
+		this.zonesMarkers = {};
 		
 		var zones = eventplanner.zone.all();
 		zones.forEach(function(zone) {
@@ -577,11 +599,16 @@ eventplanner.ui.map = {
 			  eventplanner.ui.map.zonesMarkers[zone.zoneId] = zoneMarker;
 			  zoneMarker.on({
 			    click: function (e) {
-			    	var zoneModal = new eventplanner.ui.modal.EpModalZone(eventplanner.zone.byId(this.zoneData.zoneId, true));
+			    	var zoneModal = new eventplanner.ui.modal.EpModalZone(eventplanner.zone.byId(this.zoneId, true));
 					zoneModal.open();
 			    }
 			  });
-			}, map);
+			}, llMap);
+		
+		$('#map').bind("refreshZoneTable", this, function(event){
+			eventplanner.ui.map.refreshZoneMarker();
+		});
+		this.refreshZoneMarker();
 
 		$(window).resize(function() {
 			$(".leaflet-control-layers").css("max-height", $("#map").height() - 50);
@@ -634,10 +661,9 @@ eventplanner.ui.map = {
 	addZoneMarkerOnMap: function(map, zone, dragable){
 		dragable = typeof dragable !== 'undefined' ? dragable : false;
 		
-		var zoneMarker = L.marker(zone.zoneLocalisation, {draggable:dragable, title: zone.zoneName, icon: L.AwesomeMarkers.icon({icon: 'glyphicon-arrow-down',markerColor: eventplanner.ui.STATE.stateList[zone.zoneState].mapIconColor})});
-		// Changer couler icon: eventplanner.ui.map.zonesMarkers[10].setIcon(L.AwesomeMarkers.icon({icon: 'glyphicon-arrow-down',markerColor: 'green'}))
+		var zoneMarker = L.marker(zone.zoneLocalisation, {draggable:dragable, title: zone.zoneName, icon: L.AwesomeMarkers.icon({icon: 'glyphicon-arrow-up',markerColor: 'cadetblue'})});
 		zoneMarker.addTo(map);
-		zoneMarker.zoneData = zone;
+		zoneMarker.zoneId = zone.zoneId;
 
 		return zoneMarker;
 	},
@@ -660,6 +686,20 @@ eventplanner.ui.map = {
 		eventMarker.eventData = event;
 
 		return eventMarker;
+	},
+	
+	refreshZoneMarker: function(){
+		$.each(this.zonesMarkers, function(zoneId, zoneMarker) {
+			  var zone = eventplanner.zone.byId(zoneMarker.zoneId);
+			  zoneMarker.setIcon(eventplanner.ui.map.getIconFromState(zone.zoneState))
+			});
+	},
+	
+	getIconFromState: function(state){
+		 return L.AwesomeMarkers.icon({
+		 			icon: 'glyphicon-arrow-down',
+		 			markerColor: eventplanner.ui.STATE.stateList[state].mapIconColor
+		 		});
 	}
 };
 
@@ -1172,7 +1212,6 @@ eventplanner.ui.modal.EpModalZone = function(_zone){
 		var eqLogics = eventplanner.eqLogic.byZoneId(this.data.zoneId, true);
 
 		eqLogics.forEach(function(eq){
-			console.log(eq);
 			if(eq.eqLogicConfiguration.hasOwnProperty('hasLocalisation') && eq.eqLogicConfiguration.hasLocalisation){
 				var eqMarker = eventplanner.ui.map.addEqMarkerOnMap(this.mapZone, eq);
 				eqMarker.bindPopup('<div><b>' + eq.matTypeName + ' - ' + eq.eqRealName + '</b>');
@@ -1280,7 +1319,7 @@ eventplanner.ui.modal.EpModalEqConfiguration = function(_eqLogic){
 			      eqLogic: eqParam,
 			      success: function(thisModal){
 								return function() {
-									$(".eqTable").trigger("refreshEqTable");
+									eventplanner.ui.checkNewMsg();
 									thisModal.close();
 									eventplanner.ui.notification('success', "Equipement enregistré.");
 								}
@@ -1393,7 +1432,7 @@ eventplanner.ui.modal.EpModalZoneConfiguration = function(_zone){
 			      zone: zoneParam,
 			      success: function(thisModal){
 								return function(_data) {
-									$(".zoneTable").trigger("refreshZoneTable");
+									eventplanner.ui.checkNewMsg();
 									if(thisModal.data.zoneId==""){
 										thisModal.data.zoneId=_data.zoneId;
 										thisModal.modal.find('.eqZoneConf').show();
@@ -1445,7 +1484,7 @@ eventplanner.ui.modal.EpModalEventConfiguration = function(_event){
 		}
 	
 	this.postShow = function(){
-			this.mapEvent = eventplanner.ui.map.initializeEventMap('mapEvent' + this.id, this.data.id, this.data.localisation, 14);
+			this.mapEvent = eventplanner.ui.map.initializeEventMap('mapEvent' + this.id, this.data.eventId, this.data.eventLocalisation, 14);
 			this.eventMarker = eventplanner.ui.map.addEventMarkerOnMap(this.mapEvent, this.data, true);
 
 			this.modal.find('#placeOnMap').on('click', this, function (event) {
@@ -1483,7 +1522,7 @@ eventplanner.ui.modal.EpModalEventConfiguration = function(_event){
 			      event: eventParam,
 			      success: function(thisModal){
 								return function(_data) {
-									$(".eventTable").trigger("refreshEventTable");
+									eventplanner.ui.checkNewMsg();
 							        thisModal.close();
 									eventplanner.ui.notification('success', "Zone enregistrée.");	
 								}
@@ -1545,7 +1584,7 @@ eventplanner.ui.modal.EpModalEqRealConfiguration = function(_eqReal){
 			      eqReal: eqRealParam,
 			      success: function(thisModal){
 								return function(_data) {
-									$(".eqRealTable").trigger("refreshEqRealTable");
+									eventplanner.ui.checkNewMsg();
 							        thisModal.close();
 									eventplanner.ui.notification('success', "Matériel enregistrée.");	
 								}
@@ -1648,7 +1687,7 @@ eventplanner.ui.modal.EpModalMissionConfiguration = function(_mission){
 			      mission: missionParam,
 			      success: function(thisModal){
 								return function(_data) {
-									$(".missionTable").trigger("refreshMissionTable");
+									eventplanner.ui.checkNewMsg();
 							        thisModal.close();
 									eventplanner.ui.notification('success', "Mission enregistrée.");	
 								}
@@ -1676,11 +1715,11 @@ eventplanner.ui.modal.EpModalMissionConfiguration.prototype = Object.create(even
 /// MODAL MAT TYPE CONFIGURATION ///////////////
 eventplanner.ui.modal.EpModalMatTypeConfiguration = function(_matType){
 	eventplanner.ui.modal.EpModal.call(this, "Configuration d'un type de matériel", "matTypeConfiguration");
-	
+
 	this.data = _matType;
 	
 	this.preShow = function(){
-			this.data.options.forEach(function(option){
+			this.data.matTypeOptions.forEach(function(option){
 	    		this.modal.find("#optionList").loadTemplate(this.modal.find("#templateMatTypeOption"), {option: option}, {append: true});
 	    	}, this);
 
@@ -1699,7 +1738,7 @@ eventplanner.ui.modal.EpModalMatTypeConfiguration = function(_matType){
 			      matType: matTypeParam,
 			      success: function(thisModal){
 								return function(_data) {
-									$(".matTypeTable").trigger("refreshMatTypeTable");
+									eventplanner.ui.checkNewMsg();
 							        thisModal.close();
 									eventplanner.ui.notification('success', "Type de matériel enregistrée.");	
 								}
@@ -1757,7 +1796,7 @@ eventplanner.ui.modal.EpModalUserConfiguration = function(_user){
 			      user: userParam,
 			      success: function(thisModal){
 								return function(_data) {
-									$(".userTable").trigger("refreshUserTable");
+									eventplanner.ui.checkNewMsg();
 							        thisModal.close();
 									eventplanner.ui.notification('success', "Utilisateur enregistré.");	
 								}
@@ -1824,7 +1863,7 @@ eventplanner.ui.modal.EpModalState = function(_listId, _type, _presetState){
 							state: newState,
 							success: function(thisModal){
 										return function(_data) {
-											$(".eqTable").trigger("refreshEqTable");
+											eventplanner.ui.checkNewMsg();
 									        thisModal.close();
 											eventplanner.ui.notification('success', "Etat modifié.");	
 										}
@@ -1841,7 +1880,7 @@ eventplanner.ui.modal.EpModalState = function(_listId, _type, _presetState){
 							state: newState,
 							success: function(thisModal){
 										return function(_data) {
-											$(".eqRealTable").trigger("refreshEqRealTable");
+											eventplanner.ui.checkNewMsg();
 									        thisModal.close();
 											eventplanner.ui.notification('success', "Etat modifié.");	
 										}
@@ -1858,7 +1897,7 @@ eventplanner.ui.modal.EpModalState = function(_listId, _type, _presetState){
 							state: newState,
 							success: function(thisModal){
 										return function(_data) {
-											$(".zoneTable").trigger("refreshZoneTable");
+											eventplanner.ui.checkNewMsg();
 									        thisModal.close();
 											eventplanner.ui.notification('success', "Etat modifié.");	
 										}
@@ -1875,7 +1914,7 @@ eventplanner.ui.modal.EpModalState = function(_listId, _type, _presetState){
 							state: newState,
 							success: function(thisModal){
 										return function(_data) {
-											$(".missionTable").trigger("refreshMissionTable");
+											eventplanner.ui.checkNewMsg();
 									        thisModal.close();
 											eventplanner.ui.notification('success', "Etat modifié.");	
 										}
