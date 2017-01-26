@@ -140,6 +140,7 @@
 	},
 	"default": {
 		"text": "Inconnu",
-		"colorClass": "active"
+		"colorClass": "active",
+		"mapIconColor": "blue"
 	}
 }

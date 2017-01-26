@@ -69,6 +69,11 @@ body {
   margin: 2px;
 }
 
+.llselectstatebtn-active {
+    color: #a94442 !important;
+    background-color: #f2dede !important;
+}
+
 @media (min-width: 768px) {
 	.eqLogicLabel{
 		float: right !important;

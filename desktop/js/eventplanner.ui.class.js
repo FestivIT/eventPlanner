@@ -591,10 +591,39 @@ eventplanner.ui.inventaire ={
 eventplanner.ui.map = {
 	llMap: {},
 	zonesMarkers: {},
+	stateToShow: {min: 0, max: 219},
 	
 	init: function(){
 		var currentEvent = eventplanner.event.byId(userProfils.eventId);
 		var llMap = this.initializeEventMap("map", currentEvent.eventId, currentEvent.eventLocalisation);
+		
+		var selectStateBtn = L.easyButton({
+		  id: 'selectStateBtn',
+		  states: [{
+		    stateName: 'montage',
+		    icon: 'glyphicon-resize-full',
+		    title: 'En cours: suivi du montage et l\'exploitation',
+		    onClick: function(control) {
+		      control.state('demontage');
+		      $('#selectStateBtn').addClass('llselectstatebtn-active');
+		      eventplanner.ui.map.stateToShow = {min: 220, max: 299};
+		      eventplanner.ui.map.refreshZoneMarker();
+		    }
+		  }, {
+		    stateName: 'demontage',
+		    icon: 'glyphicon-resize-small',
+		    title: 'En cours: suivi du démontage',
+		    onClick: function(control) {
+		      control.state('montage');
+		      $('#selectStateBtn').removeClass('llselectstatebtn-active');
+		      eventplanner.ui.map.stateToShow = {min: 0, max: 219};
+		      eventplanner.ui.map.refreshZoneMarker();
+		    }
+		  }]
+		});
+		selectStateBtn.addTo(llMap);
+		
+		
 		this.zonesMarkers = {};
 		
 		var zones = eventplanner.zone.all();
@@ -644,17 +673,17 @@ eventplanner.ui.map = {
 		      maxZoom: 22,
 		      tms: true
 		  });
-
+		
 		map = L.map(mapContainer, {
-		  zoom: zoom,
-		  maxZoom: 22,
-		  center: locationCenter,
-		  layers: [cartoLight, eventTiles],
-		  zoomControl: false,
-		  attributionControl: false
+			zoom: zoom,
+			maxZoom: 22,
+			center: locationCenter,
+			layers: [cartoLight, eventTiles],
+			zoomControl: false,
+			attributionControl: false
 		});
 		map.options.singleClickTimeout = 250;
-
+		
 		setTimeout(function(){
 			map.invalidateSize();
 		}, 500);
@@ -695,15 +724,28 @@ eventplanner.ui.map = {
 	refreshZoneMarker: function(){
 		$.each(this.zonesMarkers, function(zoneId, zoneMarker) {
 			  var zone = eventplanner.zone.byId(zoneMarker.zoneId);
-			  zoneMarker.setIcon(eventplanner.ui.map.getIconFromState(zone.zoneState))
+			  
+			  if(zone.zoneState >= eventplanner.ui.map.stateToShow.min && zone.zoneState <= eventplanner.ui.map.stateToShow.max){
+			  	zoneMarker.setIcon(eventplanner.ui.map.getIconFromState(zone.zoneState));
+			  }else{
+			  	zoneMarker.setIcon(eventplanner.ui.map.getIconFromState('default'));
+			  }
 			});
 	},
 	
 	getIconFromState: function(state){
-		 return L.AwesomeMarkers.icon({
-		 			icon: 'glyphicon-arrow-down',
-		 			markerColor: eventplanner.ui.STATE.stateList[state].mapIconColor
-		 		});
+		if(state == 'default'){
+			return L.AwesomeMarkers.icon({
+	 			icon: 'glyphicon-ban-circle',
+	 			markerColor: eventplanner.ui.STATE.default.mapIconColor
+	 		});
+		}else{
+			return L.AwesomeMarkers.icon({
+	 			icon: 'glyphicon-arrow-down',
+	 			markerColor: eventplanner.ui.STATE.stateList[state].mapIconColor
+	 		});
+		}
+		 
 	}
 };
 
