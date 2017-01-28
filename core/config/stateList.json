@@ -1,7 +1,16 @@
 {
 	"stateList": {},
+
+	"event": {
+		"text": "Evénement",
+		"mapMarkerColor": "darkpink",
+		"mapMarkerIcon": "glyphicon-screenshot"
+		},
+
 	"eq": {
 		"text": "Equipements",
+		"mapMarkerColor": "lightblue",
+		"mapMarkerIcon": "glyphicon-hdd",
 		"groups": [{
 			"text": "Préparation",
 			"list": {
@@ -58,28 +67,34 @@
 	},
 	"zone": {
 		"text": "Zones",
+		"mapMarkerColor": "darkblue",
+		"mapMarkerIcon": "glyphicon-arrow-down",
 		"groups": [{
 			"text": "Installation",
 			"list": {
 				"200": {
 					"text": "En attente",
 					"colorClass": "active",
-					"mapIconColor": "blue"
+					"mapMarkerColor": "lightgray",
+					"mapMarkerIcon": "glyphicon-arrow-down"
 				},
 				"201": {
 					"text": "A installer",
 					"colorClass": "warning",
-					"mapIconColor": "orange"
+					"mapMarkerColor": "orange",
+					"mapMarkerIcon": "glyphicon-arrow-down"
 				},
 				"202": {
 					"text": "Terminé",
 					"colorClass": "success",
-					"mapIconColor": "green"
+					"mapMarkerColor": "green",
+					"mapMarkerIcon": "glyphicon-arrow-down"
 				},
 				"203": {
 					"text": "Probléme",
 					"colorClass": "danger",
-					"mapIconColor": "red"
+					"mapMarkerColor": "red",
+					"mapMarkerIcon": "glyphicon-arrow-down"
 				}
 			}
 		}, {
@@ -88,12 +103,14 @@
 				"220": {
 					"text": "A désinstaller",
 					"colorClass": "danger",
-					"mapIconColor": "red"
+					"mapMarkerColor": "red",
+					"mapMarkerIcon": "glyphicon-arrow-up"
 				},
 				"221": {
 					"text": "Démontage terminé",
 					"colorClass": "success",
-					"mapIconColor": "green"
+					"mapMarkerColor": "green",
+					"mapMarkerIcon": "glyphicon-arrow-up"
 				}
 			}
 		}]
@@ -141,6 +158,7 @@
 	"default": {
 		"text": "Inconnu",
 		"colorClass": "active",
-		"mapIconColor": "blue"
+		"mapMarkerColor": "gray",
+		"mapMarkerIcon": "glyphicon-ban-circle"
 	}
 }

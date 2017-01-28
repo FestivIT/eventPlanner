@@ -607,7 +607,7 @@ eventplanner.ui.map = {
 		      control.state('demontage');
 		      $('#selectStateBtn').addClass('llselectstatebtn-active');
 		      eventplanner.ui.map.stateToShow = {min: 220, max: 299};
-		      eventplanner.ui.map.refreshZoneMarker();
+		      eventplanner.ui.map.refreshZoneMarkerState();
 		    }
 		  }, {
 		    stateName: 'demontage',
@@ -617,7 +617,7 @@ eventplanner.ui.map = {
 		      control.state('montage');
 		      $('#selectStateBtn').removeClass('llselectstatebtn-active');
 		      eventplanner.ui.map.stateToShow = {min: 0, max: 219};
-		      eventplanner.ui.map.refreshZoneMarker();
+		      eventplanner.ui.map.refreshZoneMarkerState();
 		    }
 		  }]
 		});
@@ -639,9 +639,9 @@ eventplanner.ui.map = {
 			}, llMap);
 		
 		$('#map').bind("refreshZoneTable", this, function(event){
-			eventplanner.ui.map.refreshZoneMarker();
+			eventplanner.ui.map.refreshZoneMarkerState();
 		});
-		this.refreshZoneMarker();
+		this.refreshZoneMarkerState();
 
 		$(window).resize(function() {
 			$(".leaflet-control-layers").css("max-height", $("#map").height() - 50);
@@ -694,7 +694,14 @@ eventplanner.ui.map = {
 	addZoneMarkerOnMap: function(map, zone, dragable){
 		dragable = typeof dragable !== 'undefined' ? dragable : false;
 		
-		var zoneMarker = L.marker(zone.zoneLocalisation, {draggable:dragable, title: zone.zoneName, icon: L.AwesomeMarkers.icon({icon: 'glyphicon-arrow-up',markerColor: 'cadetblue'})});
+		var zoneMarker = L.marker(
+				zone.zoneLocalisation, 
+				{
+					draggable:dragable, 
+					title: zone.zoneName, 
+					icon: eventplanner.ui.map.getIconFromType('zone')
+				});
+
 		zoneMarker.addTo(map);
 		zoneMarker.zoneId = zone.zoneId;
 
@@ -704,7 +711,14 @@ eventplanner.ui.map = {
 	addEqMarkerOnMap: function(map, eq, dragable){
 		dragable = typeof dragable !== 'undefined' ? dragable : false;
 		
-		var eqMarker = L.marker(eq.eqLogicConfiguration.localisation, {draggable:dragable, title: eq.eqLogicName, icon: L.AwesomeMarkers.icon({icon: 'glyphicon-arrow-down',markerColor: 'green'})});
+		var eqMarker = L.marker(
+				eq.eqLogicConfiguration.localisation, 
+				{
+					draggable:dragable, 
+					title: eq.eqLogicName, 
+					icon: eventplanner.ui.map.getIconFromType('eq')
+				});
+
 		eqMarker.addTo(map);
 		eqMarker.eqData = eq;
 
@@ -714,14 +728,21 @@ eventplanner.ui.map = {
 	addEventMarkerOnMap: function(map, event, dragable){
 		dragable = typeof dragable !== 'undefined' ? dragable : false;
 
-		var eventMarker = L.marker(event.eventLocalisation, {draggable:dragable, title: event.eventName, icon: L.AwesomeMarkers.icon({icon: 'glyphicon-arrow-down',markerColor: 'blue'})});
+		var eventMarker = L.marker(
+				event.eventLocalisation, 
+				{	
+					draggable:dragable,
+				 	title: event.eventName,
+				 	icon: eventplanner.ui.map.getIconFromType('event')
+				 });
+
 		eventMarker.addTo(map);
 		eventMarker.eventData = event;
 
 		return eventMarker;
 	},
 	
-	refreshZoneMarker: function(){
+	refreshZoneMarkerState: function(){
 		$.each(this.zonesMarkers, function(zoneId, zoneMarker) {
 			  var zone = eventplanner.zone.byId(zoneMarker.zoneId);
 			  
@@ -736,16 +757,23 @@ eventplanner.ui.map = {
 	getIconFromState: function(state){
 		if(state == 'default'){
 			return L.AwesomeMarkers.icon({
-	 			icon: 'glyphicon-ban-circle',
-	 			markerColor: eventplanner.ui.STATE.default.mapIconColor
+	 			icon: eventplanner.ui.STATE.default.mapMarkerIcon,
+	 			markerColor: eventplanner.ui.STATE.default.mapMarkerColor
 	 		});
 		}else{
 			return L.AwesomeMarkers.icon({
-	 			icon: 'glyphicon-arrow-down',
-	 			markerColor: eventplanner.ui.STATE.stateList[state].mapIconColor
+	 			icon: eventplanner.ui.STATE.stateList[state].mapMarkerIcon,
+	 			markerColor: eventplanner.ui.STATE.stateList[state].mapMarkerColor
 	 		});
 		}
 		 
+	},
+
+	getIconFromType: function(type){
+		return L.AwesomeMarkers.icon({
+ 			icon: eventplanner.ui.STATE[type].mapMarkerIcon,
+ 			markerColor: eventplanner.ui.STATE[type].mapMarkerColor
+ 		});
 	}
 };
 
