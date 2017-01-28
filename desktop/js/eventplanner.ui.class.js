@@ -274,7 +274,7 @@ eventplanner.ui = {
 		});
 
 		history.pushState(null, _page + ' - eventPlanner', "index.php?p=" + _page);
-		document.title = _page + ' - eventPlanner';
+		document.title = eventplanner.ui[_page].title + ' - eventPlanner';
 	}
 };
 
@@ -367,6 +367,7 @@ eventplanner.ui.search = {
 /// DASHBOARD ///////////////////////////////
 /////////////////////////////////////////////////
 eventplanner.ui.dashboard = {
+	title: 'Dashboard',
 	init: function(){
 		$('#dashboard').delegate('.selectEventBtn', 'click', function () {
 			eventplanner.user.setOptions({key: 'eventId', value: $(this).attr('data-event-id') ,success: function(_data) {
@@ -412,6 +413,7 @@ eventplanner.ui.dashboard = {
 /// UTILITAIRES ///////////////////////////////
 /////////////////////////////////////////////////
 eventplanner.ui.utilitaires = {
+	title: 'Utilitaires',
 	init : function(){}
 };
 
@@ -419,6 +421,7 @@ eventplanner.ui.utilitaires = {
 /// CONFIGURATION ///////////////////////////////
 /////////////////////////////////////////////////
 eventplanner.ui.configuration = {
+	title: 'Configuration',
 	init : function(){
 		this.constructEventTable();
 		this.constructMatTypeTable();
@@ -518,6 +521,7 @@ eventplanner.ui.configuration = {
 /// INVENTAIRE  /////////////////////////////////
 /////////////////////////////////////////////////
 eventplanner.ui.inventaire ={
+	title: 'Inventaire',
 	init: function(){
 	  	$.tablesorter.themes.bootstrap = {
 		    table        : 'table  table-bordered table-striped table-condensed',
@@ -589,6 +593,7 @@ eventplanner.ui.inventaire ={
 /// MAP /////////////////////////////////////////
 /////////////////////////////////////////////////
 eventplanner.ui.map = {
+	title: 'Carte',
 	llMap: {},
 	zonesMarkers: {},
 	stateToShow: {min: 0, max: 219},
@@ -781,6 +786,7 @@ eventplanner.ui.map = {
 /// MAIN COURANTE ///////////////////////////////
 /////////////////////////////////////////////////
 eventplanner.ui.maincourante = {
+	title: 'Main courante',
 	init: function(){
 	  	$.tablesorter.themes.bootstrap = {
 		    table        : 'table  table-bordered table-striped table-condensed',
@@ -829,6 +835,7 @@ eventplanner.ui.maincourante = {
 /// PLANNING ///////////////////////////////
 /////////////////////////////////////////////////
 eventplanner.ui.planning = {
+	title: 'Planning',
 	init: function(){
 	  	$.tablesorter.themes.bootstrap = {
 		    table        : 'table table-condensed',
@@ -975,6 +982,7 @@ eventplanner.ui.planning = {
 /// EQUIPEMENTS /////////////////////////////////
 /////////////////////////////////////////////////
 eventplanner.ui.equipements = {
+	title: 'Equipements',
 	init: function(){
 	  	$.tablesorter.themes.bootstrap = {
 		    table        : 'table  table-bordered table-striped table-condensed',
@@ -1040,6 +1048,7 @@ eventplanner.ui.equipements = {
 /// ZONES ///////////////////////////////////////
 /////////////////////////////////////////////////
 eventplanner.ui.zones ={
+	title: 'Zones',
 	init: function(){
 		$('#zones').delegate('.editZoneBtn', 'click', function () {
 			var zoneId = $(this).attr('data-zone-id');
@@ -1081,6 +1090,7 @@ eventplanner.ui.zones ={
 /// MISSION /////////////////////////////////////
 /////////////////////////////////////////////////
 eventplanner.ui.mission ={
+	title: 'Missions',
 	init: function(){
 		$('#mission').delegate('.editMissionBtn', 'click', function () {
 			var missionId = $(this).attr('data-mission-id');
@@ -1125,6 +1135,7 @@ eventplanner.ui.mission ={
 /// SCAN ////////////////////////////////////////
 /////////////////////////////////////////////////
 eventplanner.ui.scan = {
+	title: 'Scan',
 	init: function(){
 	  	
 	}
@@ -1134,6 +1145,7 @@ eventplanner.ui.scan = {
 /// EVENT INFOS///////////////////////////////////
 /////////////////////////////////////////////////
 eventplanner.ui.eventinfos = {
+	title: 'Infos événement',
 	init: function(){
 	  	
 	}
@@ -1144,6 +1156,7 @@ eventplanner.ui.eventinfos = {
 /// USER INFOS///////////////////////////////////
 /////////////////////////////////////////////////
 eventplanner.ui.userinfos = {
+	title: 'Infos utilisateur',
 	init: function(){
 	  	
 	}
