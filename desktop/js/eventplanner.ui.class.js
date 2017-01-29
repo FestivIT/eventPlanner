@@ -1061,7 +1061,7 @@ eventplanner.ui.zones ={
 					zoneEventId: currentEvent.eventId,
 					zoneLocalisation: currentEvent.eventLocalisation,
 					zoneInstallDate: currentEvent.eventStartDate,
-					zoneUuninstallDate: currentEvent.eventEndDate,
+					zoneUninstallDate: currentEvent.eventEndDate,
 					zoneState: 200
 				}
 				
