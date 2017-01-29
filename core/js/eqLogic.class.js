@@ -203,6 +203,28 @@ eventplanner.eqLogic = {
         }
     },
 
+    byEqRealId: function(_eqRealId, _fulldata = false){
+        if(this.dataReady.state() == 'resolved'){
+            // Selection des données à conserver dans le container:
+            Object.keys(this.container).forEach(function(id) {
+               if(eventplanner.eqLogic.container[id].eqLogicEqRealId == _eqRealId){
+                    var dataSelection = eventplanner.eqLogic.container[id];
+
+                    // Si on demande les data consolidées (pour l'utilisation avec les template)
+                    if(_fulldata){
+                        dataSelection = this.getFullData(dataSelection);
+                    }
+                    
+                    return dataSelection;
+                }
+            });
+            
+            return false;
+        }else{
+            return false;
+        }
+    },
+
     getFullData: function(_data){
         var processData = function(_eqLogicData){
             // Event

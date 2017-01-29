@@ -106,9 +106,6 @@ include_file('desktop', 'commun', 'css');
 	if (!isConnect()) {
 		include_file('desktop', 'connection', 'php');
 	} else {
-		sendVarToJS('userProfils', $_SESSION['user']->getOptions());
-		sendVarToJS('user_id', $_SESSION['user']->getId());
-		sendVarToJS('user_login', $_SESSION['user']->getLogin());
 	?>
 		<div class="navbar navbar-default navbar-fixed-top" role="navigation">
 	      <div class="container-fluid">
@@ -116,12 +113,8 @@ include_file('desktop', 'commun', 'css');
 	          <div class="navbar-icon-container">
 	            <a href="#" class="navbar-icon pull-right visible-xs" id="nav-btn"><i class="fa fa-bars fa-lg white"></i></a>
 	          </div>
-	          <a class="navbar-brand" href="<?php echo $homeLink; ?>">eventPlanner by FestivIT</a>
+	          <a class="navbar-brand" href="<?php echo $homeLink; ?>">eventPlanner</a>
 	        </div>
-
-
-
-
 
 	        <div class="navbar-collapse collapse">
 

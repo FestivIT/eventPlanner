@@ -20,7 +20,7 @@ try {
 	
 	if (init('action') == 'isConnect') {
 		if (isConnect()) {
-			ajax::success(true);
+			ajax::success(utils::addPrefixToArray(utils::o2a($_SESSION['user']), 'user'));
 		}else{
 			throw new Exception('Utilisateur non identifié.');
 		}
@@ -46,6 +46,8 @@ try {
 
 	if (init('action') == 'all') {
 		$user = utils::addPrefixToArray(utils::o2a(user::all()), 'user', true);
+
+		$user = utils::unsetElementFromArray($user, array('userPassword', 'userHash', 'userOptions', 'userRights'), true);
 
 		ajax::success($user);
 	}

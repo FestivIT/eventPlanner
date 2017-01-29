@@ -122,6 +122,22 @@ class utils {
 		return $newArray;
 	}
 
+	public static function unsetElementFromArray($_array, $_elements, $_isList = false){
+		if($_isList){
+			foreach ($_array as &$item) {
+				foreach ($_elements as $_element) {
+				    unset($item[$_element]);
+				}
+			}
+		}else{
+			foreach ($_elements as $_element) {
+			    unset($_array[$_element]);
+			}
+		}
+		
+		return $_array;
+	}
+
 	public static function processJsonObject($_class, $_ajaxList, $_dbList = null) {
 		if (!is_array($_ajaxList)) {
 			if (is_json($_ajaxList)) {

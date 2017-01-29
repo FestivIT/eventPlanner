@@ -39,7 +39,8 @@ class user {
 		$user = user::byLoginAndPassword($_login, $sMdp);
 		if (is_object($user)) {
 			$user->setOptions('lastConnection', date('Y-m-d H:i:s'));
-			$user->save();
+			$user->save(false);
+			msg::add(null, null, null, $user->getId(), "Connection de l'utilisateur: " . $user->getName(), 'user', 'update', $user);
 			//eventPlanner::event('user_connect');
 			//log::add('event', 'info', __('Connexion de l\'utilisateur ', __FILE__) . $_login);
 		}
@@ -142,6 +143,7 @@ class user {
 				msg::add(null, null, null, $_SESSION['user']->getId(), "Mise à jour de l'utilisateur: " . $this->getName(), 'user', 'update', $this);
 			}
 		}
+
 		return $this;
 	}
 

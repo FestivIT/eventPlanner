@@ -30,14 +30,11 @@ eventplanner.mission = {
 
     // enregistrement d'une mission
     save: function(_params) {
-        // éventuellement ajouter un futur "cache" si offline... ?
-
         var paramsRequired = ['mission'];
         var paramsSpecifics =  {
         	pre_success: function(_data){
 	        	if(_data.state == 'ok'){
 	        		eventplanner.mission.updateData(_data.result);
-	        		//eventplanner.msg.lastMsgDate = _data.date;
 	        	}
 	        	return _data;
         	}

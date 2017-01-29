@@ -55,7 +55,7 @@
 					"colorClass": "danger"
 				},
 				"141": {
-					"text": "Désinstall",
+					"text": "Désinstallé",
 					"colorClass": "warning"
 				},
 				"142": {
@@ -158,7 +158,7 @@
 	"default": {
 		"text": "Inconnu",
 		"colorClass": "active",
-		"mapMarkerColor": "gray",
+		"mapMarkerColor": "darkpurple",
 		"mapMarkerIcon": "glyphicon-ban-circle"
 	}
 }

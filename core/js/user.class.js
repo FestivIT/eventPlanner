@@ -148,8 +148,7 @@ eventplanner.user = {
 	    var paramsAJAX = eventplanner.private.getParamsAJAX(params);
 	    paramsAJAX.url = 'core/ajax/user.ajax.php';
 	    paramsAJAX.data = {
-	        action: 'get',
-	        profils: json_encode(_params.profils)
+	        action: 'get'
 	    };
 	    return $.ajax(paramsAJAX);
 	},

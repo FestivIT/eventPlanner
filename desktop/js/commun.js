@@ -1,11 +1,19 @@
 $( document ).ready(function() {
 	eventplanner.user.isConnect(
 		{success: function(_data){
+			// Enregistrement du profil utilisateur.
+			eventplanner.ui.currentUser = _data;
+
 			$.when(eventplanner.ui.init()).then(function (){
 				var page = getUrlParameter("p");
 				if(page != false){
 					if(eventplanner.ui.hasOwnProperty(page) && eventplanner.ui[page].hasOwnProperty('init')){
-						eventplanner.ui.loadPage(page);
+						if(page == 'scan'){
+							var option = {id: getUrlParameter('id')};
+						}else{
+							var option = {};
+						}
+						eventplanner.ui.loadPage(page, option);
 					}else{
 						eventplanner.ui.loadPage("dashboard");
 					}

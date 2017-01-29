@@ -4,7 +4,7 @@
       <div class="col-sm-9">
         <select class="form-control" id="eqRealMatTypeId"></select>
         <script type="text/html" id="templateEqMatTypeOptions">
-          <option data-value="id" data-content="name"></option>
+          <option data-value="matTypeId" data-content="matTypeName"></option>
         </script>
       </div>
   </div>
