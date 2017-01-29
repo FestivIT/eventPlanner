@@ -1648,7 +1648,7 @@ eventplanner.ui.modal.EpModalZoneConfiguration = function(_zone){
 				event.stopPropagation();
 			});
 			
-			if(this.data.id==''){
+			if(this.data.zoneId==''){
 				this.modal.find('.eqZoneConf').hide();
 			}
 			
@@ -1660,7 +1660,7 @@ eventplanner.ui.modal.EpModalZoneConfiguration = function(_zone){
 				if(eqId == 'new'){			
 					var eqData = {
 						eqLogicId: '',
-						eqLogicZoneId: event.data.data.id,
+						eqLogicZoneId: event.data.data.zoneId,
 						eqLogicEventId: eventplanner.ui.currentUser.userOptions.eventId,
 						eqLogicState: 100,
 						eqLogicConfiguration: {hasLocalisation: false}
