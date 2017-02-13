@@ -2,9 +2,11 @@ eventplanner.zone = {
     dataReady: $.Deferred(),
     container: {},
     
-
     // Chargement initial des données depuis le serveur
     load: function(){
+    	this.dataReady = $.Deferred();
+    	this.container = {};
+    	
         var params = {
             success: function(_data, _date) {
                 _data.forEach(function(element) {
@@ -25,7 +27,7 @@ eventplanner.zone = {
         };
         $.ajax(paramsAJAX);
 
-        return eventplanner.zone.dataReady;
+        return this.dataReady;
     },
 
     // enregistrement d'une zone

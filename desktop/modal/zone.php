@@ -50,7 +50,7 @@
 				<tr>
 					<td>
 						<p class="pull-right small">
-							<span data-content="msgDate" data-format="formatDateMsg"></span> - <strong><span data-content="userName"></span></strong>
+							<span data-content="msgDate" data-format="formatDateMsg"></span> - <strong><span class="label label-info" data-content="userName"></span></strong>
 						</p>
 						<strong><span data-content="matTypeName"></span> <span data-content="eqRealName"></span></strong>
 						<p data-content="msgContent"></p>
@@ -110,7 +110,7 @@
 						</div>
 						<div class="row">
 						  <div class="col-xs-2"><label class="control-label">Liens:</label></div>
-						  <div class="col-xs-10"><span class="label label-info">Glenmor - Rocket Omni</span><button type="button" class="btn btn-xs btn-primary pull-right">Orienter</button></div>
+						  <div class="col-xs-10 eqLinkTable" data-template-bind='[{"attribute": "data-eq-logic-id", "value": "eqLogicId"}]'></div>
 						</div>
 		    		</div>
 		    		<div class="col-sm-6">
@@ -120,6 +120,12 @@
 			    </div>
 		    </div>
 		  </div>
+		</script>
+		<script type="text/html" id="templateEqLinkTable">
+				<div class="row">
+				  <div class="col-xs-2"><span class="label label-primary" data-content="eqLinkType"></span></div>
+				  <div class="col-xs-10"><span class="label label-info"><span data-content="eqLinkTargetEqLogicZoneName"></span> <span data-content="eqLinkTargetEqLogicMatTypeName"></span> <span data-content="eqLinkTargetEqLogicEqRealName"></span></span></div>
+				</div>
 		</script>
     </div>
     <div role="tabpanel" class="tab-pane" id="carte">

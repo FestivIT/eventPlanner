@@ -49,8 +49,19 @@ class event {
 
 	/*     * *********************Méthodes d'instance************************* */
 
-	public function save() {
-		return DB::save($this);
+	public function save($_addMsg = true) {
+		if($this->getId() == null){
+			DB::save($this);
+			if($_addMsg){
+				msg::add($this->getId(), null, null, $_SESSION['user']->getId(), "Création de l'événement: " . $this->getName(), 'event', 'add', $this);
+			}
+		}else{
+			DB::save($this);
+			if($_addMsg){
+				msg::add($this->getId(), null, null, $_SESSION['user']->getId(), "Mise à jour de l'événement: " . $this->getName(), 'event', 'update', $this);
+			}
+		}
+		return $this;
 	}
 
 	public function remove() {

@@ -1,9 +1,6 @@
 $( document ).ready(function() {
 	eventplanner.user.isConnect(
 		{success: function(_data){
-			// Enregistrement du profil utilisateur.
-			eventplanner.ui.currentUser = _data;
-
 			$.when(eventplanner.ui.init()).then(function (){
 				var page = getUrlParameter("p");
 				if(page != false){
@@ -29,7 +26,7 @@ $( document ).ready(function() {
 });
 
 $.addTemplateFormatter("getConfigurationKey", function(value, template) {
-	if(value.hasOwnProperty(template)){
+	if(is_object(value) && value.hasOwnProperty(template)){
     	return value[template];
     }else{
     	return "";

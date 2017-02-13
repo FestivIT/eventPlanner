@@ -32,6 +32,34 @@ try {
 		$eqLogic->save();
 		$eqLogic->refresh();
 
+		if(array_key_exists('eqLinks',$eqLogic_json)){
+			foreach ($eqLogic_json['eqLinks']['create'] as $eqLinkData){
+			    $eqLink = new eqLink();
+			    $eqLink->setEventId($eqLogic->getEventId());
+			    $eqLink->setEqLogicId1($eqLogic->getId());
+			    $eqLink->setEqLogicId2($eqLinkData['eqLinkTargetEqLogicId']);
+			    $eqLink->setType($eqLinkData['eqLinkType']);
+			    $eqLink->save();
+			}
+
+			foreach ($eqLogic_json['eqLinks']['update'] as $eqLinkData){
+				$eqLink = eqLink::byId($eqLinkData['eqLinkId']);
+				if(is_object($eqLink)){
+				    $eqLink->setEqLogicId1($eqLogic->getId());
+				    $eqLink->setEqLogicId2($eqLinkData['eqLinkTargetEqLogicId']);
+				    $eqLink->setType($eqLinkData['eqLinkType']);
+				    $eqLink->save();
+				}
+			}
+
+			foreach ($eqLogic_json['eqLinks']['del'] as $eqLinkData){
+				$eqLink = eqLink::byId($eqLinkData['eqLinkId']);
+				if(is_object($eqLink)){
+				    $eqLink->remove();
+				}
+			}
+		}
+
 		ajax::success(utils::addPrefixToArray(utils::o2a($eqLogic), 'eqLogic'));
 	}
 

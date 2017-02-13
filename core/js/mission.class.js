@@ -5,6 +5,9 @@ eventplanner.mission = {
 
     // Chargement initial des données depuis le serveur
     load: function(){
+    	this.dataReady = $.Deferred();
+    	this.container = {};
+    	
         var params = {
             success: function(_data, _date) {
                 _data.forEach(function(element) {
@@ -25,7 +28,7 @@ eventplanner.mission = {
         };
         $.ajax(paramsAJAX);
 
-        return eventplanner.mission.dataReady;
+        return this.dataReady;
     },
 
     // enregistrement d'une mission

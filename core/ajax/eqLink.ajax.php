@@ -11,63 +11,28 @@ try {
 	ajax::init();
 
 	if (init('action') == 'all') {
-		if(init('fullData') == 'true'){
-			$eqLink = eqLink::all(true);
-			ajax::success($eqLink);
-		}else{
-			ajax::success(utils::o2a(eqLink::all(false)));
-		}	
+		$eqLink = utils::addPrefixToArray(utils::o2a(eqLink::byEventId($_SESSION['user']->getOptions('eventId'))), 'eqLink', true);
+
+		ajax::success($eqLink);
 	}
 
 	if (init('action') == 'save') {
 
-		$eqLink_json = json_decode(init('eqLink'), true);
+		$eqLogic_json = json_decode(init('eqLink'), true);
 		
-		if (isset($eqLink_json['id'])) {
-			$eqLink = eqLink::byId($eqLink_json['id']);
+		if (isset($eqLogic_json['id'])) {
+			$eqLink = eqLink::byId($eqLogic_json['id']);
 		}
 
 		if (!isset($eqLink) || !is_object($eqLink)) {
 			$eqLink = new eqLink();
 		}
 
-		utils::a2o($eqLink, $eqLink_json);
+		utils::a2o($eqLink, $eqLogic_json);
 		$eqLink->save();
+		$eqLink->refresh();
 
-		ajax::success(utils::o2a($eqLink));
-	}
-
-	if (init('action') == 'byId') {
-		if(init('fullData') == 'true'){
-			$eqLink = eqLink::byId(init('id'), true);
-			ajax::success($eqLink);
-		}else{
-			$eqLink = eqLink::byId(init('id'), false);
-			if (isset($eqLink) && is_object($eqLink)) {
-				ajax::success(utils::o2a($eqLink));
-			}
-		}
-		throw new Exception('Matériel introuvable: id=' . init('id'));
-	}
-
-	if (init('action') == 'byEqLogicId') {
-		if(init('fullData') == 'true'){
-			$eqLink = eqLink::byEqLogicId(init('eqLogicId'), true);
-			ajax::success($eqLink);
-		}else{
-			$eqLink = eqLink::byEqLogicId(init('eqLogicId'), false);
-			ajax::success(utils::o2a($eqLink));
-		}
-	}
-
-	if (init('action') == 'byEventId') {
-		if(init('fullData') == 'true'){
-			$eqLink = eqLink::byEventId(init('eventId'), true);
-			ajax::success($eqLink);
-		}else{
-			$eqLink = eqLink::byEventId(init('eventId'), false);
-			ajax::success(utils::o2a($eqLink));
-		}
+		ajax::success(utils::addPrefixToArray(utils::o2a($eqLink), 'eqLink'));
 	}
 
 	throw new Exception('Aucune methode correspondante à : ' . init('action'));

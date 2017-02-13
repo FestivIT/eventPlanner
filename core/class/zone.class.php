@@ -129,7 +129,11 @@ class zone {
 		return json_decode($this->localisation, true);
 	}
 	public function getConfiguration($_key = '', $_default = '') {
-		return utils::getJsonAttr($this->configuration, $_key, $_default);
+		if($this->configuration != null){
+			return utils::getJsonAttr($this->configuration, $_key, $_default);
+		}else{
+			return $_default;
+		}
 	}
 
 	public function setId($id) {

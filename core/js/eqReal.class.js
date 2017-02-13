@@ -5,6 +5,9 @@ eventplanner.eqReal = {
 
     // Chargement initial des données depuis le serveur
     load: function(){
+    	this.dataReady = $.Deferred();
+    	this.container = {};
+    	
         var params = {
             success: function(_data, _date) {
                 _data.forEach(function(element) {
@@ -24,7 +27,7 @@ eventplanner.eqReal = {
         };
         $.ajax(paramsAJAX);
 
-        return eventplanner.eqReal.dataReady;
+        return this.dataReady;
     },
 
     // enregistrement d'un eqReal

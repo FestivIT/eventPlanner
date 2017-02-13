@@ -78,6 +78,7 @@ include_file('3rdparty', 'leaflet/Leaflet.ImageOverlay.Rotated', 'js');
 include_file('3rdparty', 'leaflet/Leaflet.tilelayer.fallback', 'js');
 include_file('3rdparty', 'leaflet/Leaflet.singleclick', 'js');
 include_file('3rdparty', 'leaflet/leaflet.easy-button', 'js');
+include_file('3rdparty', 'leaflet/leaflet.contextmenu.min', 'js');
 include_file('3rdparty', 'snap.svg/snap.svg-min', 'js');
 
 include_file('core', 'core', 'js');
@@ -96,6 +97,7 @@ include_file('3rdparty', 'bootstrap-datepicker/bootstrap-datepicker.min', 'css')
 include_file('3rdparty', 'leaflet/leaflet', 'css');
 include_file('3rdparty', 'leaflet/leaflet.awesome-markers', 'css');
 include_file('3rdparty', 'leaflet/leaflet.easy-button', 'css');
+include_file('3rdparty', 'leaflet/leaflet.contextmenu.min', 'css');
 
 include_file('desktop', 'commun', 'css');
 

@@ -5,6 +5,9 @@ eventplanner.user = {
     
     // Chargement initial des données depuis le serveur
     load: function(){
+    	this.dataReady = $.Deferred();
+    	this.container = {};
+    	
         var params = {
             success: function(_data, _date) {
                 _data.forEach(function(element) {
@@ -25,7 +28,7 @@ eventplanner.user = {
         };
         $.ajax(paramsAJAX);
 
-        return eventplanner.user.dataReady;
+        return this.dataReady;
     },
     
     // enregistrement d'un user
@@ -83,8 +86,14 @@ eventplanner.user = {
     isConnect: function(_params) {
 	    if (Math.round(+new Date() / 1000) > (eventplanner.user.connectCheck + 300)) {
 	        var paramsRequired = [];
-	        var paramsSpecifics = {
-	            /*pre_success: function(data) {
+	        var paramsSpecifics =  {
+	        	pre_success: function(_data){
+		        	if(_data.state == 'ok'){
+		        		eventplanner.ui.currentUser = _data.result;
+		        	}
+		        	return _data;
+	        	}
+	        	/*pre_success: function(data) {
 	                if (data.state != 'ok') {
 	                    return {state: 'ok', result: false};
 	                } else {
@@ -117,7 +126,15 @@ eventplanner.user = {
     
     setOptions: function(_params) {
 	    var paramsRequired = ['key', 'value'];
-	    var paramsSpecifics = {};
+	    var paramsSpecifics =  {
+        	pre_success: function(_data){
+	        	if(_data.state == 'ok'){
+	        		eventplanner.ui.currentUser = _data.result;
+	        	}
+	        	return _data;
+        	}
+        };
+        
 	    try {
 	        eventplanner.private.checkParamsRequired(_params || {}, paramsRequired);
 	    } catch (e) {

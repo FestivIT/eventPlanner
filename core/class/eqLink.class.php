@@ -16,133 +16,71 @@ class eqLink {
 
 	/*     * ***********************Méthodes statiques*************************** */
 
-	public static function byId($_id, $_fullData = false) {
+	public static function byId($_id) {
 		$values = array(
 			'id' => $_id,
 		);
-		
-		if($_fullData){
-			/*
-			$sql = 'SELECT ' . DB::buildField(__CLASS__, 'eqReal') . ', ' . DB::buildField('matType', 'matType') . '
-					FROM eqReal 
-       				LEFT OUTER JOIN matType
-             		ON eqReal.matTypeId = matType.id
-        			WHERE eqReal.id=:id';
-             $result = DB::Prepare($sql, $values, DB::FETCH_TYPE_ROW);
-             
-             // décode les champs en JSON
-             $JSONField = ['matTypeOptions'];
-		 	 foreach($JSONField as $fieldName){
-			 		$result[$fieldName] = json_decode($result[$fieldName], true);
-			 }
-             return $result;
-             */
-		}else{
-			$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-	        FROM eqLink
-	        WHERE id=:id';
-			return DB::Prepare($sql, $values, DB::FETCH_TYPE_ROW, PDO::FETCH_CLASS, __CLASS__);
-		}
+
+		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
+        FROM eqLink
+        WHERE id=:id';
+		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ROW, PDO::FETCH_CLASS, __CLASS__);
 	}
 
-	public static function byEventId($_eventId, $_fullData = false) {
+	public static function all() {
+		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
+        FROM eqLink';
+		return DB::Prepare($sql, array(), DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
+	}
+
+	public static function byEventId($_eventId) {
 		$values = array(
 			'eventId' => $_eventId,
 		);
-		
-		if($_fullData){
-			/*
-			$sql = 'SELECT ' . DB::buildField(__CLASS__, 'eqReal') . ', ' . DB::buildField('matType', 'matType') . '
-					FROM eqReal 
-       				LEFT OUTER JOIN matType
-             		ON eqReal.matTypeId = matType.id
-        			WHERE eqReal.matTypeId=:matTypeId
-       				ORDER BY eqReal.name';
-             $result = DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL);
-             
-             // décode les champs en JSON
-             $JSONField = ['matTypeOptions'];
-             foreach ($result as &$eq) {
-			 	foreach($JSONField as $fieldName){
-			 		$eq[$fieldName] = json_decode($eq[$fieldName], true);
-			 	}
-			 }
-             return $result;
-             */
-		}else{
-			$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-	        FROM eqLink
-	        WHERE eventId=:eventId';
-			return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
-		}
+
+		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
+        FROM eqLink
+        WHERE eventId=:eventId';
+		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
 	}
 
-	public static function byEqLogicId($_eqLogicId, $_fullData = false) {
+	public static function byEqLogicId($_eqLogicId) {
 		$values = array(
 			'eqLogicId' => $_eqLogicId,
 		);
-		
-		if($_fullData){
-			/*
-			$sql = 'SELECT ' . DB::buildField(__CLASS__, 'eqReal') . ', ' . DB::buildField('matType', 'matType') . '
-					FROM eqReal 
-       				LEFT OUTER JOIN matType
-             		ON eqReal.matTypeId = matType.id
-        			WHERE eqReal.matTypeId=:matTypeId
-       				ORDER BY eqReal.name';
-             $result = DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL);
-             
-             // décode les champs en JSON
-             $JSONField = ['matTypeOptions'];
-             foreach ($result as &$eq) {
-			 	foreach($JSONField as $fieldName){
-			 		$eq[$fieldName] = json_decode($eq[$fieldName], true);
-			 	}
-			 }
-             return $result;
-             */
-		}else{
-			$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-	        FROM eqLink
-	        WHERE eqLogicId1=:eqLogicId OR eqLogicId2=:eqLogicId';
-			return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
-		}
+
+		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
+        FROM eqLink
+        WHERE eqLogicId1=:eqLogicId OR eqLogicId2=:eqLogicId';
+		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
 	}
 
-	public static function all($_fullData = false) {
-		if($_fullData){
-			/*
-			$sql = 'SELECT ' . DB::buildField(__CLASS__, 'eqReal') . ', ' . DB::buildField('matType', 'matType') . '
-					FROM eqReal 
-       				LEFT OUTER JOIN matType
-             		ON eqReal.matTypeId = matType.id
-       				ORDER BY eqReal.matTypeId';
-            $result = DB::Prepare($sql, array(), DB::FETCH_TYPE_ALL);
-             
-            // décode les champs en JSON
-            $JSONField = ['matTypeOptions'];
-            foreach ($result as &$eq) {
-				foreach($JSONField as $fieldName){
-			 		$eq[$fieldName] = json_decode($eq[$fieldName], true);
-			 	}
-			}
-			 
-            return $result;
-            */
-		}else{
-			$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-	        FROM eqLink';
-			return DB::Prepare($sql, array(), DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
-		}
-	}
 
 	/*     * *********************Méthodes d'instance************************* */
 
-	public function save() {
-		return DB::save($this);
-	}
+	public function save($_addMsg = true) {
+		if($this->configuration == null){
+			$this->configuration = array();
+		}
 
-	public function remove() {
+		if($this->getId() == null){
+			DB::save($this);
+			if($_addMsg){
+				msg::add($this->getEventId(), null, null, $_SESSION['user']->getId(), "Création du lien", 'eqLink', 'add', $this);
+			}
+		}else{
+			DB::save($this);
+			if($_addMsg){
+				msg::add($this->getEventId(), null, null, $_SESSION['user']->getId(), "Mise à jour du lien.", 'eqLink', 'update', $this);
+			}
+		}
+		return $this;
+	}
+	public function remove($_addMsg = true) {
+		if($_addMsg){
+			msg::add($this->getEventId(), null, null, $_SESSION['user']->getId(), "Suppression du lien.", 'eqLink', 'remove', $this);
+		}
+
 		return DB::remove($this);
 	}
 
@@ -159,8 +97,14 @@ class eqLink {
 	public function getEqLogicId1() {
 		return $this->eqLogicId1;
 	}
+	public function getEqLogic1() {
+		return eqLogic::byId($this->eqLogicId1);
+	}
 	public function getEqLogicId2() {
 		return $this->eqLogicId2;
+	}
+	public function getEqLogic2() {
+		return eqLogic::byId($this->eqLogicId2);
 	}
 	public function getType() {
 		return $this->type;

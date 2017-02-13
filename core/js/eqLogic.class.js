@@ -5,6 +5,9 @@ eventplanner.eqLogic = {
 
     // Chargement initial des données depuis le serveur
     load: function(){
+    	this.dataReady = $.Deferred();
+    	this.container = {};
+    	
         var params = {
             success: function(_data, _date) {
                 _data.forEach(function(element) {
@@ -24,7 +27,7 @@ eventplanner.eqLogic = {
         };
         $.ajax(paramsAJAX);
 
-        return eventplanner.eqLogic.dataReady;
+        return this.dataReady;
     },
 
     // enregistrement d'un eqLogic
@@ -228,7 +231,7 @@ eventplanner.eqLogic = {
     getFullData: function(_data){
         var processData = function(_eqLogicData){
             // Event
-            var event;// = eventplanner.event.byId(_eqLogicData.eqLogicEventId);
+            var event = eventplanner.event.byId(_eqLogicData.eqLogicEventId);
             if(!is_object(event)){
                 event = {};
             }

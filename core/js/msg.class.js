@@ -5,6 +5,10 @@ eventplanner.msg = {
 
     // Chargement initial des données depuis le serveur
     load: function(){
+    	this.dataReady = $.Deferred();
+    	this.container = {};
+    	this.lastMsgId = 0;
+    	
         var params = {
             initialLoad: true,
             success: function(_data, _date) {
@@ -15,7 +19,7 @@ eventplanner.msg = {
         this.lastMsgId = 0; // reset du lastId
         this.getLastMsg(params);
 
-        return eventplanner.msg.dataReady;
+        return this.dataReady;
     },
 
     // récupération de la liste des message depuis la dernière réception réussie
@@ -87,6 +91,10 @@ eventplanner.msg = {
             break;
             
             case 'remove':
+                var itemId = _data.content[_data.type + 'Id'];
+                console.log(_data.type);
+                console.log(itemId);                
+                delete eventplanner[_data.type].container[itemId];
             break;
         }
     },

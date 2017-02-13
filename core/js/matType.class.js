@@ -5,6 +5,9 @@ eventplanner.matType = {
 
     // Chargement initial des données depuis le serveur
     load: function(){
+    	this.dataReady = $.Deferred();
+    	this.container = {};
+    	
         var params = {
             success: function(_data, _date) {
                 _data.forEach(function(element) {
@@ -24,7 +27,7 @@ eventplanner.matType = {
         };
         $.ajax(paramsAJAX);
 
-        return eventplanner.matType.dataReady;
+        return this.dataReady;
     },
 
     // enregistrement d'un matType
