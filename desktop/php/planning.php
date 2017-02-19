@@ -44,7 +44,7 @@
 		  </tbody>
 		</table>
 		<script type="text/html" id="templatePlanningTableZone">
-				<tr class="tablesorter-hasChildRow zoneRow" data-template-bind='[{"attribute": "data-zone-id", "value": "zoneId"}, {"attribute": "class", "value": "zoneZtate", "formatter": "formatStateColorClass", "formatOptions": "tablesorter-hasChildRow zoneRow "}]' >
+				<tr data-template-bind='[{"attribute": "data-zone-id", "value": "zoneId"}, {"attribute": "class", "value": "zoneZtate", "formatter": "formatStateColorClass", "formatOptions": "tablesorter-hasChildRow zoneItem "}]' >
 					<td rowspan="1"><strong><a href="#" class="toggle" data-content-append="zoneName"><span class="glyphicon glyphicon-triangle-bottom small" aria-hidden="true"></span><span class="glyphicon glyphicon-triangle-right small" style="display: none;" aria-hidden="true"></span> </a></strong></td>
 					<td colspan="3">
 						<button type="button" class="btn btn-success btn-xs zoneBtn" data-template-bind='[{"attribute": "data-zone-id", "value": "zoneId"}]'><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span></button>

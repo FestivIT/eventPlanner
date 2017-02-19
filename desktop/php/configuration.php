@@ -19,11 +19,11 @@
 				</tbody>
 			</table>
 			<script type="text/html" id="templateEventTable">
-				<tr>
+				<tr class="eventItem" data-template-bind='[{"attribute": "data-id", "value": "eventId"}]'>
 					<th class="col-xs-4" scope="row" data-content="eventName"></th>
-					<td class="col-xs-2" data-content="eventVille"></td>
-					<td class="col-xs-2" data-content="eventStartDate" data-format="formatDateYmd2Dmy"></td>
-					<td class="col-xs-4" style="text-align: right;">
+					<td class="col-xs-4" data-content="eventVille"></td>
+					<td class="col-xs-3" data-content="eventStartDate" data-format="formatDateYmd2Dmy"></td>
+					<td class="col-xs-1" style="text-align: right;">
 						<button type="button" class="btn btn-success btn-xs selectEventBtn" data-template-bind='[{"attribute": "data-event-id", "value": "eventId"}]' title="Selectionner"><span class="glyphicon glyphicon-ok"></span></button> 
 						<button type="button" class="btn btn-primary btn-xs dupEventBtn" data-template-bind='[{"attribute": "data-event-id", "value": "eventId"}]' title="Dupliquer"><span class="glyphicon glyphicon-duplicate"></span></button> 
 						<button type="button" class="btn btn-warning btn-xs editEventBtn" data-template-bind='[{"attribute": "data-event-id", "value": "eventId"}]' title="Modifier"><span class="glyphicon glyphicon-pencil"></span></button>
@@ -51,9 +51,9 @@
 				</tbody>
 			</table>
 			<script type="text/html" id="templateMatTypeTable">
-				<tr>
-					<th class="col-xs-8" scope="row" data-content="matTypeName"></th>
-					<td class="col-xs-4" style="text-align: right;">
+				<tr class="matTypeItem" data-template-bind='[{"attribute": "data-id", "value": "matTypeId"}]'>
+					<th class="col-xs-11" scope="row" data-content="matTypeName"></th>
+					<td class="col-xs-1" style="text-align: right;">
 						<button type="button" class="btn btn-primary btn-xs dupMatTypeBtn" data-template-bind='[{"attribute": "data-matType-id", "value": "matTypeId"}]' title="Dupliquer"><span class="glyphicon glyphicon-duplicate"></span></button> 
 						<button type="button" class="btn btn-warning btn-xs editMatTypeBtn" data-template-bind='[{"attribute": "data-matType-id", "value": "matTypeId"}]' title="Modifier"><span class="glyphicon glyphicon-pencil"></span></button>
 					</td>
@@ -80,9 +80,9 @@
 				</tbody>
 			</table>
 			<script type="text/html" id="templateUserTable">
-				<tr>
-					<th class="col-xs-8" scope="row" data-content="userName"></th>
-					<td class="col-xs-4" style="text-align: right;">
+				<tr class="userItem" data-template-bind='[{"attribute": "data-id", "value": "userId"}]'>
+					<th class="col-xs-11" scope="row" data-content="userName"></th>
+					<td class="col-xs-1" style="text-align: right;">
 						<button type="button" class="btn btn-warning btn-xs editUserBtn" data-template-bind='[{"attribute": "data-user-id", "value": "userId"}]' title="Modifier"><span class="glyphicon glyphicon-pencil"></span></button>
 					</td>
 				</tr>

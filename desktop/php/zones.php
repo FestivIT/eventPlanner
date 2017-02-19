@@ -19,11 +19,11 @@
 				</tbody>
 			</table>
 			<script type="text/html" id="templateZoneTable">
-				<tr>
-					<th class="col-xs-4" scope="row" data-content="zoneName"></th>
+				<tr class="zoneItem" data-template-bind='[{"attribute": "data-id", "value": "zoneId"}]' >
+					<th class="col-xs-7" scope="row" data-content="zoneName"></th>
 					<td class="col-xs-2" data-content="zoneInstallDate" data-format="formatDateYmd2Dmy"></td>
 					<td class="col-xs-2" data-content="zoneUninstallDate" data-format="formatDateYmd2Dmy"></td>
-					<td class="col-xs-4" style="text-align: right;">
+					<td class="col-xs-1" style="text-align: right;">
 						<button type="button" class="btn btn-warning btn-xs editZoneBtn" data-template-bind='[{"attribute": "data-zone-id", "value": "zoneId"}]' title="Modifier"><span class="glyphicon glyphicon-pencil"></span></button> 
 						<button type="button" class="btn btn-danger btn-xs deleteZoneBtn" data-template-bind='[{"attribute": "data-zone-id", "value": "zoneId"}]' title="Supprimer"><span class="glyphicon glyphicon-remove"></span></button>
 					</td>

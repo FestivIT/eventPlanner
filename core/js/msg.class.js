@@ -29,23 +29,31 @@ eventplanner.msg = {
             pre_success: function(initialLoad){
                 return function(_data){
                     if(_data.state == 'ok'){
-                        var elementToUpdate = {};
+                        var elementToUpdate = {
+                            msg: {
+                                add:[]
+                            }
+                        };
 
                         // Mise à jour de la liste des message
                         _data.result.forEach(function(element) {
                             eventplanner.msg.container[element.msgId] = element;
                             eventplanner.msg.lastMsgId = Math.max(eventplanner.msg.lastMsgId,element.msgId);
 
+                            elementToUpdate['msg']['add'].push(element.msgId);
+
                             if(!initialLoad && is_object(element.msgData) && element.msgData.hasOwnProperty('type')){
                                 // Construction d'un objet contenant les type/id à updater
-                                if(is_array(elementToUpdate[element.msgData.type])){
-                                    elementToUpdate[element.msgData.type].push(element.msgData.content[element.msgData.type + 'Id']);
-                                }else{
-                                    elementToUpdate[element.msgData.type] = [element.msgData.content[element.msgData.type + 'Id']]
+                                if(!is_array(elementToUpdate[element.msgData.type])){
+                                    elementToUpdate[element.msgData.type] = [];
                                 }
-
+                                if(!is_array(elementToUpdate[element.msgData.type][element.msgData.op])){
+                                    elementToUpdate[element.msgData.type][element.msgData.op] = [];
+                                }
+                                
                                 // Process data que pour les données autre que les msg
                                 if(element.msgData.type != 'msg'){
+                                    elementToUpdate[element.msgData.type][element.msgData.op].push(element.msgData.content[element.msgData.type + 'Id']);
                                     eventplanner.msg.processMsgData(element.msgData);
                                 }
                             }
@@ -91,9 +99,7 @@ eventplanner.msg = {
             break;
             
             case 'remove':
-                var itemId = _data.content[_data.type + 'Id'];
-                console.log(_data.type);
-                console.log(itemId);                
+                var itemId = _data.content[_data.type + 'Id'];        
                 delete eventplanner[_data.type].container[itemId];
             break;
         }

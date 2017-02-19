@@ -12,7 +12,7 @@
 						<th>Type</th>
 						<th>Matériel</th>
 						<th>Etat</th>
-						<th>Actions</th>
+						<th class="text-right">Actions</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -39,11 +39,14 @@
 			</table>
 			
 			<script type="text/html" id="templateEqRealTable">
-				<tr>
-					<th scope="row" data-content="matTypeName"></th>
-					<td data-content="eqRealName"></td>
-					<td><button type="button" style="font-weight: bold;" data-template-bind='[{"attribute": "class", "value": "eqRealState", "formatter": "formatStateColorClass", "formatOptions": "editStateBtn btn btn-xs btn"},{"attribute": "content", "value": "eqRealState", "formatter": "formatState"}, {"attribute": "data-eqReal-id", "value": "eqRealId"}, {"attribute": "data-eqReal-state", "value": "eqRealState"}]'></span></td>
-					<td><button type="button" class="btn btn-warning btn-xs editEqRealBtn"  data-template-bind='[{"attribute": "data-eqReal-id", "value": "eqRealId"}]'>Modifier</button></td>
+				<tr class="eqRealItem" data-template-bind='[{"attribute": "data-id", "value": "eqRealId"}]' >
+					<th class="col-xs-4" scope="row" data-content="matTypeName"></th>
+					<td class="col-xs-3" data-content="eqRealName"></td>
+					<td class="col-xs-4"><button type="button" style="font-weight: bold;" data-template-bind='[{"attribute": "class", "value": "eqRealState", "formatter": "formatStateColorClass", "formatOptions": "editStateBtn btn btn-xs btn"},{"attribute": "content", "value": "eqRealState", "formatter": "formatState"}, {"attribute": "data-eqReal-id", "value": "eqRealId"}, {"attribute": "data-eqReal-state", "value": "eqRealState"}]'></span></td>
+					<td class="col-xs-1" style="text-align: right;">
+						<button type="button" class="btn btn-warning btn-xs editEqRealBtn" data-template-bind='[{"attribute": "data-eqReal-id", "value": "eqRealId"}]' title="Modifier"><span class="glyphicon glyphicon-pencil"></span></button>
+						<button type="button" class="btn btn-danger btn-xs deleteEqRealBtn" data-template-bind='[{"attribute": "data-eqReal-id", "value": "eqRealId"}]' title="Supprimer"><span class="glyphicon glyphicon-remove"></span></button>
+					</td>
 				</tr>
 			</script>
 		</div>

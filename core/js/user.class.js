@@ -208,6 +208,31 @@ eventplanner.user = {
             return false;
         }
     },
+    
+    // Accés aux données
+    byName: function(_name = '', _fulldata = false){
+        if(this.dataReady.state() == 'resolved'){
+            // Selection des données à conserver dans le container:
+            var dataSelection = Array();
+
+            Object.keys(this.container).forEach(function(id) {
+            	if(eventplanner.user.container[id].userName == _name){
+                    dataSelection = eventplanner.user.container[id];
+                }
+            });
+
+            // Si on demande les data consolidées (pour l'utilisation avec les template)
+            if(_fulldata){
+                dataSelection = this.getFullData(dataSelection);
+            }
+            
+            return dataSelection;
+
+        }else{
+            return false;
+        }
+    },
+    
     // Accés aux données
     byId: function(_id, _fulldata = false){
     	// si l'ID n'est pas trouvé, alors relancer un LOAD pour essayer de le trouver.

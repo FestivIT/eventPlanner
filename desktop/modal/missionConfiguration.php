@@ -48,6 +48,13 @@
   </div>
 
   <div class="form-group">
+      <label for="missionUserSelect" class="col-sm-3 control-label" >Attribué à</label>
+      <div class="col-sm-9">
+        <input type="text" data-role="tagsinput" id="missionUserSelectTag">
+      </div>
+  </div>
+  
+  <div class="form-group">
     <div class="col-sm-offset-3 col-sm-9">
       <input type="text" id="missionId" style="display: none;" data-value="missionId">
       <input type="text" id="missionEventId" style="display: none;" data-value="missionEventId">

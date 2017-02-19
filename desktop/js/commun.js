@@ -25,6 +25,15 @@ $( document ).ready(function() {
 	});
 });
 
+$.tablesorter.themes.bootstrap = {
+		    table        : 'table  table-bordered table-striped table-condensed',
+		    caption      : 'caption',
+		    header       : 'bootstrap-header',
+		    iconSortNone : 'bootstrap-icon-unsorted',
+		    iconSortAsc  : 'glyphicon glyphicon-chevron-up',
+		    iconSortDesc : 'glyphicon glyphicon-chevron-down',
+		  };
+
 $.addTemplateFormatter("getConfigurationKey", function(value, template) {
 	if(is_object(value) && value.hasOwnProperty(template)){
     	return value[template];

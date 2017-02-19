@@ -6,7 +6,7 @@
 		  		<button type="button" class="btn btn-success btn-xs pull-right editEqBtn" data-eq-id="new">Ajouter</button>
 		  	</div>
 			
-			<table class="table table-striped table-hover table-condensed eqTable" id="eqTable">
+			<table class="table table-striped table-hover table-condensed eqLogicTable" id="eqLogicTable">
 				<thead>
 					<tr>
 						<th>Type</th>
@@ -17,7 +17,7 @@
 				</thead>
 				<tbody>
 				</tbody>
-				<tfoot>
+				<!--<tfoot>
 					<tr>
 					  <th colspan="9" class="ts-pager form-horizontal">
 					    <button type="button" class="btn first"><i class="icon-step-backward glyphicon glyphicon-step-backward"></i></button>
@@ -36,15 +36,16 @@
 					  </th>
 					</tr>
 				</tfoot>
+			-->
 			</table>
 			<script type="text/html" id="templateEqTable">
-				<tr>
+				<tr class="eqLogicItem" data-template-bind='[{"attribute": "data-id", "value": "eqLogicId"}]' >
 					<th class="col-xs-3" scope="row" data-content="matTypeName"></th>
 					<td class="col-xs-4" data-content="eqRealName"></td>
 					<td class="col-xs-4" data-content="zoneName"></td>
 					<td class="col-xs-1" style="text-align: right;">
 						<button type="button" class="btn btn-warning btn-xs editEqBtn" data-template-bind='[{"attribute": "data-eq-id", "value": "eqLogicId"}]' title="Modifier"><span class="glyphicon glyphicon-pencil"></span></button>
-						<button type="button" class="btn btn-danger btn-xs deleteEqBtn" data-template-bind='[{"attribute": "data-eq-id", "value": "id"}]' title="Supprimer"><span class="glyphicon glyphicon-remove"></span></button>
+						<button type="button" class="btn btn-danger btn-xs deleteEqBtn" data-template-bind='[{"attribute": "data-eq-id", "value": "eqLogicId"}]' title="Supprimer"><span class="glyphicon glyphicon-remove"></span></button>
 					</td>
 				</tr>
 			</script>

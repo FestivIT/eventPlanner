@@ -24,7 +24,7 @@
   }
 </style>
 
-<div id="map" class="zoneTable"></div>
+<div id="map"></div>
 
 <?php
   //include_file('desktop', 'map', 'js');

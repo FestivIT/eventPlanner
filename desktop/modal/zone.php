@@ -70,7 +70,7 @@
 		<div class="panel-group eqTable" role="tablist" aria-multiselectable="true" id="zoneEqTable">
 		</div>
 		<script type="text/html" id="templateZoneEqTable">
-		  <div class="panel panel-default">
+		  <div class="panel panel-default eqLogicItem" data-template-bind='[{"attribute": "data-id", "value": "eqLogicId"}]'>
 		    <div class="panel-heading" role="tab" data-template-bind='[{"attribute": "id", "value": "eqLogicId", "formatter": "prepend", "formatOptions": "heading"}]'>
 		      <h4 class="panel-title">
 		        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#zoneEqTable" aria-expanded="false" data-template-bind='[{"attribute": "href", "value": "eqLogicId", "formatter": "prepend", "formatOptions": "#collapse"},{"attribute": "aria-controls", "value": "eqLogicId", "formatter": "prepend", "formatOptions": "collapse"}]'>

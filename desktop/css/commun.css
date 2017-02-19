@@ -10,6 +10,10 @@ body {
   height: 100%;
 }
 
+.ui-autocomplete {
+    z-index: 2000;
+}
+
 #planningTable td a {
   display: inline-block;
   width:100%;

@@ -72,6 +72,8 @@ include_file('3rdparty', 'jquery.tablesorter/jquery.tablesorter.pager', 'js');
 include_file('3rdparty', 'jquery.typeahead/jquery.typeahead.min', 'js');
 include_file('3rdparty', 'bootstrap-switch/bootstrap-switch.min', 'js');
 include_file('3rdparty', 'bootstrap-datepicker/bootstrap-datepicker.min', 'js');
+include_file('3rdparty', 'bootstrap-tokenfield/bootstrap-tokenfield.min', 'js');
+include_file('3rdparty', 'bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min', 'js');
 include_file('3rdparty', 'leaflet/leaflet', 'js');
 include_file('3rdparty', 'leaflet/leaflet.awesome-markers.min', 'js');
 include_file('3rdparty', 'leaflet/Leaflet.ImageOverlay.Rotated', 'js');
@@ -94,6 +96,9 @@ include_file('3rdparty', 'jquery.tablesorter/jquery.tablesorter.pager', 'css');
 include_file('3rdparty', 'jquery.typeahead/jquery.typeahead.min', 'css');
 include_file('3rdparty', 'bootstrap-switch/bootstrap-switch.min', 'css');
 include_file('3rdparty', 'bootstrap-datepicker/bootstrap-datepicker.min', 'css');
+include_file('3rdparty', 'bootstrap-tokenfield/bootstrap-tokenfield.min', 'css');
+include_file('3rdparty', 'bootstrap-tokenfield/tokenfield-typeahead.min', 'css');
+include_file('3rdparty', 'bootstrap-wysihtml5/bootstrap3-wysihtml5.min', 'css');
 include_file('3rdparty', 'leaflet/leaflet', 'css');
 include_file('3rdparty', 'leaflet/leaflet.awesome-markers', 'css');
 include_file('3rdparty', 'leaflet/leaflet.easy-button', 'css');
@@ -113,9 +118,14 @@ include_file('desktop', 'commun', 'css');
 	      <div class="container-fluid">
 	        <div class="navbar-header">
 	          <div class="navbar-icon-container">
-	            <a href="#" class="navbar-icon pull-right visible-xs" id="nav-btn"><i class="fa fa-bars fa-lg white"></i></a>
+	          	<a href="#" class="navbar-icon pull-right visible-xs" id="nav-btn"><i class="fa fa-bars fa-lg white"></i></a>
+	          	<a href="#" class="navbar-icon pull-right visible-xs navBarBtn" data-link="mission"><i class="glyphicon glyphicon-list-alt"></i></a>
+	          	<a href="#" class="navbar-icon pull-right visible-xs navBarBtn" data-link="maincourante"><i class="glyphicon glyphicon-pencil"></i></a>
+	          	<a href="#" class="navbar-icon pull-right visible-xs navBarBtn" data-link="planning"><i class="glyphicon glyphicon-calendar"></i></a>
+	          	<a href="#" class="navbar-icon pull-right visible-xs navBarBtn" data-link="map"><i class="fa fa-globe white"></i></a>
 	          </div>
 	          <a class="navbar-brand" href="<?php echo $homeLink; ?>">eventPlanner</a>
+
 	        </div>
 
 	        <div class="navbar-collapse collapse">
