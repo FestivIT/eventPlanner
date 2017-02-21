@@ -7,7 +7,7 @@
 		"mapMarkerIcon": "glyphicon-screenshot"
 		},
 
-	"eq": {
+	"eqLogic": {
 		"text": "Equipements",
 		"mapMarkerColor": "lightblue",
 		"mapMarkerIcon": "glyphicon-hdd",

@@ -25,7 +25,16 @@ eventplanner.ui = {
 					}
 				);
   		});
-
+  		
+  		// Gestion du multimodal: afficher le fond noir entre la dernière modal et l'avant dernière
+  		$(document).on('show.bs.modal', '.modal', function () {
+		    var zIndex = 1040 + (10 * $('.modal:visible').length);
+		    $(this).css('z-index', zIndex);
+		    setTimeout(function() {
+		        $('.modal-backdrop').not('.modal-stack').css('z-index', zIndex - 1).addClass('modal-stack');
+		    }, 0);
+		});
+				
 		return this.uiReady;
 	},
 
@@ -60,7 +69,7 @@ eventplanner.ui = {
 				// Liste les ID
 				_ops[_op].forEach(function(_id){
 					if(_op == 'add'){
-						$("." + _type + "Table").trigger("addItem", _id);
+						$("." + _type + "Table").trigger("addItem", _id, _type);
 					}else{
 						$("." + _type + "Item[data-id=" + _id + "]").trigger(_op + "Item");
 					}
@@ -232,38 +241,6 @@ eventplanner.ui = {
 			eventplanner.ui.eventMenu.hide();
 		}
 	},
-
-	openModal: function(title, name, data, callbacks){
-		if(!callbacks.hasOwnProperty('preShow')){
-			callbacks.preShow = function(){};
-		}
-
-		if(!callbacks.hasOwnProperty('postShow')){
-			callbacks.postShow = function(){};
-		}
-
-		this.modalContainer.loadTemplate($("#templateModal"), {title: title, modalId: 'epModal' + '1'});
-
-		var modal = this.modalContainer.find('#epModal' + '1');
-		modal.on('show.bs.modal', {data: data, callbacks: callbacks}, function (e) {
-		    e.data.callbacks.postShow(data);
-		});
-
-		modal.on('hide.bs.modal', function (e) {
-		    this.remove();
-		});
-
-		modal.find('.modal-body').loadTemplate("desktop/modal/" + name + ".php", data, {
-			success: function(){
-				callbacks.preShow(data);
-				modal.modal("show");
-			}
-		});
-	},
-
-	closeModal: function(){
-		this.modalContainer.find('#epModal' + '1').modal("hide");
-	},
 	
 	notification: function(type, text, title){
 		if(type=='success'){
@@ -332,7 +309,7 @@ eventplanner.ui.search = {
     		eventplanner.ui.search.data.push({
 	    		title: _eqLogicData.matTypeName + ' ' + _eqLogicData.eqRealName,
 	    		type: 'Equipement',
-	    		id: _eqLogicData.eqLogicZoneId,
+	    		id: _eqLogicData.eqLogicId,
 	    		content: 'Zone: ' +  _eqLogicData.zoneName + '<br>IP: ' + _eqLogicData.eqLogicIp + '<br>Etat: ' + formatState(_eqLogicData.eqLogicState)
 	    	});
     	});
@@ -361,8 +338,17 @@ eventplanner.ui.search = {
 		    },
 		    callback: {
 		    	onClickBefore: function (node, a, item, event) {
-					var zoneModal = new eventplanner.ui.modal.EpModalZone(eventplanner.zone.byId(item.id));
+		    		if(item.type="Zone"){
+						var zone = eventplanner.zone.byId(item.id);
+					}
+					
+					if(item.type="Equipement"){
+						var eqLogic = eventplanner.eqLogic.byId(item.id);
+						var zone = eventplanner.zone.byId(eqLogic.eqLogicZoneId);
+					}
+					var zoneModal = new eventplanner.ui.modal.EpModalZone(zone);
 						zoneModal.open();
+		    		
 		    	},
 		    	onClickAfter: function (node, a, item, event) {
 		    		node.val("");
@@ -842,7 +828,7 @@ eventplanner.ui.map = {
 				{
 					draggable:dragable, 
 					title: eq.eqLogicName, 
-					icon: eventplanner.ui.map.getIconFromType('eq')
+					icon: eventplanner.ui.map.getIconFromType('eqLogic')
 				});
 
 		eqMarker.addTo(map);
@@ -891,11 +877,25 @@ eventplanner.ui.map = {
 						contextmenuInheritItems: false,
 						contextmenuItems: [
 							{
-						        text: 'Modifier l\'état',
+						        text: 'Changer l\'état',
 						        callback: function(e) {
 							      	var currentZone = eventplanner.zone.byId(e.relatedTarget.zoneId);
 							      	var stateModal = new eventplanner.ui.modal.EpModalState([currentZone.zoneId], 'zone', currentZone.zoneState); 
 								  	stateModal.open();
+							    }
+						    },{
+						        text: 'Créer une mission',
+						        callback: function(e) {
+							      	var currentZone = eventplanner.zone.byId(e.relatedTarget.zoneId);
+							      	var currentEvent = eventplanner.event.byId(eventplanner.ui.currentUser.userOptions.eventId);
+									var missionData = {
+										missionId: '',
+										missionEventId: currentEvent.eventId,
+										missionZones: [currentZone],
+										missionState: 400
+									}
+							      	var missionConfModal = new eventplanner.ui.modal.EpModalMissionConfiguration(missionData);
+									missionConfModal.open();
 							    }
 						    },  {
 						        text: 'Configurer',
@@ -945,39 +945,60 @@ eventplanner.ui.map = {
 /////////////////////////////////////////////////
 eventplanner.ui.maincourante = {
 	title: 'Main courante',
+	currentPage: 1,
+	resultsPerPage: 20,
+
 	init: function(){
-	  	$("#msgTable")
-	  		.tablesorter({
-			    theme : "bootstrap",
-			    widthFixed: false,
-			    headerTemplate : '{content} {icon}',
-			    widgets : [ "uitheme", "filter", "zebra"],
-			    widgetOptions : {
-			      filter_reset : ".reset",
-			      filter_cssFilter: "form-control",
-			      filter_childRows  : true,
-			    }
-			})
-			.tablesorterPager({
-				container: $(".ts-pager"),
-				cssGoto  : ".pagenum",
-				removeRows: false,
-				output: '{startRow} - {endRow} / {filteredRows} ({totalRows})'
-			});
+		this.currentPage = 1;
+
+		$('#maincourante .previous').click(this, function (event) {
+			event.data.currentPage--;
+			if(event.data.currentPage < 1){
+				event.data.currentPage = 1;
+			}
+			event.data.constructMsgTable();
+			return false;
+		});
+
+		$('#maincourante .next').click(this, function (event) {
+			
+			if (event.data.currentPage * event.data.resultsPerPage < eventplanner.msg.all().length) {
+				event.data.currentPage++;
+				event.data.constructMsgTable();
+			}
+			
+			return false;
+		});
+
+		$("#msgTable").bind("addItem", function(event, _msgId){
+			eventplanner.ui.maincourante.constructMsgTable();
+		});
 
 		this.constructMsgTable();
-		
-		$("#msgTable").bind("addItem", function(event, _msgId){
-			var newItem = $('<div>').loadTemplate($("#templateMsgTable"), eventplanner.msg.byId(_msgId, true));
-			$(this).find('tbody').prepend($(newItem).contents());
-
-			$('#msgTable').trigger('update');
-		});
 	},
 
 	constructMsgTable: function(){
-		$("#msgTable > tbody").loadTemplate($("#templateMsgTable"), eventplanner.msg.all(true));
-		$('#msgTable').trigger('update');
+
+		if (this.currentPage <= 1) {
+            $('#maincourante .previous').attr('disabled','disabled');
+        } else {
+            $('#maincourante .previous').prop("disabled", false);
+        }
+
+        if (this.currentPage * this.resultsPerPage > eventplanner.msg.all().length) {
+            $('#maincourante .next').attr('disabled','disabled');
+        } else {
+            $('#maincourante .next').prop("disabled", false);
+        }
+
+		$("#msgTable").loadTemplate(
+			$("#templateMsgTable"), 
+			eventplanner.msg.all(true), 
+			{
+				paged: true, 
+				pageNo: this.currentPage, 
+				elemPerPage: this.resultsPerPage
+			});
 	}
 };
 
@@ -986,26 +1007,28 @@ eventplanner.ui.maincourante = {
 /////////////////////////////////////////////////
 eventplanner.ui.planning = {
 	title: 'Planning',
+	sortBy: 'zoneInstallDate',
+	sortOrder: 'asc',
 	init: function(){
-	  	$("#planningTable").tablesorter({
-			    theme : "bootstrap",
-			    cssChildRow : "tablesorter-childRow",
-			    widthFixed: false,
-			    headerTemplate : '{content} {icon}',
-			    widgets : [ "uitheme", "filter"],
-			    widgetOptions : {
-			      filter_reset : ".reset",
-			      filter_cssFilter: "form-control",
-			      filter_childRows  : true,
-			      filter_columnFilters: false
-			    },
-			    sortList: [[4,0],[0,0]]
-			});
-		
-		$('#planningTable').delegate( '.toggle', 'click' ,function() {
-			$(this).closest('tr').nextUntil('tr:not(.tablesorter-childRow)').find('td').toggle();
-			$(this).find('span').toggle();
+		$('#planning .showAllZone').click(this, function (event) {
+			event.data.showAllZone();
 			return false;
+		});
+
+		$('#planning .hideAllZone').click(this, function (event) {
+			event.data.hideAllZone();
+			return false;
+		});
+		
+		$('.planningSortBy').click(this, function (event) {
+			event.data.sortBy = $(this).attr('data-sortby');
+			event.data.sortOrder = $(this).attr('data-sortorder');
+			event.data.sortPlanning();
+			event.preventDefault();
+		});			
+		
+		$('#planningSearch').keyup(this, function (event) {
+			eventplanner.ui.planning.searchVal($(this).val());
 		});
 		
 		$('#planning').delegate('.editMultipleStateBtn', 'click', function () {
@@ -1013,13 +1036,13 @@ eventplanner.ui.planning = {
 			var eqState = 0;
 
 			$.each($('#planningTable .planningEqCb:checked'), function( index, eqCb) {
-			  eqList.push($(eqCb).data('eqId'));
+			  eqList.push($(eqCb).data('eqlogicId'));
 			  if(eqState < $(eqCb).data('eqlogicState')){
 			  	eqState = $(eqCb).data('eqlogicState');
 			  }
 			});
 
-			var stateModal = new eventplanner.ui.modal.EpModalState(eqList, 'eq', eqState); 
+			var stateModal = new eventplanner.ui.modal.EpModalState(eqList, 'eqLogic', eqState); 
 			stateModal.open();
 
 			return false;
@@ -1041,9 +1064,29 @@ eventplanner.ui.planning = {
 
 			return false;
 		});
+		
+		$('#planning').delegate('.addMissionBtn', 'click', function () {
+			var zoneList = [];
+
+			$.each($('#planningTable .planningZoneCb:checked'), function( index, zoneCb) {
+			  zoneList.push(eventplanner.zone.byId($(zoneCb).data('zoneId')));
+			});
+
+	      	var currentEvent = eventplanner.event.byId(eventplanner.ui.currentUser.userOptions.eventId);
+			var missionData = {
+				missionId: '',
+				missionEventId: currentEvent.eventId,
+				missionZones: zoneList,
+				missionState: 400
+			}
+	      	var missionConfModal = new eventplanner.ui.modal.EpModalMissionConfiguration(missionData);
+			missionConfModal.open();
+
+			return false;
+		});
 
 		$('#planning').delegate('.editStateBtn', 'click', function () {
-			var stateModal = new eventplanner.ui.modal.EpModalState([$(this).data('eqlogicId')], 'eq', $(this).data('eqlogicState')); 
+			var stateModal = new eventplanner.ui.modal.EpModalState([$(this).data('eqlogicId')], 'eqLogic', $(this).data('eqlogicState')); 
 			stateModal.open();
 
 			return false;
@@ -1056,16 +1099,6 @@ eventplanner.ui.planning = {
 			return false;
 		});
 		
-		$('#planning .showAllZone').click(this, function (event) {
-			event.data.showAllZone();
-			return false;
-		});
-
-		$('#planning .hideAllZone').click(this, function (event) {
-			event.data.hideAllZone();
-			return false;
-		});
-
 		$('#planning').delegate('.zoneBtn', 'click', function () {
 			var zoneModal = new eventplanner.ui.modal.EpModalZone(eventplanner.zone.byId($(this).data('zoneId')));
 			zoneModal.open();
@@ -1073,53 +1106,139 @@ eventplanner.ui.planning = {
 			return false;
 		});
 
-		$('#planningTable').delegate( '.planningZoneCb', 'change' ,function() {
+		$('#planningTable').delegate( '.planningZoneCb', 'change' ,function(event) {
 			var zoneId = $(this).data('zone-id');
 			$('#planningTable .planningEqCb[data-zone-id=' + zoneId + ']').prop('checked', $(this).prop('checked'));
 		});
-
-		$('#planningTable').bind("refreshEqTable", this, function(event){
-			event.data.constructPlanningTable();
-		});
-
-		$('#planningTable').bind("refreshZoneTable", this, function(event){
-			event.data.constructPlanningTable();
+		
+		// TRIGGER ADDITEM
+		$("#planningTable").bind("addItem", function(event, _id, _type){
+			if(_type == 'eqLogic'){
+				$("#planningTable .zoneItem[data-id=" + _eqData.zoneId + "] .zoneEqList").loadTemplate(
+					$("#templatePlanningTableEq"), 
+					eventplanner.eqLogic.byId(_id, true), 
+					{append: true}
+					);
+			}
+			if(_type == 'zone'){
+				$("#planningTable").loadTemplate(
+					$("#templatePlanningTableZone"), 
+					eventplanner.zone.byId(_id, true), 
+					{append: true});
+			}
+			
+			eventplanner.ui.planning.sortPlanning();
+			return false;
 		});
 		
-		this.constructPlanningTable();
+		// TRIGGER ACTUALISATION EQLOGIC
+		$("#planningTable").delegate(".eqLogicItem", "updateItem", function(event){
+			var newItem = $('<div>').loadTemplate(
+				$("#templatePlanningTableEq"), 
+				eventplanner.eqLogic.byId($(this).attr('data-id'), true), 
+				{append: true});
+				
+			$(this).replaceWith($(newItem).contents());
+			
+			eventplanner.ui.planning.sortPlanning();
+			return false;
+		});
+
+		$("#planningTable").delegate(".eqLogicItem", "removeItem", function(event){
+			$(this).remove();
+			return false;
+		});
+		
+		// TRIGGER ACTUALISATION ZONE
+		$("#planningTable").delegate(".zoneItem", "updateItem", function(event){
+			var newItem = $('<div>').loadTemplate(
+				$("#templatePlanningTableZone"),
+				eventplanner.zone.byId($(this).attr('data-id'), true), 
+				{append: true});
+				
+			// On ne met à jour que l'entête!
+			$(this).find('.panel-heading').replaceWith($(newItem).find('.panel-heading'));
+			
+			eventplanner.ui.planning.sortPlanning();
+			return false;
+		});
+
+		$("#planningTable").delegate(".zoneItem", "removeItem", function(event){
+			$(this).remove();
+			return false;
+		});
+
+		this.constructPlanning();
+	},
+	
+	searchVal: function(searchVal){
+		this.showAllZone();
+		if(searchVal == ''){
+			$('#planningSearch').parent().removeClass('has-error');
+			// Réinitialisation: on affiche tout
+			$('#planning .zoneItem').show();
+			$('#planning .eqLogicItem').show();
+		}else{
+			$('#planningSearch').parent().addClass('has-error');
+			// On cache tout par défaut
+			$('#planning .zoneItem').hide();
+			$('#planning .eqLogicItem').hide();
+			
+			//Puis on affiche que ce que l'on cherche
+			//On passe chaque zone en revue
+			$("#planning .zoneItem").each(function(){
+				$(this).find(".planningZoneName:contains('" + searchVal + "')")
+					.closest('.zoneItem').show()
+					.find('.eqLogicItem').show();
+				
+				$(this).find(".eqLogicItem:contains('" + searchVal + "')")
+					.closest('.eqLogicItem').show()
+					.closest('.zoneItem').show();
+			});
+		}
+	},
+	
+	sortPlanning: function(){		
+		var newDivOrder = $('#planning .zoneItem').sort(function (a, b) {
+			// Récupération des zones concernées
+			var zoneA = eventplanner.zone.byId(  $(a).attr('data-id') );
+			var zoneB = eventplanner.zone.byId(  $(b).attr('data-id') );
+			
+			// Récupération des valeurs souhaitées pour le tri:
+			var contentA = zoneA[eventplanner.ui.planning.sortBy];
+			var contentB = zoneB[eventplanner.ui.planning.sortBy];
+			
+			if(eventplanner.ui.planning.sortOrder == 'asc'){
+				return (contentA < contentB) ? -1 : (contentA > contentB) ? 1 : 0;
+			}else{
+				return (contentA > contentB) ? -1 : (contentA < contentB) ? 1 : 0;				
+			}
+		});
+		
+		$('#planningTable').empty();
+		$('#planningTable').append(newDivOrder);
 	},
 
-	constructPlanningTable: function(){
-		$("#planningTable > tbody").loadTemplate($("#templatePlanningTableZone"), eventplanner.zone.all(true));
+	constructPlanning: function(){
+		$("#planningTable").loadTemplate($("#templatePlanningTableZone"), eventplanner.zone.all(true));
     	
 		var eqsData = eventplanner.eqLogic.all(true);
 
     	eqsData.forEach(function(_eqData) {
-    		var eqRow = $("<div/>").loadTemplate($("#templatePlanningTableEq"), _eqData);
-    		eqRow.find('tr').addClass(formatStateColorClass(_eqData.eqLogicState));
-
-    		$("#planningTable tr[data-zone-id='" + _eqData.zoneId + "'] .planningZoneNbrEq").text($("#planningTable tr[data-zone-id='" + _eqData.zoneId + "']").find('td[rowspan]').attr( "rowspan") + ' équipement(s)');
-    		
-		    $("#planningTable tr[data-zone-id='" + _eqData.zoneId + "']")
-		    	.after(eqRow.children())
-		    	.find('td[rowspan]').attr( "rowspan", function(i, val ) {return parseInt(val)+1;});
+    		$("#planningTable .zoneItem[data-id=" + _eqData.zoneId + "] .zoneEqList").loadTemplate($("#templatePlanningTableEq"), _eqData, {append: true});
 		});
 		
-		$('#planningTable').trigger('update');
+		this.sortPlanning();
 	},
 
 	showAllZone: function(){
-		$('#planningTable .toggle').closest('tr').nextUntil('tr:not(.tablesorter-childRow)').children('td').show();
-		$('#planningTable .toggle .glyphicon-triangle-right').hide();
-		$('#planningTable .toggle .glyphicon-triangle-bottom').show();
+		$('#planningTable').find('.panel-collapse').collapse('show');
 	},
 
 	hideAllZone: function(){
-		$('#planningTable .toggle').closest('tr').nextUntil('tr:not(.tablesorter-childRow)').children('td').hide();
-		$('#planningTable .toggle .glyphicon-triangle-bottom').hide();
-		$('#planningTable .toggle .glyphicon-triangle-right').show();
+		$('#planningTable').find('.panel-collapse').collapse('hide');
 	}
-};
+}
 
 /////////////////////////////////////////////////
 /// EQUIPEMENTS /////////////////////////////////
@@ -1132,7 +1251,7 @@ eventplanner.ui.equipements = {
 			    theme : "bootstrap",
 			    widthFixed: false,
 			    headerTemplate : '{content} {icon}',
-			    widgets : ["filter", "zebra"],
+			    widgets : ["uitheme", "filter", "zebra"],
 			    widgetOptions : {
 			      filter_reset : ".reset",
 			      filter_cssFilter: "form-control",
@@ -1428,7 +1547,7 @@ eventplanner.ui.scan = {
 				case 'eqStateSelect':
 					var eqLogic = eventplanner.eqLogic.byEqRealId(eqRealId);
 					if(eqLogic !== false){
-						var stateModal = new eventplanner.ui.modal.EpModalState([eqLogic.eqLogicId], 'eq', eqLogic.eqLogicState); 
+						var stateModal = new eventplanner.ui.modal.EpModalState([eqLogic.eqLogicId], 'eqLogic', eqLogic.eqLogicState); 
 						stateModal.open();
 					}else{
 						eventplanner.ui.notification('error', 'Matériel non trouvé sur cet événement!');
@@ -1450,6 +1569,71 @@ eventplanner.ui.scan = {
 eventplanner.ui.eventinfos = {
 	title: 'Infos événement',
 	init: function(){
+		// GENERAL
+		$('#eventInfosEditorContainer').hide();
+		$('#eventInfosTextarea').wysihtml5();
+		
+		$('#validEventInfoBtn')
+			.hide()
+			.click(function(){
+				// On cache les éléments d'édition
+				$('#validEventInfoBtn').hide();
+				$('#eventInfosEditorContainer').hide();
+				
+				// On met à jour le DivContainer avec les infos éditées 
+				$('#eventInfosContainer').html($('#eventInfosTextarea').val());
+				
+				// On affiche de DivContainer et le bouton éditer
+				$('#editEventInfoBtn').show();
+				$('#eventInfosContainer').show();
+			});
+		
+		$('#editEventInfoBtn')
+			.click(function(){
+				// On cache le DivContainer et le bouton éditer
+				$('#editEventInfoBtn').hide();
+				$('#eventInfosContainer').hide();
+				
+				// On met à jour l'éditeur avec les infos du DivContainer
+				$('#eventInfosTextarea').data("wysihtml5").editor.setValue($('#eventInfosContainer').html());
+				
+				// On affiche l'éditeur et le bouton de validation
+				$('#validEventInfoBtn').show();
+				$('#eventInfosEditorContainer').show();
+			});
+		
+		
+		// CONTACT
+		var contactList = [
+				{
+					contactId: "1",
+					contactName: "Gaël GRIFFON",
+					contactFct: "Sous-fifre",
+					contactZones: [
+						eventplanner.zone.byId("41"),
+						eventplanner.zone.byId("12"),
+						eventplanner.zone.byId("11")],
+					contactCoord: ["0620912192","gael.griffon@gmail.com","3264"]
+				},	{
+					contactId: "2",
+					contactName: "Pamela MORGAN",
+					contactFct: "Assitante",
+					contactZones: [
+						eventplanner.zone.byId("26")],
+					contactCoord: ["0123456789","pamela.morgan@gmail.com"]
+				}
+			];
+		$("#eventInfoContactTable").loadTemplate(
+			$("#templateEventInfoContactTable"), 
+			contactList);
+		
+		// CONFIGURATION
+		
+		// MAP
+		this.initMap();
+	},
+	
+	initMap : function(){
 		var currentEvent = eventplanner.event.byId(eventplanner.ui.currentUser.userOptions.eventId);
 	  	this.eventMapPlanConfig = eventplanner.ui.map.initializeEventMap('eventMapPlanConfig', currentEvent.eventId, currentEvent.eventLocalisation);
 		
@@ -1476,12 +1660,11 @@ eventplanner.ui.eventinfos = {
 		$('#eventinfos').on('shown.bs.tab', this, function(event) {
 		  event.data.eventMapPlanConfig.invalidateSize();
 		});
-		
-		$('#eventinfostextarea').wysihtml5();
 	},
+	
 	repositionImage: function() {
-			eventplanner.ui.eventinfos.overlay.reposition(eventplanner.ui.eventinfos.marker1.getLatLng(), eventplanner.ui.eventinfos.marker2.getLatLng(), eventplanner.ui.eventinfos.marker3.getLatLng());
-		}
+		eventplanner.ui.eventinfos.overlay.reposition(eventplanner.ui.eventinfos.marker1.getLatLng(), eventplanner.ui.eventinfos.marker2.getLatLng(), eventplanner.ui.eventinfos.marker3.getLatLng());
+	}
 };
 
 
@@ -1617,6 +1800,12 @@ eventplanner.ui.modal.EpModal = function(_title, _name){
 	
 	this.modalContainer.loadTemplate($("#templateModal"), {title: this.title, modalId: 'epModal' + this.id}, {append: true});
 	this.modal = this.modalContainer.find('#epModal' + this.id);
+	this.modal.on('hidden.bs.modal', function () {
+	    if($('.modal:visible').length > 0){
+	    	$('body').addClass('modal-open');
+	    }
+	});
+		
 }
 
 eventplanner.ui.modal.EpModal.prototype.lastId = 1;
@@ -1661,13 +1850,17 @@ eventplanner.ui.modal.EpModal.prototype.close = function(){
 
 eventplanner.ui.modal.EpModalZone = function(_zone){
 	eventplanner.ui.modal.EpModal.call(this, _zone.zoneName, "zone");
-	
+	this.currentPage = 1;
+	this.resultsPerPage = 20;
 	this.data = _zone;
 	
 	this.preShow = function(){
+		this.constructZone();
 		this.constructMsgTable();
 		this.constructEqTable();
 		this.addTriggers();
+		
+		this.modal.find('.modalValidBtn').hide();
 	}
 
 	this.postShow = function(){
@@ -1686,6 +1879,13 @@ eventplanner.ui.modal.EpModalZone = function(_zone){
 			//event.data.constructEqTable();
 			// PROBLEME POUR NE RAFRAICHIR QUE LA DONNEE QUI VA BIEN...
 		});
+		this.modal.find("#zone").delegate(".zoneItem", "updateItem", function(thisModal){
+			return function(event){
+				thisModal.data = eventplanner.zone.byId(thisModal.data.zoneId, true);
+				thisModal.constructZone();
+				thisModal.constructMsgTable();
+			}
+		}(this));
 
 		this.modal.find('#zone').delegate('.editStateBtn', 'click', this, function (event) {
 			var stateModal = new eventplanner.ui.modal.EpModalState([$(this).data('zoneId')], 'zone', $(this).data('zoneState')); 
@@ -1695,15 +1895,34 @@ eventplanner.ui.modal.EpModalZone = function(_zone){
 		});
 
 		// MSG
+		this.modal.find('.previous').click(this, function (event) {
+			event.data.currentPage--;
+			if(event.data.currentPage < 1){
+				event.data.currentPage = 1;
+			}
+			event.data.constructMsgTable();
+			return false;
+		});
+
+		this.modal.find('.next').click(this, function (event) {
+			
+			if (event.data.currentPage * event.data.resultsPerPage < eventplanner.msg.byZoneId(event.data.data.zoneId).length) {
+				event.data.currentPage++;
+				event.data.constructMsgTable();
+			}
+			
+			return false;
+		});
+
+		$("#msgTable").bind("addItem", function(event, _msgId){
+			eventplanner.ui.maincourante.constructMsgTable();
+		});
+
+		this.constructMsgTable();
+		
 		$("#zoneMsgTable").bind("addItem",  function(thisModal){
 			return function(event, _msgId){
-				var msg = eventplanner.msg.byId(_msgId, true);
-				if(msg.msgZoneId == thisModal.data.zoneId){
-					var newItem = $('<div>').loadTemplate($("#templateZoneMsgTable"), eventplanner.msg.byId(_msgId, true));
-					$(this).find('tbody').prepend($(newItem).contents());
-
-					$('#zoneMsgTable').trigger('update');
-				}
+				thisModal.constructMsgTable();
 			}
 		}(this));
 
@@ -1727,9 +1946,13 @@ eventplanner.ui.modal.EpModalZone = function(_zone){
 
 		this.modal.find("#zoneEqTable").delegate(".eqLogicItem", "updateItem", function(thisModal){
 			return function(event, _eqId){
+				var collapseState = $(this).find('.panel-collapse').hasClass('in');
 				var eqId = $(this).attr('data-id');
 				var eqLogic = eventplanner.eqLogic.byId(eqId, true);
 				var newItem = $('<div>').loadTemplate($("#templateZoneEqTable"), eqLogic);
+				if(collapseState){
+					$(newItem).find('.panel-collapse').addClass('in');
+				}
 				$(this).replaceWith($(newItem).contents());
 
 				// ajout des liens
@@ -1755,27 +1978,55 @@ eventplanner.ui.modal.EpModalZone = function(_zone){
 			  }
 			});
 			
-			var stateModal = new eventplanner.ui.modal.EpModalState(eqList, 'eq', eqState); 
+			var stateModal = new eventplanner.ui.modal.EpModalState(eqList, 'eqLogic', eqState); 
 			stateModal.open();
 
 			return false;
 		});
 		
 		this.modal.find('#equipements').delegate('.editStateBtn', 'click', this, function (event) {
-			var stateModal = new eventplanner.ui.modal.EpModalState([$(this).data('eqlogicId')], 'eq', $(this).data('eqlogicState')); 
+			var stateModal = new eventplanner.ui.modal.EpModalState([$(this).data('eqlogicId')], 'eqLogic', $(this).data('eqlogicState')); 
 			stateModal.open();
 
 			return false;
 		});
 
 		// EQLINK
+		/*
+		// Déjà pris en compte dans le refresh de l'eqLogic
 		this.modal.find(".eqLinkTable").bind("refreshEqLinkTable", this, function(event){
 			event.data.constructEqLinkTable($(this).data('eqLogicId'));
 		});
+		*/
+	}
+	
+	this.constructZone = function(){
+		this.modal.find("#zoneInfo").loadTemplate(this.modal.find("#templateZoneInfo"), this.data);
 	}
 
 	this.constructMsgTable = function(){
-		this.modal.find("#zoneMsgTable tbody").loadTemplate($("#templateZoneMsgTable"), eventplanner.msg.byZoneId(this.data.zoneId, true));
+		var listeMsg = eventplanner.msg.byZoneId(this.data.zoneId, true);
+
+		if (this.currentPage <= 1) {
+            this.modal.find('.previous').attr('disabled','disabled');
+        } else {
+            this.modal.find('.previous').prop("disabled", false);
+        }
+
+        if (this.currentPage * this.resultsPerPage > listeMsg.length) {
+            this.modal.find('.next').attr('disabled','disabled');
+        } else {
+            this.modal.find('.next').prop("disabled", false);
+        }
+
+		this.modal.find("#zoneMsgTable").loadTemplate(
+			this.modal.find("#templateZoneMsgTable"), 
+			listeMsg, 
+			{
+				paged: true, 
+				pageNo: this.currentPage, 
+				elemPerPage: this.resultsPerPage
+			});
 	}
 
 	this.constructEqTable = function(){
@@ -1877,6 +2128,10 @@ eventplanner.ui.modal.EpModalEqConfiguration = function(_eqLogic){
 				event.data.addEqLinkRow(eqLink);
 
 			});
+			
+		this.modal.find('.modalValidBtn').click(this, function(event){
+			event.data.modal.find('#eqLogicForm').submit();
+		});
 
 		this.modal.find('#eqLogicForm').delegate('.deleteEqLinkBtn', 'click', this, function (event) {
 			if($(this).closest('tr').attr('data-status') == 'deleted'){
@@ -2130,6 +2385,10 @@ eventplanner.ui.modal.EpModalZoneConfiguration = function(_zone){
 			
 			this.constructEqTable();
 			
+			this.modal.find('.modalValidBtn').click(this, function(event){
+				event.data.modal.find('#zoneForm').submit();
+			});
+			
 			this.modal.find('#zoneForm').delegate('.editEqBtn', 'click', this, function (event) {
 				var eqId = $(this).attr('data-eq-id');
 				
@@ -2230,31 +2489,10 @@ eventplanner.ui.modal.EpModalEventConfiguration = function(_event){
 				event.preventDefault();
 				event.stopPropagation();
 			});
-		}
-	
-	this.postShow = function(){
-			this.mapEvent = eventplanner.ui.map.initializeEventMap('mapEvent' + this.id, this.data.eventId, this.data.eventLocalisation, 14);
-			this.eventMarker = eventplanner.ui.map.addEventMarkerOnMap(this.mapEvent, this.data, true);
-
-			this.modal.find('#placeOnMap').on('click', this, function (event) {
-			  $.getJSON('https://nominatim.openstreetmap.org/search?format=json&limit=1&q=' + event.data.modal.find("#eventVille").val(), function(thisModal){
-					return function(data){
-						$.each(data, function(key, val) {
-					        var newLatLng = new L.LatLng(val.lat, val.lon);
-					        thisModal.eventMarker.setLatLng(newLatLng); 
-					        thisModal.mapEvent.setZoom(14);
-					        thisModal.mapEvent.panTo(newLatLng);
-					    });
-					}
-				}(event.data));
+			
+			this.modal.find('.modalValidBtn').click(this, function(event){
+				event.data.modal.find('#eventForm').submit();
 			});
-
-
-			this.mapEvent.on('singleclick', function(thisModal){
-				return function(event) {
-					thisModal.eventMarker.setLatLng(event.latlng); 
-				}
-			}(this));
 			
 			this.modal.find('#eventForm').submit(this, function(event) {
 			    var eventParam = {
@@ -2281,8 +2519,31 @@ eventplanner.ui.modal.EpModalEventConfiguration = function(_event){
 			      }			  
 			    });
 			    return false;
-
 			});
+		}
+	
+	this.postShow = function(){
+			this.mapEvent = eventplanner.ui.map.initializeEventMap('mapEvent' + this.id, this.data.eventId, this.data.eventLocalisation, 14);
+			this.eventMarker = eventplanner.ui.map.addEventMarkerOnMap(this.mapEvent, this.data, true);
+
+			this.modal.find('#placeOnMap').on('click', this, function (event) {
+			  $.getJSON('https://nominatim.openstreetmap.org/search?format=json&limit=1&q=' + event.data.modal.find("#eventVille").val(), function(thisModal){
+					return function(data){
+						$.each(data, function(key, val) {
+					        var newLatLng = new L.LatLng(val.lat, val.lon);
+					        thisModal.eventMarker.setLatLng(newLatLng); 
+					        thisModal.mapEvent.setZoom(14);
+					        thisModal.mapEvent.panTo(newLatLng);
+					    });
+					}
+				}(event.data));
+			});
+
+			this.mapEvent.on('singleclick', function(thisModal){
+				return function(event) {
+					thisModal.eventMarker.setLatLng(event.latlng); 
+				}
+			}(this));
 		}
 }
 
@@ -2310,9 +2571,11 @@ eventplanner.ui.modal.EpModalEqRealConfiguration = function(_eqReal){
 					}
 				}(this)
 			});
-		}
-	
-	this.postShow = function(){
+			
+			this.modal.find('.modalValidBtn').click(this, function(event){
+				event.data.modal.find('#eqRealForm').submit();
+			});
+			
 			this.modal.find('#eqRealForm').submit(this, function(event) {
 			    var eqRealParam = {
 			        id: $(this).find("#eqRealId").val(),
@@ -2339,8 +2602,9 @@ eventplanner.ui.modal.EpModalEqRealConfiguration = function(_eqReal){
 
 			    return false;
 			});
-			
 		}
+	
+	this.postShow = function(){}
 }
 
 eventplanner.ui.modal.EpModalEqRealConfiguration.prototype = Object.create(eventplanner.ui.modal.EpModal.prototype, {
@@ -2435,47 +2699,50 @@ eventplanner.ui.modal.EpModalMissionConfiguration = function(_mission){
 			}(this));
 
 		this.modal.find('#stateSelect option[value="' + this.data.missionState + '"]').prop('selected', true);
+		
+		this.modal.find('.modalValidBtn').click(this, function(event){
+			event.data.modal.find('#missionForm').submit();
+		});
+		
+		this.modal.find('#missionForm').submit(this, function(event) {
+		    var missionParam = {
+		        id: $(this).find("#missionId").val(),
+		        name: $(this).find("#missionName").val(),
+		        comment: $(this).find("#missionComment").val(),
+		        eventId: $(this).find("#missionEventId").val(),
+		        state: $(this).find("#stateSelect").val(),
+		        zones: [],
+		        users: [],
+		        configuration: {}
+		    };
+
+		    $(this).find("#missionZoneSelect option:selected" ).each(function() {
+		      missionParam.zones.push(this.value);
+		    });
+
+		    $(this).find("#missionUserSelect option:selected" ).each(function() {
+		      missionParam.users.push(this.value);
+		    });
+		   
+		   	eventplanner.mission.save({
+		      mission: missionParam,
+		      success: function(thisModal){
+							return function(_data) {
+								eventplanner.ui.checkNewMsg();
+						        thisModal.close();
+								eventplanner.ui.notification('success', "Mission enregistrée.");	
+							}
+						}(event.data),
+			  error: function(_data){
+		        eventplanner.ui.notification('error', "Impossible d'enregistrer la mission. " + _data.message);
+		      }			  
+		    });
+			
+		    return false;
+		});
 	}
 	
-	this.postShow = function(){
-			this.modal.find('#missionForm').submit(this, function(event) {
-			    var missionParam = {
-			        id: $(this).find("#missionId").val(),
-			        name: $(this).find("#missionName").val(),
-			        comment: $(this).find("#missionComment").val(),
-			        eventId: $(this).find("#missionEventId").val(),
-			        state: $(this).find("#stateSelect").val(),
-			        zones: [],
-			        users: [],
-			        configuration: {}
-			    };
-
-			    $(this).find("#missionZoneSelect option:selected" ).each(function() {
-			      missionParam.zones.push(this.value);
-			    });
-
-			    $(this).find("#missionUserSelect option:selected" ).each(function() {
-			      missionParam.users.push(this.value);
-			    });
-			   
-			   	eventplanner.mission.save({
-			      mission: missionParam,
-			      success: function(thisModal){
-								return function(_data) {
-									eventplanner.ui.checkNewMsg();
-							        thisModal.close();
-									eventplanner.ui.notification('success', "Mission enregistrée.");	
-								}
-							}(event.data),
-				  error: function(_data){
-			        eventplanner.ui.notification('error', "Impossible d'enregistrer la mission. " + _data.message);
-			      }			  
-			    });
-				
-			    return false;
-			});
-			
-		}
+	this.postShow = function(){}
 }
 
 eventplanner.ui.modal.EpModalMissionConfiguration.prototype = Object.create(eventplanner.ui.modal.EpModal.prototype, {
@@ -2499,9 +2766,11 @@ eventplanner.ui.modal.EpModalMatTypeConfiguration = function(_matType){
 	    	}, this);
 
 	    	this.modal.find("#optionList").loadTemplate(this.modal.find("#templateMatTypeAddOption"), {} , {append: true});
-		}
-	
-	this.postShow = function(){
+	    	
+	    	this.modal.find('.modalValidBtn').click(this, function(event){
+				event.data.modal.find('#matTypeForm').submit();
+			});
+			
 			this.modal.find('#matTypeForm').submit(this, function(event) {
 			    var matTypeParam = {
 			        id: $(this).find("#matTypeId").val(),
@@ -2523,8 +2792,10 @@ eventplanner.ui.modal.EpModalMatTypeConfiguration = function(_matType){
 			      }	
 			    });
 			    return false;
-			});			
+			});	
 		}
+	
+	this.postShow = function(){}
 }
 
 eventplanner.ui.modal.EpModalMatTypeConfiguration.prototype = Object.create(eventplanner.ui.modal.EpModal.prototype, {
@@ -2543,6 +2814,9 @@ eventplanner.ui.modal.EpModalUserConfiguration = function(_user){
 	this.data = _user;
 	
 	this.preShow = function(){
+			this.modal.find('.modalValidBtn').click(this, function(event){
+				event.data.modal.find('#userForm').submit();
+			});
 		}
 	
 	this.postShow = function(){
@@ -2625,17 +2899,54 @@ eventplanner.ui.modal.EpModalState = function(_listId, _type, _presetState){
 			}(this));
 
 			this.modal.find('#stateSelect option[value="' + this.presetState + '"]').prop('selected', true);
-		}
-	
-	this.postShow = function(){
+			
+			this.listId.forEach(function(thisModal){
+				return function(id) {
+				  var objectTo = eventplanner[thisModal.type].byId(id, true);
+				  var name = '';
+				  var typeName = '';
+				  
+				  switch(thisModal.type){
+				  	case 'eqLogic':
+				  		typeName = 'Equipement';
+				  		name = (objectTo.zoneName||'') + ' - ' + (objectTo.matTypeName||'') + ' ' + (objectTo.eqRealName||''); 
+				  	break;
+				  	case 'eqReal':
+				  		typeName = 'Matériel';
+				  		name = (objectTo.eqRealName||''); 
+				  	break;
+				  	case 'zone':
+				  		typeName = 'Zone';
+				  		name = (objectTo.zoneName||''); 
+				  	break;
+				  	case 'mission':
+				  		typeName = 'Mission';
+				  		name = (objectTo.missionName||''); 
+				  	break;
+				  }
+				  
+				  thisModal.modal.find('#stateToList').loadTemplate(
+				  	thisModal.modal.find("#templateStateTo"),
+				  	{
+				  		name:name,
+				  		typeName:typeName
+				  	} , 
+				  	{
+				  		append: true
+				  	}
+				  );
+				}	
+			}(this));
+			
+			this.modal.find('.modalValidBtn').click(this, function(event){
+				event.data.modal.find('#stateForm').submit();
+			});
+			
 			this.modal.find('#stateForm').submit(this, function(event) {
 				var newState = $(this).find("#stateSelect").val();
 
-			    //console.log(event.data.type + ': ' + newState + ' sur ');
-			    //console.log(event.data.listId);
-
 			    switch(event.data.type){
-			    	case 'eq':
+			    	case 'eqLogic':
 			    		eventplanner.eqLogic.updateState({
 							listId: event.data.listId,
 							state: newState,
@@ -2705,8 +3016,9 @@ eventplanner.ui.modal.EpModalState = function(_listId, _type, _presetState){
 			    }
 			    return false;
 			});
-
 		}
+	
+	this.postShow = function(){}
 }
 
 eventplanner.ui.modal.EpModalState.prototype = Object.create(eventplanner.ui.modal.EpModal.prototype, {

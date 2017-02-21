@@ -28,9 +28,36 @@ body {
 #planningTable .zoneRow td {
  border-top: 1px solid #adadad;
 }
+#planningTable .list-group-item {
+    padding-top: 5px;
+    padding-right: 10px;
+    padding-bottom: 5px;
+    padding-left: 10px;
+}
+#planningTable .panel-heading {
+    padding-top: 5px;
+    padding-right: 10px;
+    padding-bottom: 5px;
+    padding-left: 10px;
+}
+#planningTable .panel{
+    margin-top: 3px;
+}
+#planningTable .panel-title a{
+    color: inherit;
+}
+
+#zoneEqTable > .panel {
+    margin-bottom: 0;
+    margin-top: 5px;
+}
 
 .msgTable p, .selectMissionBtn p{
 	margin: 0 0 0px;
+}
+
+.msgTable .list-group-item {
+    padding: 5px 10px;
 }
 
 .nav-tabs {

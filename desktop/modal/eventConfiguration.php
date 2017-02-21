@@ -1,4 +1,5 @@
 <form class="form-horizontal" id="eventForm">
+  <input type="text" id="eventId" style="display: none;" data-value="eventId" >
   <div class="form-group">
     	<label for="eventName" class="col-sm-3 control-label">Nom</label>
     	<div class="col-sm-9">
@@ -33,11 +34,5 @@
 				</div>
 			</div>
 		</div>
-  </div>
-  <div class="form-group">
-    <div class="col-sm-offset-3 col-sm-9">
-      <input type="text" id="eventId" style="display: none;" data-value="eventId" >
-      <button type="submit" class="btn btn-success">Sauvegarder</button>
-    </div>
   </div>
 </form>

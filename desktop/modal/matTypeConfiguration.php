@@ -1,4 +1,5 @@
 <form class="form-horizontal" id="matTypeForm">
+	<input type="text" id="matTypeId" style="display: none;" data-value="matTypeId">
 	<div class="panel panel-primary">
   	  <div class="panel-heading">Général</div>
   	  <div class="panel-body">
@@ -27,13 +28,4 @@
         </script>
 	  </div>
 	</div>
-	<div class="form-group">
-		<div class="col-sm-offset-3 col-sm-9">
-			<input type="text" id="matTypeId" style="display: none;" data-value="matTypeId">
-			<button type="submit" class="btn btn-success">Sauvegarder</button>
-		</div>
-	</div>
 </form>
-<script>
-
-</script>

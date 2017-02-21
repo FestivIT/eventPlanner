@@ -49,6 +49,7 @@ include_file('3rdparty', 'jquery/jquery.min', 'js');
 	<?php
 include_file('3rdparty', 'jquery.utils/jquery.utils', 'js');
 include_file('3rdparty', 'bootstrap/bootstrap.min', 'js');
+//include_file('3rdparty', 'bootstrap/multimodal', 'js');
 include_file('3rdparty', 'jquery.ui/jquery-ui.min', 'js');
 include_file('3rdparty', 'bootbox/bootbox.min', 'js');
 //include_file('3rdparty', 'highstock/highstock', 'js');
@@ -204,6 +205,7 @@ include_file('desktop', 'commun', 'css');
 						</div>
 						<div class="modal-body" data-content="modalContent"></div>
 						<div class="modal-footer">
+							<button type="button" class="btn btn-primary modalValidBtn">Valider</button>
 							<button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
 						</div>
 					</div>

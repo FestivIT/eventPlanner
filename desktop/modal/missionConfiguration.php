@@ -1,5 +1,6 @@
 <form class="form-horizontal" id="missionForm">
-
+<input type="text" id="missionId" style="display: none;" data-value="missionId">
+      <input type="text" id="missionEventId" style="display: none;" data-value="missionEventId">
   <div class="form-group">
       <label for="missionName" class="col-sm-3 control-label" >Nom</label>
       <div class="col-sm-9">
@@ -52,13 +53,5 @@
       <div class="col-sm-9">
         <input type="text" data-role="tagsinput" id="missionUserSelectTag">
       </div>
-  </div>
-  
-  <div class="form-group">
-    <div class="col-sm-offset-3 col-sm-9">
-      <input type="text" id="missionId" style="display: none;" data-value="missionId">
-      <input type="text" id="missionEventId" style="display: none;" data-value="missionEventId">
-      <button type="submit" class="btn btn-success">Sauvegarder</button>
-    </div>
   </div>
 </form>

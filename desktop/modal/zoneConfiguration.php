@@ -1,4 +1,8 @@
 <form class="form-horizontal" id="zoneForm">
+	<input type="text" id="zoneId" style="display: none;" data-value="zoneId">
+	<input type="text" id="zoneEventId" style="display: none;" data-value="zoneEventId">
+	<input type="text" id="zoneState" style="display: none;" data-value="zoneState">
+
   <div class="form-group">
     	<label for="name" class="col-sm-3 control-label" >Nom</label>
     	<div class="col-sm-9">
@@ -50,13 +54,5 @@
 				</tr>
 			</script>
 		</div>
-  </div>
-  <div class="form-group">
-    <div class="col-sm-offset-3 col-sm-9">
-      <input type="text" id="zoneId" style="display: none;" data-value="zoneId">
-      <input type="text" id="zoneEventId" style="display: none;" data-value="zoneEventId">
-      <input type="text" id="zoneState" style="display: none;" data-value="zoneState">
-      <button type="submit" class="btn btn-success">Sauvegarder</button>
-    </div>
   </div>
 </form>

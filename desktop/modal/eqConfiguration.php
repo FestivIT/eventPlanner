@@ -1,4 +1,7 @@
 <form class="form-horizontal" id="eqLogicForm">
+      <input type="text" id="eqLogicId" style="display: none;" data-value="eqLogicId">
+      <input type="text" id="eqLogicEventId" style="display: none;" data-value="eqLogicEventId">
+      <input type="text" id="eqLogicState" style="display: none;" data-value="eqLogicState">
   <div class="form-group">
       <label for="eqLogicZoneId" class="col-sm-3 control-label" >Zone</label>
       <div class="col-sm-9">
@@ -87,14 +90,6 @@
       <script type="text/html" id="templateEqLinkTypeOptions">
           <option data-value="eqLinkTypeId" data-content="eqLinkTypeName"></option>
       </script>
-    </div>
-  </div>
-  <div class="form-group">
-    <div class="col-sm-offset-3 col-sm-9">
-      <input type="text" id="eqLogicId" style="display: none;" data-value="eqLogicId">
-      <input type="text" id="eqLogicEventId" style="display: none;" data-value="eqLogicEventId">
-      <input type="text" id="eqLogicState" style="display: none;" data-value="eqLogicState">
-      <button type="submit" class="btn btn-success">Sauvegarder</button>
     </div>
   </div>
 </form>

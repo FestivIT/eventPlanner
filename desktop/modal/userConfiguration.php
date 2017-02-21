@@ -1,4 +1,5 @@
 <form class="form-horizontal" id="userForm">
+<input type="text" id="userId" style="display: none;" data-value="userId">
   <div class="form-group">
       <label for="name" class="col-sm-3 control-label" >Nom</label>
       <div class="col-sm-9">
@@ -16,11 +17,5 @@
       <div class="col-sm-9">
         <input type="checkbox" id="userEnable">
       </div>
-  </div>
-  <div class="form-group">
-    <div class="col-sm-offset-3 col-sm-9">
-      <input type="text" id="userId" style="display: none;" data-value="userId">
-      <button type="submit" class="btn btn-success">Sauvegarder</button>
-    </div>
   </div>
 </form>

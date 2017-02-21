@@ -2,9 +2,9 @@ eventplanner.eqLink = {
     dataReady: $.Deferred(),
     container: {},
     type: {
-        1: 'Ethernet',
-        2: 'Wifi 2,4Ghz',
-        3: 'Wifi 5Ghz',
+        1: 'Eth',
+        2: 'Wifi2.4',
+        3: 'Wifi5',
         4: 'VDSL'
     },
     
