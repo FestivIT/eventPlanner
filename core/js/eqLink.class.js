@@ -7,6 +7,32 @@ eventplanner.eqLink = {
         3: 'Wifi5',
         4: 'VDSL'
     },
+    eqLinkItem: function(){ 
+    	this.getEqLogics = function(_fullData = false){
+			return [eventplanner.eqLogic.byId(this.eqLinkEqLogicId1, _fullData),
+		    		eventplanner.eqLogic.byId(this.eqLinkEqLogicId2, _fullData)];
+    	}
+    	
+    	this.getPointsLocalisation = function(){
+    		var eqLogic1 = eventplanner.eqLogic.byId(this.eqLinkEqLogicId1);
+    		var eqLogic2 = eventplanner.eqLogic.byId(this.eqLinkEqLogicId2);
+    		var result = [];
+    		
+    		if(eqLogic1.eqLogicConfiguration.hasLocalisation){
+    			result.push(eqLogic1.eqLogicConfiguration.localisation);
+    		}else{
+    			result.push(eqLogic1.getZone().zoneLocalisation);
+    		}
+    		
+    		if(eqLogic2.eqLogicConfiguration.hasLocalisation){
+    			result.push(eqLogic2.eqLogicConfiguration.localisation);
+    		}else{
+    			result.push(eqLogic2.getZone().zoneLocalisation);
+    		}
+    		
+			return result;
+    	}
+    },
     
 
     // Chargement initial des données depuis le serveur
@@ -17,7 +43,7 @@ eventplanner.eqLink = {
         var params = {
             success: function(_data, _date) {
                 _data.forEach(function(element) {
-                    eventplanner.eqLink.container[element.eqLinkId] = element;
+                    eventplanner.eqLink.container[element.eqLinkId] = $.extend(new eventplanner.eqLink.eqLinkItem(), element);
                 });
 
                 eventplanner.eqLink.dataReady.resolve();
@@ -72,13 +98,13 @@ eventplanner.eqLink = {
         if(is_object(_data)){
             // c'est un objet, donc un seul enregistrement à traiter
             if(_data.hasOwnProperty('eqLinkId')){
-                this.container[_data.eqLinkId] = _data;
+                this.container[_data.eqLinkId] = $.extend(new eventplanner.eqLink.eqLinkItem(), _data);;
             }           
         }else{
             // c'est un array, donc plusieurs enregistrement à traiter
             _data.forEach(function(element) {
                 if(element.hasOwnProperty('eqLinkId')){
-                    eventplanner.eqLink.container[element.eqLinkId] = element;
+                    eventplanner.eqLink.container[element.eqLinkId] = $.extend(new eventplanner.eqLink.eqLinkItem(), element);;
                 }
             });
         }

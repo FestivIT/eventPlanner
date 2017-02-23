@@ -88,15 +88,16 @@ try {
 		ajax::success(utils::o2a($_SESSION['user']));
 	}
 
-	if (init('action') == 'setOptions') {
-		$key = init('key');
-		$value = init('value');
+	
+	if (init('action') == 'setProperty') {
+		$param = init('param');
 
 		$user = user::byId($_SESSION['user']->getId());
 		
 		if (is_object($user)) {
-			$user->setOptions($key, $value);
-			$user->save();
+			print_r($param);
+			//$user->setOptions($key, $value);
+			//$user->save();
 			@session_start();
 			$_SESSION['user']->refresh();
 			@session_write_close();
@@ -106,6 +107,7 @@ try {
 
 		throw new Exception('User inconnu');
 	}
+	
 
 	if (init('action') == 'byId') {
 		$user = user::byId(init('id'));

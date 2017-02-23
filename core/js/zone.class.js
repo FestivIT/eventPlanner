@@ -1,6 +1,15 @@
 eventplanner.zone = {
     dataReady: $.Deferred(),
     container: {},
+    zoneItem: function(){ 
+    	this.getEvent = function(_fullData = false){
+    		return eventplanner.event.byId(this.zoneEventId, _fullData);
+    	}
+    	
+    	this.getEqLogics = function(_fullData = false){
+    		return eventplanner.eqLogic.byZoneId(this.zoneId, _fullData);
+    	}
+    },
     
     // Chargement initial des données depuis le serveur
     load: function(){
@@ -10,7 +19,7 @@ eventplanner.zone = {
         var params = {
             success: function(_data, _date) {
                 _data.forEach(function(element) {
-                    eventplanner.zone.container[element.zoneId] = element;
+                    eventplanner.zone.container[element.zoneId] = $.extend(new eventplanner.zone.zoneItem(), element);
                 });
 
                 eventplanner.zone.dataReady.resolve();
@@ -96,13 +105,13 @@ eventplanner.zone = {
         if(is_object(_data)){
             // c'est un objet, donc un seul enregistrement à traiter
             if(_data.hasOwnProperty('zoneId')){
-                this.container[_data.zoneId] = _data;
-            }           
+                this.container[_data.zoneId] = $.extend(new eventplanner.zone.zoneItem(), _data);
+            }
         }else{
             // c'est un array, donc plusieurs enregistrement à traiter
             _data.forEach(function(element) {
                 if(element.hasOwnProperty('zoneId')){
-                    eventplanner.zone.container[element.zoneId] = element;
+                    eventplanner.zone.container[element.zoneId] = $.extend(new eventplanner.zone.zoneItem(), element);
                 }
             });
         }

@@ -8,7 +8,7 @@ class matType {
 
 	private $id;
 	private $name;
-	private $options;
+	private $parentId;
 
 
 	/*     * ***********************Méthodes statiques*************************** */
@@ -61,10 +61,11 @@ class matType {
 	public function getName() {
 		return $this->name;
 	}
-	public function getOptions() {
-		return $this->options;
-		// ? return json_decode($this->options, true);
-		
+	public function getParentId() {
+		return $this->parentId;
+	}
+	public function getAttributes() {
+		return false;
 	}
 
 	public function setId($id) {
@@ -73,9 +74,11 @@ class matType {
 	public function setName($name) {
 		$this->name = $name;
 	}
-	public function setOptions($options) {
-		$this->options = $options;
-		// ? $this->options = json_encode($options, JSON_UNESCAPED_UNICODE);
+	public function setParentId($parentId) {
+		$this->parentId = $parentId;
+	}
+	public function addAttributes($name, $option) {
+		
 	}
 }
 ?>

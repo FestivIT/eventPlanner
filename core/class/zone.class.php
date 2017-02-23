@@ -13,7 +13,7 @@ class zone {
 	private $installDate;
 	private $uninstallDate;
 	private $state;
-	private $configuration;
+	private $comment;
 
 
 	/*     * ***********************Méthodes statiques*************************** */
@@ -128,12 +128,8 @@ class zone {
 	public function getLocalisation() {
 		return json_decode($this->localisation, true);
 	}
-	public function getConfiguration($_key = '', $_default = '') {
-		if($this->configuration != null){
-			return utils::getJsonAttr($this->configuration, $_key, $_default);
-		}else{
-			return $_default;
-		}
+	public function getComment() {
+		return $this->comment;
 	}
 
 	public function setId($id) {
@@ -157,8 +153,8 @@ class zone {
 	public function setLocalisation($localisation) {
 		$this->localisation = json_encode($localisation, JSON_UNESCAPED_UNICODE);
 	}
-	public function setConfiguration($_key, $_value) {
-		$this->configuration = utils::setJsonAttr($this->configuration, $_key, $_value);
+	public function setComment($comment) {
+		$this->comment = $comment;
 	}
 
 }

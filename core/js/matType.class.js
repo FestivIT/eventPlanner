@@ -1,7 +1,11 @@
 eventplanner.matType = {
     dataReady: $.Deferred(),
     container: {},
-    
+    matTypeItem: function(){ 
+    	this.getParent = function(_fullData = false){
+			return eventplanner.matType.byId(this.matTypeParentId, _fullData);
+    	}
+    },
 
     // Chargement initial des données depuis le serveur
     load: function(){
@@ -11,7 +15,7 @@ eventplanner.matType = {
         var params = {
             success: function(_data, _date) {
                 _data.forEach(function(element) {
-                    eventplanner.matType.container[element.matTypeId] = element;
+                    eventplanner.matType.container[element.matTypeId] = $.extend(new eventplanner.matType.matTypeItem(), element);
                 });
 
                 eventplanner.matType.dataReady.resolve();
@@ -66,13 +70,13 @@ eventplanner.matType = {
         if(is_object(_data)){
             // c'est un objet, donc un seul enregistrement à traiter
             if(_data.hasOwnProperty('matTypeId')){
-                this.container[_data.matTypeId] = _data;
+                this.container[_data.matTypeId] = $.extend(new eventplanner.matType.matTypeItem(), _data);
             }           
         }else{
             // c'est un array, donc plusieurs enregistrement à traiter
             _data.forEach(function(element) {
                 if(element.hasOwnProperty('matTypeId')){
-                    eventplanner.matType.container[element.matTypeId] = element;
+                    eventplanner.matType.container[element.matTypeId] = $.extend(new eventplanner.matType.matTypeItem(), element);
                 }
             });
         }

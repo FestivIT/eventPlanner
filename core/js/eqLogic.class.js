@@ -1,6 +1,27 @@
 eventplanner.eqLogic = {
     dataReady: $.Deferred(),
     container: {},
+    eqLogicItem: function(){ 
+    	this.getEvent = function(_fullData = false){
+    		return eventplanner.event.byId(this.eqLogicEventId, _fullData);
+    	}
+    	
+    	this.getEqReal = function(_fullData = false){
+    		return eventplanner.eqReal.byId(this.eqLogicEqRealId, _fullData);
+    	}
+    	
+    	this.getMatType = function(_fullData = false){
+    		return eventplanner.matType.byId(this.eqLogicMatTypeId, _fullData);
+    	}
+    	
+    	this.getZone = function(_fullData = false){
+    		return eventplanner.zone.byId(this.eqLogicZoneId, _fullData);
+    	}
+    	
+    	this.getEqLinks = function(_fullData = false){
+    		return eventplanner.eqLink.byEqLogicId(this.eqLogicId, _fullData);
+    	}
+    },
     
 
     // Chargement initial des données depuis le serveur
@@ -11,7 +32,7 @@ eventplanner.eqLogic = {
         var params = {
             success: function(_data, _date) {
                 _data.forEach(function(element) {
-                    eventplanner.eqLogic.container[element.eqLogicId] = element;
+                    eventplanner.eqLogic.container[element.eqLogicId] = $.extend(new eventplanner.eqLogic.eqLogicItem(), element);
                 });
 
                 eventplanner.eqLogic.dataReady.resolve();
@@ -96,13 +117,13 @@ eventplanner.eqLogic = {
         if(is_object(_data)){
             // c'est un objet, donc un seul enregistrement à traiter
             if(_data.hasOwnProperty('eqLogicId')){
-                this.container[_data.eqLogicId] = _data;
+                this.container[_data.eqLogicId] = $.extend(new eventplanner.eqLogic.eqLogicItem(), _data);
             }           
         }else{
             // c'est un array, donc plusieurs enregistrement à traiter
             _data.forEach(function(element) {
                 if(element.hasOwnProperty('eqLogicId')){
-                    eventplanner.eqLogic.container[element.eqLogicId] = element;
+                    eventplanner.eqLogic.container[element.eqLogicId] = $.extend(new eventplanner.eqLogic.eqLogicItem(), element);
                 }
             });
         }
@@ -209,20 +230,23 @@ eventplanner.eqLogic = {
     byEqRealId: function(_eqRealId, _fulldata = false){
         if(this.dataReady.state() == 'resolved'){
             // Selection des données à conserver dans le container:
+            var dataSelection = Array();
+
             Object.keys(this.container).forEach(function(id) {
                if(eventplanner.eqLogic.container[id].eqLogicEqRealId == _eqRealId){
-                    var dataSelection = eventplanner.eqLogic.container[id];
-
-                    // Si on demande les data consolidées (pour l'utilisation avec les template)
-                    if(_fulldata){
-                        dataSelection = this.getFullData(dataSelection);
-                    }
-                    
-                    return dataSelection;
+                    dataSelection.push(eventplanner.eqLogic.container[id]);
                 }
             });
+
+            // Tri
+            dataSelection.sort(this.compareZoneIdAsc);
+
+            // Si on demande les data consolidées (pour l'utilisation avec les template)
+            if(_fulldata){
+                dataSelection = this.getFullData(dataSelection);
+            }
             
-            return false;
+            return dataSelection;
         }else{
             return false;
         }

@@ -11,7 +11,7 @@ try {
 	ajax::init();
 
 	if (init('action') == 'all') {
-		$mission = utils::addPrefixToArray(utils::o2a(mission::byEventId($_SESSION['user']->getOptions('eventId'))), 'mission', true);
+		$mission = utils::addPrefixToArray(utils::o2a(mission::byEventId($_SESSION['user']->getEventId())), 'mission', true);
 
 		ajax::success($mission);
 	}

@@ -1,7 +1,15 @@
 eventplanner.mission = {
     dataReady: $.Deferred(),
     container: {},
-    
+    missionItem: function(){ 
+        this.getUsers = function(_fullData = false){
+            //return eventplanner.matType.byId(this.matTypeParentId, _fullData);
+        }
+
+        this.getZones = function(_fullData = false){
+            //return eventplanner.matType.byId(this.matTypeParentId, _fullData);
+        }
+    },
 
     // Chargement initial des données depuis le serveur
     load: function(){
@@ -11,7 +19,7 @@ eventplanner.mission = {
         var params = {
             success: function(_data, _date) {
                 _data.forEach(function(element) {
-                    eventplanner.mission.container[element.missionId] = element;
+                    eventplanner.mission.container[element.missionId] = $.extend(new eventplanner.mission.missionItem(), element);
                 });
 
                 eventplanner.mission.dataReady.resolve();
@@ -61,16 +69,17 @@ eventplanner.mission = {
     },
     
     updateData: function(_data){
+        console.log(_data);
     	if(is_object(_data)){
     		// c'est un objet, donc un seul enregistrement à traiter
     		if(_data.hasOwnProperty('missionId')){
-    			this.container[_data.missionId] = _data;
+    			this.container[_data.missionId] = $.extend(new eventplanner.mission.missionItem(), _data);
     		}    		
     	}else{
     		// c'est un array, donc plusieurs enregistrement à traiter
     		_data.forEach(function(element) {
                 if(element.hasOwnProperty('missionId')){
-	    			eventplanner.mission.container[element.missionId] = element;
+	    			eventplanner.mission.container[element.missionId] = $.extend(new eventplanner.mission.missionItem(), element);
 	    		}
             });
     	}

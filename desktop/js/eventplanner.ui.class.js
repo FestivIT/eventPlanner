@@ -128,20 +128,21 @@ eventplanner.ui = {
 			}
 
 			var msgParam = {
-				eventId: eventplanner.ui.currentUser.userOptions.eventId,
+				id: '',
+				eventId: eventplanner.ui.currentUser.userEventId,
 				userId: eventplanner.ui.currentUser.userId,
 				content: $(this).find('.msgFormInput').val(),
 				data:{}
 			}
 			
 			if($(this).data("zone-id")==undefined){
-				msgParam.zoneId = '';
+				msgParam.zoneId = null;
 			}else{
 				msgParam.zoneId = $(this).data("zone-id");
 			}
 			
 			if($(this).data("eqlogic-id")==undefined){
-				msgParam.eqId = '';
+				msgParam.eqId = null;
 			}else{
 				msgParam.eqId = $(this).data("eqlogic-id");
 			}
@@ -224,8 +225,8 @@ eventplanner.ui = {
 	},
 
 	configEventMenu: function() {
-		if(eventplanner.ui.currentUser.userOptions.hasOwnProperty('eventId')){
-			var currentEvent = eventplanner.event.byId(eventplanner.ui.currentUser.userOptions.eventId);
+		if(eventplanner.ui.currentUser.userEventId != null){
+			var currentEvent = eventplanner.event.byId(eventplanner.ui.currentUser.userEventId);
 
 			eventplanner.ui.eventMenu.empty();
 			eventplanner.ui.eventMenu.append($('<i />', {
@@ -374,11 +375,16 @@ eventplanner.ui.dashboard = {
 	title: 'Dashboard',
 	init: function(){
 		$('#dashboard').delegate('.selectEventBtn', 'click', function () {
-			eventplanner.user.setOptions({key: 'eventId', value: $(this).attr('data-event-id') ,success: function(_data) {
-				$.when(eventplanner.ui.init()).then(
-					eventplanner.ui.loadPage('map')
-				);
-			}});
+			eventplanner.user.save({
+				user: {
+					id: eventplanner.ui.currentUser.userId,
+					eventId: $(this).attr('data-event-id')
+				} ,success: function(_data) {
+					$.when(eventplanner.ui.init()).then(
+						eventplanner.ui.loadPage('map')
+					);
+				}
+			});
 		});
 
 		$('#dashboard').delegate('.selectMissionBtn', 'click', function () {
@@ -474,7 +480,7 @@ eventplanner.ui.configuration = {
 		});
 
 		$('#configuration').delegate('.selectEventBtn', 'click', function () {
-			eventplanner.user.setOptions({key: 'eventId', value: $(this).attr('data-event-id') ,success: function(_data) {
+			eventplanner.user.setProperty({eventId: $(this).attr('data-event-id') ,success: function(_data) {
 				eventplanner.ui.init();
 			}});
 		});
@@ -576,7 +582,11 @@ eventplanner.ui.configuration = {
 			if(userId == 'new'){
 				var userData = {
 					userId: '',
-					userEnable: true
+					userEnable: "1",
+					userActionOnScan: 'zone',
+					userSlackID: '',
+					userRights: {},
+					userLastConnection: '0000-00-00 00:00:00'
 				}
 				
 				var userModal = new eventplanner.ui.modal.EpModalUserConfiguration(userData);
@@ -696,12 +706,12 @@ eventplanner.ui.map = {
 	stateToShow: {min: 0, max: 999},
 	
 	init: function(){
-		var currentEvent = eventplanner.event.byId(eventplanner.ui.currentUser.userOptions.eventId);
+		var currentEvent = eventplanner.event.byId(eventplanner.ui.currentUser.userEventId);
 		this.llMap = this.initializeEventMap("map", currentEvent.eventId, currentEvent.eventLocalisation);
 	    this.llMap.contextmenu.addItem({
 	        text: 'Ajouter une zone',
 	        callback: function(e) {
-		      var currentEvent = eventplanner.event.byId(eventplanner.ui.currentUser.userOptions.eventId);
+		      var currentEvent = eventplanner.event.byId(eventplanner.ui.currentUser.userEventId);
 				var zoneData = {
 					zoneId: '',
 					zoneEventId: currentEvent.eventId,
@@ -824,7 +834,7 @@ eventplanner.ui.map = {
 		dragable = typeof dragable !== 'undefined' ? dragable : false;
 		
 		var eqMarker = L.marker(
-				eq.eqLogicConfiguration.localisation, 
+				eq.eqLogicLocalisation, 
 				{
 					draggable:dragable, 
 					title: eq.eqLogicName, 
@@ -887,7 +897,7 @@ eventplanner.ui.map = {
 						        text: 'Créer une mission',
 						        callback: function(e) {
 							      	var currentZone = eventplanner.zone.byId(e.relatedTarget.zoneId);
-							      	var currentEvent = eventplanner.event.byId(eventplanner.ui.currentUser.userOptions.eventId);
+							      	var currentEvent = eventplanner.event.byId(eventplanner.ui.currentUser.userEventId);
 									var missionData = {
 										missionId: '',
 										missionEventId: currentEvent.eventId,
@@ -1072,7 +1082,7 @@ eventplanner.ui.planning = {
 			  zoneList.push(eventplanner.zone.byId($(zoneCb).data('zoneId')));
 			});
 
-	      	var currentEvent = eventplanner.event.byId(eventplanner.ui.currentUser.userOptions.eventId);
+	      	var currentEvent = eventplanner.event.byId(eventplanner.ui.currentUser.userEventId);
 			var missionData = {
 				missionId: '',
 				missionEventId: currentEvent.eventId,
@@ -1266,9 +1276,9 @@ eventplanner.ui.equipements = {
 			if(eqId == 'new'){			
 				var eqData = {
 					eqLogicId: '',
-					eqLogicEventId: eventplanner.ui.currentUser.userOptions.eventId,
+					eqLogicEventId: eventplanner.ui.currentUser.userEventId,
 					eqLogicState: 100,
-					eqLogicConfiguration: {hasLocalisation: false}
+					eqLogicLocalisation: null
 				}
 				
 				var eqModal = new eventplanner.ui.modal.EpModalEqConfiguration(eqData);
@@ -1277,6 +1287,19 @@ eventplanner.ui.equipements = {
 				var eqModal = new eventplanner.ui.modal.EpModalEqConfiguration(eventplanner.eqLogic.byId(eqId));
 				eqModal.open();
 			}
+		});
+
+		$('#eqLogicTable').delegate('.dupEqBtn', 'click', function () {
+			var eqId = $(this).attr('data-eq-id');
+
+			var eqLogicBase = eventplanner.eqLogic.byId(eqId);
+			var eqData = jQuery.extend(true, {}, eqLogicBase);
+				eqData.eqLogicId = '';
+				eqData.eqLogicIp = '';
+				eqData.eqLogicEqRealId = ''; 
+				
+				var eqModal = new eventplanner.ui.modal.EpModalEqConfiguration(eqData);
+				eqModal.open();
 		});
 
 		$('#eqLogicTable').delegate('.deleteEqBtn', 'click', function () {
@@ -1337,7 +1360,7 @@ eventplanner.ui.zones ={
 			var zoneId = $(this).attr('data-zone-id');
 			
 			if(zoneId == 'new'){
-				var currentEvent = eventplanner.event.byId(eventplanner.ui.currentUser.userOptions.eventId);
+				var currentEvent = eventplanner.event.byId(eventplanner.ui.currentUser.userEventId);
 				var zoneData = {
 					zoneId: '',
 					zoneEventId: currentEvent.eventId,
@@ -1415,7 +1438,7 @@ eventplanner.ui.mission ={
 			var missionId = $(this).attr('data-mission-id');
 			
 			if(missionId == 'new'){
-				var currentEvent = eventplanner.event.byId(eventplanner.ui.currentUser.userOptions.eventId);
+				var currentEvent = eventplanner.event.byId(eventplanner.ui.currentUser.userEventId);
 				var missionData = {
 					missionId: '',
 					missionEventId: currentEvent.eventId,
@@ -1491,14 +1514,14 @@ eventplanner.ui.scan = {
 			return false;
 		}
 
-		if(Number.isInteger(parseInt(eventplanner.ui.currentUser.userOptions.actionOnScan))){
+		if(Number.isInteger(parseInt(eventplanner.ui.currentUser.userActionOnScan))){
 			// eq
-			if(eventplanner.ui.currentUser.userOptions.actionOnScan >= 100 && eventplanner.ui.currentUser.userOptions.actionOnScan < 200 ){
+			if(eventplanner.ui.currentUser.userActionOnScan >= 100 && eventplanner.ui.currentUser.userActionOnScan < 200 ){
 				var eqLogic = eventplanner.eqLogic.byEqRealId(eqRealId);
 				if(eqLogic !== false){
 					eventplanner.eqLogic.updateState({
 						listId: [eqLogic.eqLogicId],
-						state: eventplanner.ui.currentUser.userOptions.actionOnScan,
+						state: eventplanner.ui.currentUser.userActionOnScan,
 						success: function(thisModal){
 									return function(_data) {
 										eventplanner.ui.checkNewMsg();
@@ -1516,10 +1539,10 @@ eventplanner.ui.scan = {
 			}
 
 			//eqReal
-			if(eventplanner.ui.currentUser.userOptions.actionOnScan >= 300 && eventplanner.ui.currentUser.userOptions.actionOnScan < 400 ){
+			if(eventplanner.ui.currentUser.userActionOnScan >= 300 && eventplanner.ui.currentUser.userActionOnScan < 400 ){
 				eventplanner.eqReal.updateState({
 					listId: [eqRealId],
-					state: eventplanner.ui.currentUser.userOptions.actionOnScan,
+					state: eventplanner.ui.currentUser.userActionOnScan,
 					success: function(thisModal){
 								return function(_data) {
 									eventplanner.ui.checkNewMsg();
@@ -1533,7 +1556,7 @@ eventplanner.ui.scan = {
 			}
 
 		}else{
-			switch(eventplanner.ui.currentUser.userOptions.actionOnScan){
+			switch(eventplanner.ui.currentUser.userActionOnScan){
 				case 'zone':
 					var eqLogic = eventplanner.eqLogic.byEqRealId(eqRealId);
 					if(eqLogic !== false){
@@ -1569,23 +1592,44 @@ eventplanner.ui.scan = {
 eventplanner.ui.eventinfos = {
 	title: 'Infos événement',
 	init: function(){
+		var currentEvent = eventplanner.event.byId(eventplanner.ui.currentUser.userEventId);
+
 		// GENERAL
+		$('#eventInfosContainer').html(currentEvent.eventGeneralInfo);
+
 		$('#eventInfosEditorContainer').hide();
 		$('#eventInfosTextarea').wysihtml5();
 		
 		$('#validEventInfoBtn')
 			.hide()
 			.click(function(){
-				// On cache les éléments d'édition
-				$('#validEventInfoBtn').hide();
-				$('#eventInfosEditorContainer').hide();
-				
-				// On met à jour le DivContainer avec les infos éditées 
-				$('#eventInfosContainer').html($('#eventInfosTextarea').val());
-				
-				// On affiche de DivContainer et le bouton éditer
-				$('#editEventInfoBtn').show();
-				$('#eventInfosContainer').show();
+				var eventParam = {
+			        id: eventplanner.ui.currentUser.userEventId,
+			        generalInfo: $('#eventInfosTextarea').val()
+			    };
+
+			    eventplanner.event.save({
+			      event: eventParam,
+			      success: function(_data) {
+						eventplanner.ui.checkNewMsg();
+						
+						// On cache les éléments d'édition
+						$('#validEventInfoBtn').hide();
+						$('#eventInfosEditorContainer').hide();
+						
+						// On met à jour le DivContainer avec les infos éditées 
+						$('#eventInfosContainer').html($('#eventInfosTextarea').val());
+						
+						// On affiche de DivContainer et le bouton éditer
+						$('#editEventInfoBtn').show();
+						$('#eventInfosContainer').show();
+
+						eventplanner.ui.notification('success', "Changement enregistré.");	
+					},
+				  error: function(_data){
+			        eventplanner.ui.notification('error', "Impossible d'enregistrer la modification. " + _data.message);
+			      }	
+			    });
 			});
 		
 		$('#editEventInfoBtn')
@@ -1634,7 +1678,7 @@ eventplanner.ui.eventinfos = {
 	},
 	
 	initMap : function(){
-		var currentEvent = eventplanner.event.byId(eventplanner.ui.currentUser.userOptions.eventId);
+		var currentEvent = eventplanner.event.byId(eventplanner.ui.currentUser.userEventId);
 	  	this.eventMapPlanConfig = eventplanner.ui.map.initializeEventMap('eventMapPlanConfig', currentEvent.eventId, currentEvent.eventLocalisation);
 		
 		var topleft    = L.latLng(currentEvent.eventLocalisation.lat + (180/Math.PI)*(100/6378137), currentEvent.eventLocalisation.lng + (180/Math.PI)*(-100/6378137)/Math.cos(Math.PI/180.0*currentEvent.eventLocalisation.lat)),
@@ -1677,8 +1721,8 @@ eventplanner.ui.userinfos = {
 		$("#userinfos").find("#userName").val(eventplanner.ui.currentUser.userName);
 		$("#userinfos").find("#userLogin").val(eventplanner.ui.currentUser.userLogin);
 
-		if(eventplanner.ui.currentUser.userOptions.hasOwnProperty('slackID')){
-			$("#userinfos").find("#userSlackID").val(eventplanner.ui.currentUser.userOptions.slackID);
+		if(eventplanner.ui.currentUser.userSlackID){
+			$("#userinfos").find("#userSlackID").val(eventplanner.ui.currentUser.userSlackID);
 		}
 
 		$.each(eventplanner.ui.STATE.stateList, function(stateNbr, stateParam){
@@ -1707,7 +1751,7 @@ eventplanner.ui.userinfos = {
 			}
 		});
 
-		$("#userinfos").find('#scanSelect option[value="' + eventplanner.ui.currentUser.userOptions.actionOnScan + '"]').prop('selected', true);
+		$("#userinfos").find('#scanSelect option[value="' + eventplanner.ui.currentUser.userActionOnScan + '"]').prop('selected', true);
 
 
 		// Submit SCAN
@@ -1715,11 +1759,7 @@ eventplanner.ui.userinfos = {
 				var userParam = {
 			        id: eventplanner.ui.currentUser.userId,
 			        login: $(this).find("#userLogin").val(),
-			        name: $(this).find("#userName").val(),
-			        options: eventplanner.ui.currentUser.userOptions,
-			        rights: eventplanner.ui.currentUser.userRights,
-			        enable: eventplanner.ui.currentUser.userEnable,
-			        password: eventplanner.ui.currentUser.userPassword
+			        name: $(this).find("#userName").val()
 			    };
 
 			    if(($(this).find("#userPassword1").val() != '') || ($(this).find("#userPassword2").val() != '')){
@@ -1748,17 +1788,21 @@ eventplanner.ui.userinfos = {
 
 		// Submit Slack
 		$("#userinfos").find('#userSlackForm').submit(this, function(event) {
-			    eventplanner.user.setOptions({
-			      key: 'slackID',
-			      value: $(this).find("#userSlackID").val(),
+				var userParam = {
+			        id: eventplanner.ui.currentUser.userId,
+			        slackID: $(this).find("#userSlackID").val()
+			    };
+
+			    eventplanner.user.save({
+			      user: userParam,
 			      success: function(_data) {
 						eventplanner.ui.checkNewMsg();
 						eventplanner.ui.currentUser = _data;
-						eventplanner.ui.notification('success', "Changement enregistré.");
+						eventplanner.ui.notification('success', "Changement enregistré.");	
 					},
-			      error: function(_data){
+				  error: function(_data){
 			        eventplanner.ui.notification('error', "Impossible d'enregistrer la modification. " + _data.message);
-			      }
+			      }	
 			    });
 			    
 			    return false;
@@ -1767,19 +1811,23 @@ eventplanner.ui.userinfos = {
 
 		// Submit SCAN
 		$("#userinfos").find('#userScanForm').submit(this, function(event) {
-			    eventplanner.user.setOptions({
-			      key: 'actionOnScan',
-			      value: $(this).find("#scanSelect").val(),
+				var userParam = {
+			        id: eventplanner.ui.currentUser.userId,
+			        actionOnScan: $(this).find("#scanSelect").val()
+			    };
+
+			    eventplanner.user.save({
+			      user: userParam,
 			      success: function(_data) {
 						eventplanner.ui.checkNewMsg();
 						eventplanner.ui.currentUser = _data;
-						eventplanner.ui.notification('success', "Changement enregistré.");
+						eventplanner.ui.notification('success', "Changement enregistré.");	
 					},
-			      error: function(_data){
+				  error: function(_data){
 			        eventplanner.ui.notification('error', "Impossible d'enregistrer la modification. " + _data.message);
-			      }
+			      }	
 			    });
-			    
+
 			    return false;
 			});
 	}
@@ -1847,7 +1895,6 @@ eventplanner.ui.modal.EpModal.prototype.close = function(){
 }
 
 ///// MODAL ZONE /////////////////////////////////////////
-
 eventplanner.ui.modal.EpModalZone = function(_zone){
 	eventplanner.ui.modal.EpModal.call(this, _zone.zoneName, "zone");
 	this.currentPage = 1;
@@ -2047,7 +2094,7 @@ eventplanner.ui.modal.EpModalZone = function(_zone){
 		var eqLogics = eventplanner.eqLogic.byZoneId(this.data.zoneId, true);
 
 		eqLogics.forEach(function(eq){
-			if(eq.eqLogicConfiguration.hasOwnProperty('hasLocalisation') && eq.eqLogicConfiguration.hasLocalisation){
+			if(is_array(eq.eqLogicLocalisation)){
 				var eqMarker = eventplanner.ui.map.addEqMarkerOnMap(this.mapZone, eq);
 				eqMarker.bindPopup('<div><b>' + eq.matTypeName + ' - ' + eq.eqRealName + '</b>');
 			}
@@ -2107,7 +2154,7 @@ eventplanner.ui.modal.EpModalEqConfiguration = function(_eqLogic){
 			event.data.constructAndSelectEqReal();
 		});
 
-		if(this.data.eqLogicConfiguration.hasLocalisation){
+		if(is_array(this.data.eqLogicLocalisation)){
 			this.modal.find("#mapDiv").show();
 		}else{
 			this.modal.find("#mapDiv").hide();
@@ -2121,7 +2168,7 @@ eventplanner.ui.modal.EpModalEqConfiguration = function(_eqLogic){
 					eqLinkEqLogicId1: event.data.data.eqLogicId,
 					eqLinkEqLogicId2: '0',
 					eqLinkType: '1',
-					eqLinkEventId: eventplanner.ui.currentUser.userOptions.eventId,
+					eqLinkEventId: eventplanner.ui.currentUser.userEventId,
 					eqLinkConfiguration: {}
 				}
 
@@ -2166,7 +2213,7 @@ eventplanner.ui.modal.EpModalEqConfiguration = function(_eqLogic){
 	}
 
 	this.postShow = function(){
-			this.mapZone = eventplanner.ui.map.initializeEventMap('mapZone' + this.id, this.data.eqLogicEventId, this.data.eqLogicConfiguration.localisation);
+			this.mapZone = eventplanner.ui.map.initializeEventMap('mapZone' + this.id, this.data.eqLogicEventId, this.data.eqLogicLocalisation);
 			this.eqMarker = eventplanner.ui.map.addEqMarkerOnMap(this.mapZone, this.data, true);
 						
 			this.modal.on('shown.bs.tab', this, function(event) {
@@ -2185,7 +2232,7 @@ eventplanner.ui.modal.EpModalEqConfiguration = function(_eqLogic){
 			
 			this.modal.find("#eqLocalisation")
 				.bootstrapSwitch({
-					state: this.data.eqLogicConfiguration.hasLocalisation,
+					state: is_array(this.data.eqLogicLocalisation),
 					onText: "Oui",
 					offText: "Non"
 				})			
@@ -2210,12 +2257,14 @@ eventplanner.ui.modal.EpModalEqConfiguration = function(_eqLogic){
 			        ip: $(this).find("#eqLogicIp").val(),
 			        comment: $(this).find("#eqLogicComment").val(),
 			        state: $(this).find("#eqLogicState").val(),
-			        configuration: {
-			        	hasLocalisation: $(this).find("#eqLocalisation").bootstrapSwitch('state'),
-			        	localisation: event.data.eqMarker.getLatLng()
-			        },
 			        eqLinks: event.data.getEqLinks()
 			    };
+
+			    if($(this).find("#eqLocalisation").bootstrapSwitch('state')){
+			    	eqParam.localisation = event.data.eqMarker.getLatLng();
+			    }else{
+			    	eqParam.localisation = null;
+			    }
 
 			    eventplanner.eqLogic.save({
 			      eqLogic: eqParam,
@@ -2396,9 +2445,9 @@ eventplanner.ui.modal.EpModalZoneConfiguration = function(_zone){
 					var eqData = {
 						eqLogicId: '',
 						eqLogicZoneId: event.data.data.zoneId,
-						eqLogicEventId: eventplanner.ui.currentUser.userOptions.eventId,
+						eqLogicEventId: eventplanner.ui.currentUser.userEventId,
 						eqLogicState: 100,
-						eqLogicConfiguration: {hasLocalisation: false}
+						eqLogicLocalisation: null
 					}
 					
 					var eqModal = new eventplanner.ui.modal.EpModalEqConfiguration(eqData);
@@ -2472,9 +2521,7 @@ eventplanner.ui.modal.EpModalZoneConfiguration.prototype = Object.create(eventpl
     }
 });
 
-
 /// MODAL EVENT CONFIGURATION ///////////////////
-
 eventplanner.ui.modal.EpModalEventConfiguration = function(_event){
 	eventplanner.ui.modal.EpModal.call(this, "Configuration d'un événement", "eventConfiguration");
 	
@@ -2557,7 +2604,6 @@ eventplanner.ui.modal.EpModalEventConfiguration.prototype = Object.create(eventp
 });
 
 /// MODAL INVENTAIRE CONFIGURATION /////////////
-
 eventplanner.ui.modal.EpModalEqRealConfiguration = function(_eqReal){
 	eventplanner.ui.modal.EpModal.call(this, "Configuration d'un matériel", "eqRealConfiguration");
 	
@@ -2583,7 +2629,7 @@ eventplanner.ui.modal.EpModalEqRealConfiguration = function(_eqReal){
 			        name: $(this).find("#eqRealName").val(),
 			        comment: $(this).find("#eqRealComment").val(),
 			        state: $(this).find("#eqRealState").val(),
-			        configuration: {localisation: ""}
+			        localisation: ""
 			    };
 			   
 			    eventplanner.eqReal.save({
@@ -2617,7 +2663,6 @@ eventplanner.ui.modal.EpModalEqRealConfiguration.prototype = Object.create(event
 });
 
 /// MODAL MISSION CONFIGURATION /////////////
-
 eventplanner.ui.modal.EpModalMissionConfiguration = function(_mission){
 	eventplanner.ui.modal.EpModal.call(this, "Configuration d'une mission", "missionConfiguration");
 	
@@ -2761,12 +2806,15 @@ eventplanner.ui.modal.EpModalMatTypeConfiguration = function(_matType){
 	this.data = _matType;
 	
 	this.preShow = function(){
+			/*
 			this.data.matTypeOptions.forEach(function(option){
 	    		this.modal.find("#optionList").loadTemplate(this.modal.find("#templateMatTypeOption"), {option: option}, {append: true});
 	    	}, this);
 
+
 	    	this.modal.find("#optionList").loadTemplate(this.modal.find("#templateMatTypeAddOption"), {} , {append: true});
-	    	
+	    	*/
+
 	    	this.modal.find('.modalValidBtn').click(this, function(event){
 				event.data.modal.find('#matTypeForm').submit();
 			});
@@ -2829,15 +2877,14 @@ eventplanner.ui.modal.EpModalUserConfiguration = function(_user){
 
 			this.modal.find('#userForm').submit(this, function(event) {
 			    var userParam = {
-			        id: $(this).find("#userId").val(),
+			        id: event.data.data.userId,
 			        login: $(this).find("#userLogin").val(),
 			        name: $(this).find("#userName").val(),
-			        options: {
-			        	slackID: '',
-			        	actionOnScan: 'zone'
-			        },
-			        rights: {},
-			        enable: $(this).find("#userEnable").bootstrapSwitch('state')
+			        actionOnScan: event.data.data.userActionOnScan,
+			        slackID: event.data.data.userSlackID,
+			    	lastConnection: event.data.data.userLastConnection,
+			        rights: event.data.data.userRights,
+			        enable: ($(this).find("#userEnable").bootstrapSwitch('state') ? "1" : "0")
 			    };
 			    
 			    if(userParam.id == ''){

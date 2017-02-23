@@ -1,7 +1,15 @@
 eventplanner.eqReal = {
     dataReady: $.Deferred(),
     container: {},
-    
+    eqRealItem: function(){ 
+    	this.getMatType = function(_fullData = false){
+			return eventplanner.matType.byId(this.eqRealMatTypeId, _fullData);
+    	}
+    	
+    	this.getEqLogics = function(_fullData = false){
+			return eventplanner.eqLogic.byEqRealId(this.eqRealId, _fullData);
+    	}
+    },
 
     // Chargement initial des données depuis le serveur
     load: function(){
@@ -11,7 +19,7 @@ eventplanner.eqReal = {
         var params = {
             success: function(_data, _date) {
                 _data.forEach(function(element) {
-                    eventplanner.eqReal.container[element.eqRealId] = element;
+                    eventplanner.eqReal.container[element.eqRealId] = $.extend(new eventplanner.eqReal.eqRealItem(), element);
                 });
 
                 eventplanner.eqReal.dataReady.resolve();
@@ -96,13 +104,13 @@ eventplanner.eqReal = {
         if(is_object(_data)){
             // c'est un objet, donc un seul enregistrement à traiter
             if(_data.hasOwnProperty('eqRealId')){
-                this.container[_data.eqRealId] = _data;
+                this.container[_data.eqRealId] = $.extend(new eventplanner.eqReal.eqRealItem(), _data);
             }           
         }else{
             // c'est un array, donc plusieurs enregistrement à traiter
             _data.forEach(function(element) {
                 if(element.hasOwnProperty('eqRealId')){
-                    eventplanner.eqReal.container[element.eqRealId] = element;
+                    eventplanner.eqReal.container[element.eqRealId] = $.extend(new eventplanner.eqReal.eqRealItem(), element);
                 }
             });
         }

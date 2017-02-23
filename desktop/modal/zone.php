@@ -38,7 +38,7 @@
 				<div class="col-sm-6">
 					<div class="panel panel-default">
 						<div class="panel-heading">Commentaire</div>
-						<div class="panel-body" data-content="zoneConfiguration" data-format="getConfigurationKey" data-format-options="comment">
+						<div class="panel-body" data-content="zoneComment">
 						</div>
 					</div>
 				</div>

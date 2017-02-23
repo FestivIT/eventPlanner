@@ -21,7 +21,7 @@
 				</tbody>
 			</table>
 			<script type="text/html" id="templateMissionTable">
-				<tr>
+				<tr class="missionItem" data-template-bind='[{"attribute": "data-id", "value": "missionId"}]' >
 					<th class="col-xs-5" scope="row" data-content="missionName"></th>
 					<td class="col-xs-2" data-template-bind='[{"attribute": "content", "value": "missionUsers", "formatter": "formatListWithUserName", "formatOptions": "<span class=\"label label-info\"></span>"}]'></td>
 					<td class="col-xs-2" data-template-bind='[{"attribute": "content", "value": "missionZones", "formatter": "formatListWithZoneName", "formatOptions": "<span class=\"label label-default\"></span>"}]'></td>

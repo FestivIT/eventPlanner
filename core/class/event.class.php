@@ -12,6 +12,7 @@ class event {
 	private $localisation;
 	private $startDate;
 	private $endDate;
+	private $generalInfo;
 	private $configuration;
 
 
@@ -93,6 +94,9 @@ class event {
 	public function getConfiguration() {
 		return $this->configuration;
 	}
+	public function getGeneralInfo() {
+		return $this->generalInfo;
+	}
 
 	public function setId($id) {
 		$this->id = $id;
@@ -114,6 +118,9 @@ class event {
 	}
 	public function setConfiguration($configuration) {
 		$this->configuration = $configuration;
+	}
+	public function setGeneralInfo($generalInfo) {
+		$this->generalInfo = $generalInfo;
 	}
 }
 ?>

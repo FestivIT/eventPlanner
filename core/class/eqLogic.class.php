@@ -14,7 +14,7 @@ class eqLogic {
 	private $ip;
 	private $comment;
 	private $state;
-	private $configuration;
+	private $localisation;
 
 
 	/*     * ***********************Méthodes statiques*************************** */
@@ -140,9 +140,12 @@ class eqLogic {
 	}
 	public function getState() {
 		return $this->state;
-	}	
-	public function getConfiguration($_key = '', $_default = '') {
-		return utils::getJsonAttr($this->configuration, $_key, $_default);
+	}
+	public function getLocalisation() {
+		return json_decode($this->localisation, true);
+	}
+	public function getAttributes() {
+		return false;
 	}
 
 	public function setId($id) {
@@ -169,8 +172,8 @@ class eqLogic {
 	public function setState($state) {
 		$this->state = $state;
 	}
-	public function setConfiguration($_key, $_value) {
-		$this->configuration = utils::setJsonAttr($this->configuration, $_key, $_value);
+	public function setLocalisation($localisation) {
+		$this->localisation = json_encode($localisation, JSON_UNESCAPED_UNICODE);
 	}
 
 }

@@ -11,7 +11,7 @@ class eqReal {
 	private $name;
 	private $comment;
 	private $state;
-	private $configuration;
+	private $localisation;
 
 
 	/*     * ***********************Méthodes statiques*************************** */
@@ -120,10 +120,10 @@ class eqReal {
 	}
 	public function getState() {
 		return $this->state;
-	}	
-	public function getConfiguration($_key = '', $_default = '') {
-		return utils::getJsonAttr($this->configuration, $_key, $_default);
 	}
+	public function getLocalisation() {
+		return $this->localisation;
+	}	
 
 	public function setId($id) {
 		$this->id = $id;
@@ -140,8 +140,8 @@ class eqReal {
 	public function setState($state) {
 		$this->state = $state;
 	}
-	public function setConfiguration($_key, $_value) {
-		$this->configuration = utils::setJsonAttr($this->configuration, $_key, $_value);
+	public function setLocalisation($localisation) {
+		$this->localisation = $localisation;
 	}
 
 }

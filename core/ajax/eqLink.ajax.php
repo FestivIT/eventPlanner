@@ -11,7 +11,7 @@ try {
 	ajax::init();
 
 	if (init('action') == 'all') {
-		$eqLink = utils::addPrefixToArray(utils::o2a(eqLink::byEventId($_SESSION['user']->getOptions('eventId'))), 'eqLink', true);
+		$eqLink = utils::addPrefixToArray(utils::o2a(eqLink::byEventId($_SESSION['user']->getEventId())), 'eqLink', true);
 
 		ajax::success($eqLink);
 	}

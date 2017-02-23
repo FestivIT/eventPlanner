@@ -9,12 +9,9 @@ class mission {
 	private $id;
 	private $eventId;
 	private $name;
-	private $users;
-	private $zones;
 	private $comment;
 	private $state;
 	private $date;
-	private $configuration;
 
 
 	/*     * ***********************Méthodes statiques*************************** */
@@ -50,19 +47,29 @@ class mission {
 	}
 
 	public static function byZoneId($_zoneId) {
-		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-        FROM mission
-        WHERE `zones` LIKE \'%\"' . $_zoneId . '\"%\'
+		$values = array(
+			'zoneId' => $_zoneId,
+		);
+		
+	    $sql = 'SELECT ' . DB::buildField(__CLASS__) . '
+	    FROM mission 
+	    LEFT OUTER JOIN missionZoneAssociation ON missionZoneAssociation.missionId = mission.id 
+	    WHERE missionZoneAssociation.zoneId =:zoneId
 	    ORDER BY `date`';
-		return DB::Prepare($sql, array(), DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
+		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
 	}
 
 	public static function byUserId($_userId) {
-		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-        FROM mission
-        WHERE `users` LIKE \'%\"' . $_userId . '\"%\'
+	    $values = array(
+			'userId' => $_userId,
+		);
+		
+	    $sql = 'SELECT ' . DB::buildField(__CLASS__) . '
+	    FROM mission 
+	    LEFT OUTER JOIN missionUserAssociation ON missionUserAssociation.missionId = mission.id 
+	    WHERE missionUserAssociation.userId =:userId
 	    ORDER BY `date`';
-		return DB::Prepare($sql, array(), DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
+		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
 	}
 
 	public static function byUserIdMaxState($_userId, $_maxState, $_fullData = false) {
@@ -110,6 +117,7 @@ class mission {
 		return DB::Prepare($sql, array(), DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
 	}
 
+
 	/*     * *********************Méthodes d'instance************************* */
 
 	public function save($_addMsg = true) {
@@ -144,11 +152,11 @@ class mission {
 	public function getName() {
 		return $this->name;
 	}
-	public function getUsers() {
-		return json_decode($this->users, true);
+	public function getUsers(){
+	    return missionUserAssociation::byMissionId($this->getId());
 	}
-	public function getZones() {
-		return json_decode($this->zones, true);
+	public function getZones(){
+	    return missionZoneAssociation::byMissionId($this->getId());
 	}
 	public function getComment() {
 		return $this->comment;
@@ -158,9 +166,6 @@ class mission {
 	}	
 	public function getDate() {
 		return $this->date;
-	}	
-	public function getConfiguration($_key = '', $_default = '') {
-		return utils::getJsonAttr($this->configuration, $_key, $_default);
 	}
 
 	public function setId($id) {
@@ -172,12 +177,6 @@ class mission {
 	public function setName($name) {
 		$this->name = $name;
 	}
-	public function setUsers($users) {
-		$this->users = json_encode($users, JSON_UNESCAPED_UNICODE);
-	}
-	public function setZones($zones) {
-		$this->zones = json_encode($zones, JSON_UNESCAPED_UNICODE);
-	}
 	public function setComment($comment) {
 		$this->comment = $comment;
 	}
@@ -187,8 +186,153 @@ class mission {
 	public function setDate($date) {
 		$this->date = $date;
 	}
-	public function setConfiguration($_key, $_value) {
-		$this->configuration = utils::setJsonAttr($this->configuration, $_key, $_value);
+
+}
+
+class missionUserAssociation {
+	/*     * *************************Attributs****************************** */
+
+	private $missionId;
+	private $userId;
+
+
+	/*     * ***********************Méthodes statiques*************************** */
+
+	public static function byUserId($_userId) {
+		$values = array(
+			'userId' => $_userId,
+		);
+
+		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
+        	FROM missionUserAssociation
+        	WHERE userId=:userId';
+		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ROW, PDO::FETCH_CLASS, __CLASS__);
+	}
+
+	public static function byMissionId($_missionId) {
+		$values = array(
+			'missionId' => $_missionId,
+		);
+
+		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
+        	FROM missionUserAssociation
+        	WHERE missionId=:missionId';
+		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ROW, PDO::FETCH_CLASS, __CLASS__);
+	}
+
+	public static function byEventId($_eventId) {
+		$values = array(
+			'eventId' => $_eventId,
+		);
+
+		$sql = 'SELECT ' . DB::buildField(__CLASS__) . ' 
+        FROM missionUserAssociation 
+        LEFT JOIN mission 
+        ON missionUserAssociation.missionId = mission.id 
+        WHERE mission.eventId =:eventId';
+		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
+	}
+
+	/*     * *********************Méthodes d'instance************************* */
+
+	public function save() {
+		return DB::save($this);;
+	}
+
+	public function remove() {
+		return DB::remove($this);
+	}
+
+	public function refresh() {
+		DB::refresh($this);
+	}
+
+	public function getMissionId() {
+		return $this->missionId;
+	}
+	public function getUserId() {
+		return $this->userId;
+	}
+
+	public function setMissionId($missionId) {
+		$this->missionId = $missionId;
+	}
+	public function setUserId($userId) {
+		$this->userId = $userId;
+	}
+
+}
+
+class missionZoneAssociation {
+	/*     * *************************Attributs****************************** */
+
+	private $missionId;
+	private $zoneId;
+
+
+	/*     * ***********************Méthodes statiques*************************** */
+
+	public static function byZoneId($_zoneId) {
+		$values = array(
+			'zoneId' => $_zoneId,
+		);
+
+		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
+        	FROM missionZoneAssociation
+        	WHERE zoneId=:zoneId';
+		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ROW, PDO::FETCH_CLASS, __CLASS__);
+	}
+
+	public static function byMissionId($_missionId) {
+		$values = array(
+			'missionId' => $_missionId,
+		);
+
+		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
+        	FROM missionZoneAssociation
+        	WHERE missionId=:missionId';
+		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ROW, PDO::FETCH_CLASS, __CLASS__);
+	}
+
+	public static function byEventId($_eventId) {
+		$values = array(
+			'eventId' => $_eventId,
+		);
+
+		$sql = 'SELECT ' . DB::buildField(__CLASS__) . ' 
+        FROM missionZoneAssociation 
+        LEFT JOIN mission 
+        ON missionZoneAssociation.missionId = mission.id 
+        WHERE mission.eventId =:eventId';
+		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
+	}
+
+	/*     * *********************Méthodes d'instance************************* */
+
+	public function save() {
+		return DB::save($this);;
+	}
+
+	public function remove() {
+		return DB::remove($this);
+	}
+
+	public function refresh() {
+		DB::refresh($this);
+	}
+
+	public function getMissionId() {
+		return $this->missionId;
+	}
+	public function getZoneId() {
+		return $this->zoneId;
+	}
+
+	public function setMissionId($missionId) {
+		$this->missionId = $missionId;
+	}
+	public function setZoneId($zoneId) {
+		$this->zoneId = $zoneId;
 	}
 
 }

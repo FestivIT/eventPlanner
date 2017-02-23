@@ -123,34 +123,6 @@ eventplanner.user = {
 	        return true;
 	    }
     },
-    
-    setOptions: function(_params) {
-	    var paramsRequired = ['key', 'value'];
-	    var paramsSpecifics =  {
-        	pre_success: function(_data){
-	        	if(_data.state == 'ok'){
-	        		eventplanner.ui.currentUser = _data.result;
-	        	}
-	        	return _data;
-        	}
-        };
-        
-	    try {
-	        eventplanner.private.checkParamsRequired(_params || {}, paramsRequired);
-	    } catch (e) {
-	        (_params.error || paramsSpecifics.error || eventplanner.private.default_params.error)(e);
-	        return;
-	    }
-	    var params = $.extend({}, eventplanner.private.default_params, paramsSpecifics, _params || {});
-	    var paramsAJAX = eventplanner.private.getParamsAJAX(params);
-	    paramsAJAX.url = 'core/ajax/user.ajax.php';
-	    paramsAJAX.data = {
-	        action: 'setOptions',
-	        key: _params.key,
-	        value: _params.value
-	    };
-	    return $.ajax(paramsAJAX);
-	},
 	
 	get: function(_params) {
 	    var paramsRequired = [];

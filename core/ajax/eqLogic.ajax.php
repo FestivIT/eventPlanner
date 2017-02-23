@@ -11,7 +11,7 @@ try {
 	ajax::init();
 
 	if (init('action') == 'all') {
-		$eqLogic = utils::addPrefixToArray(utils::o2a(eqLogic::byEventId($_SESSION['user']->getOptions('eventId'))), 'eqLogic', true);
+		$eqLogic = utils::addPrefixToArray(utils::o2a(eqLogic::byEventId($_SESSION['user']->getEventId())), 'eqLogic', true);
 
 		ajax::success($eqLogic);
 	}

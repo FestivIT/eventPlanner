@@ -11,7 +11,7 @@ try {
 	ajax::init();
 
 	if (init('action') == 'all') {
-		$zone = utils::addPrefixToArray(utils::o2a(zone::byEventId($_SESSION['user']->getOptions('eventId'))), 'zone', true);
+		$zone = utils::addPrefixToArray(utils::o2a(zone::byEventId($_SESSION['user']->getEventId())), 'zone', true);
 
 		ajax::success($zone);
 	}

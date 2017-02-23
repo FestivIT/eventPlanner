@@ -16,12 +16,43 @@ if (init('p') == '' && isConnect()) {
 <head>
 	<meta charset="utf-8">
 	<title>eventPlanner</title>
-	<link rel="shortcut icon" href="core/img/logo-eventplanner-sans-nom-couleur-25x25.png">
-	<meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
-	<meta name="description" content="">
-	<meta name="author" content="">
-	<meta name="apple-mobile-web-app-capable" content="yes">
-	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<link rel="shortcut icon" href="desktop/img/logo25.png">
+	
+	<meta name="description" content="Préparez et Plannifiez vos événements!">
+	<meta name="author" content="Gaël GRIFFON">
+
+	<!-- Allow web app to be run in full-screen mode. -->  
+    <meta name="apple-mobile-web-app-capable" content="yes">  
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <!-- Make the app title different than the page title. -->  
+    <meta name="apple-mobile-web-app-title" content="eventPlanner">
+
+     <!-- Configure the status bar. --> 
+	<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+
+	<!-- Set the viewport. -->  
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+    <!-- Enable automatic phone number detection. -->  
+    <meta name="format-detection" content="telephone=yes">
+ 
+    <meta name="application-name" content="eventPlanner">  
+    <meta name="msapplication-TileColor" content="#2196f3">  
+    <meta name="msapplication-TileImage" content="/assets/favicons/mstile-144x144.png">  
+    <meta name="theme-color" content="#2196f3"> 
+
+    <link rel="apple-touch-icon" href="desktop/img/logo25.png"/>
+	<link rel="apple-touch-icon" sizes="114x114" href="desktop/img/logo114.png"/>
+	<link rel="apple-touch-icon" sizes="72x72" href="desktop/img/logo72.png" />
+     
+    <!-- STARTUP IMAGES --> 
+	<link rel="apple-touch-startup-image" href="desktop/img/logo320x460.png"/>
+	<link rel="apple-touch-startup-image" sizes="1024x748" href="desktop/img/splashscreen1024x748.png" />
+	<link rel="apple-touch-startup-image" sizes="768x1004" href="desktop/img/logo768x1004.png" />
+	<link rel="apple-touch-startup-image" sizes="640x960" href="desktop/img/logo640x960.png" />
+	<!-- END icon for iOS Devices -->
+
 	<?php
 include_file('3rdparty', 'bootstrap/css/bootstrap.min', 'css');
 include_file('3rdparty', 'roboto/roboto', 'css');
@@ -124,8 +155,9 @@ include_file('desktop', 'commun', 'css');
 	          	<a href="#" class="navbar-icon pull-right visible-xs navBarBtn" data-link="maincourante"><i class="glyphicon glyphicon-pencil"></i></a>
 	          	<a href="#" class="navbar-icon pull-right visible-xs navBarBtn" data-link="planning"><i class="glyphicon glyphicon-calendar"></i></a>
 	          	<a href="#" class="navbar-icon pull-right visible-xs navBarBtn" data-link="map"><i class="fa fa-globe white"></i></a>
+	          	<a href="#" class="navbar-icon pull-right visible-xs navBarBtn" data-link="dashboard"><i class="glyphicon glyphicon-th"></i></a>
 	          </div>
-	          <a class="navbar-brand" href="<?php echo $homeLink; ?>">eventPlanner</a>
+	          <a class="navbar-brand" href="<?php echo $homeLink; ?>"><span><img alt="Brand" src="desktop/img/logo25.png"></span> <span class="hidden-xs">eventPlanner</span></a>
 
 	        </div>
 
@@ -155,7 +187,7 @@ include_file('desktop', 'commun', 'css');
 
 // A reprendre pour un paramétrage à l'initialisation de l'UI
 
-	            	$currentEventId = $_SESSION['user']->getOptions('eventId', '0');
+	            	$currentEventId = $_SESSION['user']->getEventId();
 	            	if($currentEventId != 0){
 	            		$currentEvent = event::byId($currentEventId);
 	            		if(is_object($currentEvent)){

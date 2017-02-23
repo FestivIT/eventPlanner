@@ -11,7 +11,10 @@ class user {
 	private $login;
 	private $name;
 	private $password;
-	private $options;
+	private $lastConnection;
+	private $eventId;
+	private $actionOnScan;
+	private $slackID;
 	private $rights;
 	private $enable = 1;
 	private $hash;
@@ -38,7 +41,7 @@ class user {
 		$sMdp = (!is_sha1($_mdp)) ? sha1($_mdp) : $_mdp;
 		$user = user::byLoginAndPassword($_login, $sMdp);
 		if (is_object($user)) {
-			$user->setOptions('lastConnection', date('Y-m-d H:i:s'));
+			$user->setLastConnection(date('Y-m-d H:i:s'));
 			$user->save(false);
 			msg::add(null, null, null, $user->getId(), "Connection de l'utilisateur: " . $user->getName(), 'user', 'update', $user);
 			//eventPlanner::event('user_connect');
@@ -181,6 +184,22 @@ class user {
 		return $this->password;
 	}
 
+	public function getLastConnection() {
+		return $this->lastConnection;
+	}
+
+	public function getActionOnScan() {
+		return $this->actionOnScan;
+	}
+
+	public function getSlackID() {
+		return $this->slackID;
+	}
+
+	public function getEventId() {
+		return $this->eventId;
+	}
+
 	public function setId($id) {
 		$this->id = $id;
 	}
@@ -193,16 +212,24 @@ class user {
 		$this->name = $name;
 	}
 
+	public function setLastConnection($lastConnection) {
+		$this->lastConnection = $lastConnection;
+	}
+
+	public function setActionOnScan($actionOnScan) {
+		$this->actionOnScan = $actionOnScan;
+	}
+
+	public function setSlackID($slackID) {
+		$this->slackID = $slackID;
+	}
+
+	public function setEventId($eventId) {
+		$this->eventId = $eventId;
+	}
+
 	public function setPassword($password) {
 		$this->password = (!is_sha1($password)) ? sha1($password) : $password;
-	}
-
-	public function getOptions($_key = '', $_default = '') {
-		return utils::getJsonAttr($this->options, $_key, $_default);
-	}
-
-	public function setOptions($_key, $_value) {
-		$this->options = utils::setJsonAttr($this->options, $_key, $_value);
 	}
 
 	public function getRights($_key = '', $_default = '') {
