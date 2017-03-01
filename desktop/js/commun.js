@@ -149,12 +149,14 @@ $.addTemplateFormatter("formatList", function(list, template) {
     return formatList(list, template, '');
 });
 
-$.addTemplateFormatter("formatListWithUserName", function(list, template) {
-    return formatList(list, template, 'userName');
+$.addTemplateFormatter("formatMissionUsers", function(missionId, templateId) {
+    return $('<div>').loadTemplate($('#' + templateId), [eventplanner.mission.byId(missionId).getUsers()]).html();
 });
-
-$.addTemplateFormatter("formatListWithZoneName", function(list, template) {
-    return formatList(list, template, 'zoneName');
+$.addTemplateFormatter("formatMissionZones", function(missionId, templateId) {
+    return $('<div>').loadTemplate($('#' + templateId), [eventplanner.mission.byId(missionId).getZones()]).html();
+});
+$.addTemplateFormatter("formatContactCoord", function(contactId, templateId) {
+    return $('<div>').loadTemplate($('#' + templateId), eventplanner.contact.byId(contactId).contactCoord).html();
 });
 
 function formatDateYmd2Dmy(date){

@@ -2,6 +2,8 @@ eventplanner.msg = {
     dataReady: $.Deferred(),
     container: {},
     lastMsgId: 0,
+    msgItem: function(){
+    },
 
     // Chargement initial des données depuis le serveur
     load: function(){
@@ -78,8 +80,9 @@ eventplanner.msg = {
         var params = $.extend({}, eventplanner.private.default_params, paramsSpecifics, _params || {});
 
         var paramsAJAX = eventplanner.private.getParamsAJAX(params);
-        paramsAJAX.url = 'core/ajax/msg.ajax.php';
+        paramsAJAX.url = 'core/ajax/ajax.php';
         paramsAJAX.data = {
+            type: 'msg',
             action: 'sinceId',
             id: this.lastMsgId
         };
@@ -89,13 +92,13 @@ eventplanner.msg = {
     processMsgData: function(_data){
         switch(_data.op) {
             case 'add':
-                var itemId = _data.content[_data.type + 'Id'];                    
-                eventplanner[_data.type].container[itemId] = _data.content;
+                var itemId = _data.content[_data.type + 'Id'];
+                eventplanner.updateDataFromServer(_data.type, _data.content);
             break;
             
             case 'update':
                 var itemId = _data.content[_data.type + 'Id'];
-                eventplanner[_data.type].container[itemId] = _data.content;
+                eventplanner.updateDataFromServer(_data.type, _data.content);
             break;
             
             case 'remove':
@@ -105,36 +108,9 @@ eventplanner.msg = {
         }
     },
 
-    // enregistrement d'un message
+    // enregistrement
     save: function(_params) {
-        // éventuellement ajouter un futur "cache" si offline... ?
-
-        var paramsRequired = ['msg'];
-        var paramsSpecifics =  {
-        	pre_success: function(_data){
-	        	if(_data.state == 'ok'){
-	        		eventplanner.msg.updateData(_data.result);
-	        		//eventplanner.msg.lastMsgDate = _data.date;
-	        	}
-	        	return _data;
-        	}
-        };
-
-        try {
-            eventplanner.private.checkParamsRequired(_params || {}, paramsRequired);
-        } catch (e) {
-            (_params.error || paramsSpecifics.error || eventplanner.private.default_params.error)(e);
-            return;
-        }
-
-        var params = $.extend({}, eventplanner.private.default_params, paramsSpecifics, _params || {});
-        var paramsAJAX = eventplanner.private.getParamsAJAX(params);
-        paramsAJAX.url = 'core/ajax/msg.ajax.php';
-        paramsAJAX.data = {
-            action: 'save',
-            msg: json_encode(_params.msg),
-        };
-        return $.ajax(paramsAJAX);
+        return eventplanner.saveDataToServer('msg', _params);
     },
 
     updateData: function(_data){

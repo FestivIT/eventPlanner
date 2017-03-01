@@ -135,6 +135,13 @@ class mission {
 		return $this;
 	}
 
+	public function formatForFront(){
+		$mission = utils::addPrefixToArray(utils::o2a($this), 'mission');
+		$mission['missionUsers'] = missionUserAssociation::listIdByMissionId($this->getId());
+		$mission['missionZones'] = missionZoneAssociation::listIdByMissionId($this->getId());
+		return $mission;
+	}
+
 	public function remove() {
 		return DB::remove($this);
 	}
@@ -206,7 +213,7 @@ class missionUserAssociation {
 		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
         	FROM missionUserAssociation
         	WHERE userId=:userId';
-		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ROW, PDO::FETCH_CLASS, __CLASS__);
+		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
 	}
 
 	public static function byMissionId($_missionId) {
@@ -217,7 +224,15 @@ class missionUserAssociation {
 		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
         	FROM missionUserAssociation
         	WHERE missionId=:missionId';
-		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ROW, PDO::FETCH_CLASS, __CLASS__);
+		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
+	}
+
+	public static function listIdByMissionId($_missionId) {
+		$list = array();
+		foreach(missionUserAssociation::byMissionId($_missionId) as $missionUserAssociation){
+			array_push($list, $missionUserAssociation->getUserId());
+		}
+		return $list;
 	}
 
 	public static function byEventId($_eventId) {
@@ -280,7 +295,7 @@ class missionZoneAssociation {
 		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
         	FROM missionZoneAssociation
         	WHERE zoneId=:zoneId';
-		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ROW, PDO::FETCH_CLASS, __CLASS__);
+		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
 	}
 
 	public static function byMissionId($_missionId) {
@@ -291,7 +306,15 @@ class missionZoneAssociation {
 		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
         	FROM missionZoneAssociation
         	WHERE missionId=:missionId';
-		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ROW, PDO::FETCH_CLASS, __CLASS__);
+		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
+	}
+
+	public static function listIdByMissionId($_missionId) {
+		$list = array();
+		foreach(missionZoneAssociation::byMissionId($_missionId) as $missionZoneAssociation){
+			array_push($list, $missionZoneAssociation->getZoneId());
+		}
+		return $list;
 	}
 
 	public static function byEventId($_eventId) {

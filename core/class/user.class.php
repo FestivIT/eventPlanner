@@ -147,7 +147,25 @@ class user {
 			}
 		}
 
+		// Si c'est l'utilisateur en cours, on met à jour la session
+		if(is_object($_SESSION['user']) && ($this->getId() == $_SESSION['user']->getId())){
+			@session_start();
+			$_SESSION['user']->refresh();
+			@session_write_close();
+		}		
+
 		return $this;
+	}
+
+	public function formatForFront($_currentUser = false){
+		$return = utils::addPrefixToArray(utils::o2a($this), get_class($this));
+
+		// Si c'est pas l'utilisateur en cours, on supprimer certains champs
+		if(!$_currentUser){
+			$return = utils::unsetElementFromArray($return, array('userPassword', 'userHash', 'userOptions', 'userRights'));
+		}		
+
+		return $return;
 	}
 
 	public function remove() {

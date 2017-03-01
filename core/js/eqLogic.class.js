@@ -26,107 +26,16 @@ eventplanner.eqLogic = {
 
     // Chargement initial des données depuis le serveur
     load: function(){
-    	this.dataReady = $.Deferred();
-    	this.container = {};
-    	
-        var params = {
-            success: function(_data, _date) {
-                _data.forEach(function(element) {
-                    eventplanner.eqLogic.container[element.eqLogicId] = $.extend(new eventplanner.eqLogic.eqLogicItem(), element);
-                });
-
-                eventplanner.eqLogic.dataReady.resolve();
-            }
-        };
-
-        var params = $.extend({}, eventplanner.private.default_params, params || {});
-
-        var paramsAJAX = eventplanner.private.getParamsAJAX(params);
-        paramsAJAX.url = 'core/ajax/eqLogic.ajax.php';
-        paramsAJAX.data = {
-            action: 'all'
-        };
-        $.ajax(paramsAJAX);
-
-        return this.dataReady;
+        return eventplanner.loadDataFromServer('eqLogic');
     },
 
-    // enregistrement d'un eqLogic
+    // enregistrement
     save: function(_params) {
-        // éventuellement ajouter un futur "cache" si offline... ?
-
-        var paramsRequired = ['eqLogic'];
-        var paramsSpecifics =  {
-            pre_success: function(_data){
-                if(_data.state == 'ok'){
-                    eventplanner.eqLogic.updateData(_data.result);
-                    //eventplanner.msg.lastMsgDate = _data.date;
-                }
-                return _data;
-            }
-        };
-
-        try {
-            eventplanner.private.checkParamsRequired(_params || {}, paramsRequired);
-        } catch (e) {
-            (_params.error || paramsSpecifics.error || eventplanner.private.default_params.error)(e);
-            return;
-        }
-
-        var params = $.extend({}, eventplanner.private.default_params, paramsSpecifics, _params || {});
-        var paramsAJAX = eventplanner.private.getParamsAJAX(params);
-        paramsAJAX.url = 'core/ajax/eqLogic.ajax.php';
-        paramsAJAX.data = {
-            action: 'save',
-            eqLogic: json_encode(_params.eqLogic)
-        };
-        return $.ajax(paramsAJAX);
+        return eventplanner.saveDataToServer('eqLogic', _params);
     },
-    
-    updateState: function(_params) {
-	    var paramsRequired = ['listId','state'];
-	    var paramsSpecifics =  {
-            pre_success: function(_data){
-                if(_data.state == 'ok'){
-                    eventplanner.eqLogic.updateData(_data.result);
-                    //eventplanner.msg.lastMsgDate = _data.date;
-                }
-                return _data;
-            }
-        };
-	
-	    try {
-	        eventplanner.private.checkParamsRequired(_params || {}, paramsRequired);
-	    } catch (e) {
-	        (_params.error || paramsSpecifics.error || eventplanner.private.default_params.error)(e);
-	        return;
-	    }
-	
-	    var params = $.extend({}, eventplanner.private.default_params, paramsSpecifics, _params || {});
-	    var paramsAJAX = eventplanner.private.getParamsAJAX(params);
-	    paramsAJAX.url = 'core/ajax/eqLogic.ajax.php';
-	    paramsAJAX.data = {
-	        action: 'updateState',
-	        listId: json_encode(_params.listId),
-	        state: _params.state
-	    };
-	    return $.ajax(paramsAJAX);
-	},
 
-    updateData: function(_data){
-        if(is_object(_data)){
-            // c'est un objet, donc un seul enregistrement à traiter
-            if(_data.hasOwnProperty('eqLogicId')){
-                this.container[_data.eqLogicId] = $.extend(new eventplanner.eqLogic.eqLogicItem(), _data);
-            }           
-        }else{
-            // c'est un array, donc plusieurs enregistrement à traiter
-            _data.forEach(function(element) {
-                if(element.hasOwnProperty('eqLogicId')){
-                    eventplanner.eqLogic.container[element.eqLogicId] = $.extend(new eventplanner.eqLogic.eqLogicItem(), element);
-                }
-            });
-        }
+    updateState: function(_params) {
+        return eventplanner.updateStateToServer('eqLogic' ,_params);
     },
 
     // Accés aux données

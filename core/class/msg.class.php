@@ -105,11 +105,19 @@ class msg {
 		if (!class_exists($_type)) {
 		    throw new Exception('Type [' . $_type . '] inconnu!');
 		}
+
+		if (!is_object($_data)) {
+		    throw new Exception('Data doit être un objet!');
+		}
+
+		if (!method_exists($_data, 'formatForFront')) {
+		    throw new Exception('Data doit avoir la méthode formatForFront!');
+		}
 		
 		$data = array(
 						'type' => $_type,
 						'op' => $_op,
-						'content' => utils::addPrefixToArray(utils::o2a($_data), $_type) // ajout des prefixs
+						'content' => $_data->formatForFront()
 					);
 
 
@@ -138,6 +146,11 @@ class msg {
 		
 		DB::save($this);
 		return $this;
+	}
+
+	public function formatForFront(){
+		$return = utils::addPrefixToArray(utils::o2a($this), get_class($this));
+		return $return;
 	}
 
 	public function remove() {

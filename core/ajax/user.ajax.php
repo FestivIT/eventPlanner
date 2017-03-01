@@ -88,36 +88,6 @@ try {
 		ajax::success(utils::o2a($_SESSION['user']));
 	}
 
-	
-	if (init('action') == 'setProperty') {
-		$param = init('param');
-
-		$user = user::byId($_SESSION['user']->getId());
-		
-		if (is_object($user)) {
-			print_r($param);
-			//$user->setOptions($key, $value);
-			//$user->save();
-			@session_start();
-			$_SESSION['user']->refresh();
-			@session_write_close();
-
-			ajax::success(utils::addPrefixToArray(utils::o2a($user), 'user'));
-		}
-
-		throw new Exception('User inconnu');
-	}
-	
-
-	if (init('action') == 'byId') {
-		$user = user::byId(init('id'));
-		if (isset($user) && is_object($user)) {
-			ajax::success(utils::o2a($user));
-		}
-
-		throw new Exception('User introuvable: id=' . init('id'));
-	}
-
 	throw new Exception('Aucune methode correspondante  : ' . init('action'));
 	/*     * *********Catch exeption*************** */
 } catch (Exception $e) {

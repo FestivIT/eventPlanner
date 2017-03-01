@@ -3,116 +3,34 @@ eventplanner.mission = {
     container: {},
     missionItem: function(){ 
         this.getUsers = function(_fullData = false){
-            //return eventplanner.matType.byId(this.matTypeParentId, _fullData);
+            var userList = [];
+            this.missionUsers.forEach(function(userId){
+                userList.push(eventplanner.user.byId(userId, _fullData));
+            })
+            return userList;
         }
 
         this.getZones = function(_fullData = false){
-            //return eventplanner.matType.byId(this.matTypeParentId, _fullData);
+            var zoneList = [];
+            this.missionZones.forEach(function(zoneId){
+                zoneList.push(eventplanner.zone.byId(zoneId, _fullData));
+            })
+            return zoneList;
         }
     },
 
     // Chargement initial des données depuis le serveur
     load: function(){
-    	this.dataReady = $.Deferred();
-    	this.container = {};
-    	
-        var params = {
-            success: function(_data, _date) {
-                _data.forEach(function(element) {
-                    eventplanner.mission.container[element.missionId] = $.extend(new eventplanner.mission.missionItem(), element);
-                });
-
-                eventplanner.mission.dataReady.resolve();
-            }
-        };
-
-        var params = $.extend({}, eventplanner.private.default_params, params || {});
-
-        var paramsAJAX = eventplanner.private.getParamsAJAX(params);
-        paramsAJAX.url = 'core/ajax/mission.ajax.php';
-        paramsAJAX.data = {
-            action: 'all',
-            fullData: true
-        };
-        $.ajax(paramsAJAX);
-
-        return this.dataReady;
+        return eventplanner.loadDataFromServer('mission');
     },
 
     // enregistrement d'une mission
     save: function(_params) {
-        var paramsRequired = ['mission'];
-        var paramsSpecifics =  {
-        	pre_success: function(_data){
-	        	if(_data.state == 'ok'){
-	        		eventplanner.mission.updateData(_data.result);
-	        	}
-	        	return _data;
-        	}
-        };
-
-        try {
-            eventplanner.private.checkParamsRequired(_params || {}, paramsRequired);
-        } catch (e) {
-            (_params.error || paramsSpecifics.error || eventplanner.private.default_params.error)(e);
-            return;
-        }
-
-        var params = $.extend({}, eventplanner.private.default_params, paramsSpecifics, _params || {});
-        var paramsAJAX = eventplanner.private.getParamsAJAX(params);
-        paramsAJAX.url = 'core/ajax/mission.ajax.php';
-        paramsAJAX.data = {
-            action: 'save',
-            mission: json_encode(_params.mission)
-        };
-        return $.ajax(paramsAJAX);
-    },
-    
-    updateData: function(_data){
-        console.log(_data);
-    	if(is_object(_data)){
-    		// c'est un objet, donc un seul enregistrement à traiter
-    		if(_data.hasOwnProperty('missionId')){
-    			this.container[_data.missionId] = $.extend(new eventplanner.mission.missionItem(), _data);
-    		}    		
-    	}else{
-    		// c'est un array, donc plusieurs enregistrement à traiter
-    		_data.forEach(function(element) {
-                if(element.hasOwnProperty('missionId')){
-	    			eventplanner.mission.container[element.missionId] = $.extend(new eventplanner.mission.missionItem(), element);
-	    		}
-            });
-    	}
+        return eventplanner.saveDataToServer('mission', _params);
     },
 
     updateState: function(_params) {
-        var paramsRequired = ['listId','state'];
-        var paramsSpecifics =  {
-        	pre_success: function(_data){
-	        	if(_data.state == 'ok'){
-	        		eventplanner.mission.updateData(_data.result);
-	        		//eventplanner.msg.lastMsgDate = _data.date;
-	        	}
-	        	return _data;
-        	}
-        };
-
-        try {
-            eventplanner.private.checkParamsRequired(_params || {}, paramsRequired);
-        } catch (e) {
-            (_params.error || paramsSpecifics.error || eventplanner.private.default_params.error)(e);
-            return;
-        }
-
-        var params = $.extend({}, eventplanner.private.default_params, paramsSpecifics, _params || {});
-        var paramsAJAX = eventplanner.private.getParamsAJAX(params);
-        paramsAJAX.url = 'core/ajax/mission.ajax.php';
-        paramsAJAX.data = {
-            action: 'updateState',
-            listId: json_encode(_params.listId),
-            state: _params.state
-        };
-        return $.ajax(paramsAJAX);
+        return eventplanner.updateStateToServer('mission' ,_params);
     },
 
     // Accés aux données

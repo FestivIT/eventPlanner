@@ -26,22 +26,32 @@
 			<script type="text/html" id="templateEventInfoContactTable">
 				<li class="list-group-item msgItem" data-template-bind='[{"attribute": "data-id", "value": "msgId"}]'>
 		  			<div class="row">
-			  			<div class="col-xs-8 col-md-5">
+			  			<div class="col-xs-8 col-sm-5">
 							<strong><span data-content="contactName"></span></strong><br>
 							<small><span data-content="contactFct"></span></small>
 						</div>
-						<div class="col-md-3 hidden-xs" data-template-bind='[{"attribute": "content", "value": "contactZones", "formatter": "formatListWithZoneName", "formatOptions": "<span class=\"label label-default\"></span>"}]'></div>
-						<div class="col-md-3 hidden-xs" data-template-bind='[{"attribute": "content", "value": "contactCoord", "formatter": "formatList", "formatOptions": "<span class=\"label label-default\"></span>"}]'></div>
-						<div class="col-xs-4 col-md-1" style="text-align: right;">
+						<div class="col-sm-3 hidden-xs">
+							<span class="label label-default" data-content="zoneName"></span>
+						</div>
+						<div class="col-sm-3 hidden-xs" data-template-bind='[{"attribute": "content", "value": "contactId", "formatter": "formatContactCoord", "formatOptions": "templateContactCoord"}]'></div>
+						<div class="col-xs-4 col-sm-1" style="text-align: right;">
 							<button type="button" class="btn btn-warning btn-xs editMissionBtn" data-template-bind='[{"attribute": "data-mission-id", "value": "missionId"}]' title="Modifier"><span class="glyphicon glyphicon-pencil"></span></button> 
 							<button type="button" class="btn btn-danger btn-xs deleteMissionBtn" data-template-bind='[{"attribute": "data-mission-id", "value": "missionId"}]' title="Supprimer"><span class="glyphicon glyphicon-remove"></span></button>
 						</div>
 					</div>
 					<div class="row hidden-sm hidden-md hidden-lg">
-						<div class="col-xs-6" data-template-bind='[{"attribute": "content", "value": "contactZones", "formatter": "formatListWithZoneName", "formatOptions": "<span class=\"label label-default\"></span>"}]'></div>
-						<div class="col-xs-6" data-template-bind='[{"attribute": "content", "value": "contactCoord", "formatter": "formatList", "formatOptions": "<span class=\"label label-default\"></span>"}]'></div>
+						<div class="col-xs-6">
+							<span class="label label-default" data-content="zoneName"></span>
+						</div>
+						<div class="col-xs-6" data-template-bind='[{"attribute": "content", "value": "contactId", "formatter": "formatContactCoord", "formatOptions": "templateContactCoord"}]'></div>
 		  			</div>
 				</li>
+			</script>
+			<script type="text/html" id="templateContactCoord">
+				 <span class="label label-info">
+				 	<span data-content="type"></span>: 
+				 	<span data-content="value"></span>
+				 </span><br>
 			</script>
 		</div>
 		

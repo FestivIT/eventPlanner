@@ -4,10 +4,16 @@
 	<input type="text" id="zoneState" style="display: none;" data-value="zoneState">
 
   <div class="form-group">
-    	<label for="name" class="col-sm-3 control-label" >Nom</label>
+    	<label for="zoneName" class="col-sm-3 control-label" >Nom</label>
     	<div class="col-sm-9">
     		<input type="text" class="form-control" id="zoneName" placeholder="Nom" data-value="zoneName">
     	</div>
+  </div>
+  <div class="form-group">
+      <label for="zoneComment" class="col-sm-3 control-label" >Commentaire</label>
+      <div class="col-sm-9">
+        <textarea class="form-control" rows="5" id="zoneComment" data-content="zoneComment"></textarea>
+      </div>
   </div>
   <div class="form-group" id="mapDiv">
 		<label class="col-sm-3 control-label" data-template-bind='[{"attribute": "for", "value": "modalId", "formatter": "prepend", "formatOptions": "mapZone"}]'>Localisation</label>

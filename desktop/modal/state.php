@@ -23,4 +23,13 @@
 		</p>
 	</script>
   </div>
+  <div class="form-group zoneEqlogicState">
+    <label class="col-sm-3 control-label" >Appliquer sur les équipements de la zone</label>
+    <div class="col-sm-2">
+    	<input type="checkbox" id="eqLogicStateSwitch">
+    </div>
+    <div class="col-sm-7">
+		<span class="label label-primary zoneEqLogicState"></span>   	
+   	</div>
+  </div>
 </form>

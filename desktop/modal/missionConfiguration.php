@@ -29,29 +29,44 @@
   </div>
 
   <div class="form-group">
-      <label for="missionZoneSelect" class="col-sm-3 control-label" >Zone</label>
+    <label for="missionZoneSelect" class="col-sm-3 control-label" >Zones</label>
       <div class="col-sm-9">
-        <select multiple class="form-control" id="missionZoneSelect"></select>
-        <script type="text/html" id="templateZoneOptions">
-          <option data-template-bind='[{"attribute": "value", "value": "zoneId"}]' data-content="zoneName"></option>
-        </script>
-      </div>
-  </div>
+        <div class="input-group">
+          <select class="form-control" id="missionZoneSelect"></select>
+          <span class="input-group-btn">
+            <button class="btn btn-success addZoneOptionBtn" type="button"><span class="glyphicon glyphicon-plus-sign"></span></button>
+          </span>
+          <script type="text/html" id="templateZoneOptions">
+            <option data-template-bind='[{"attribute": "value", "value": "zoneId"}]' data-content="zoneName"></option>
+          </script>
+        </div>
 
-  <div class="form-group">
-      <label for="missionUserSelect" class="col-sm-3 control-label" >Attribué à</label>
-      <div class="col-sm-9">
-        <select multiple class="form-control" id="missionUserSelect"></select>
-        <script type="text/html" id="templateUserOptions">
-          <option data-template-bind='[{"attribute": "value", "value": "userId"}]' data-content="userName"></option>
+        <div id="missionZoneList" class="list-group">
+        </div>
+        <script type="text/html" id="templateMissionZoneOption">
+          <span class="list-group-item missionZoneItem" data-template-bind='[{"attribute": "data-zone-id", "value": "zoneId"}]' data-content-prepend="zoneName"><a href="#" class="deleteZoneOptionBtn"><span class="glyphicon glyphicon-minus-sign pull-right "></span></a></span>
         </script>
-      </div>
+    </div>
   </div>
-
+  
   <div class="form-group">
-      <label for="missionUserSelect" class="col-sm-3 control-label" >Attribué à</label>
+  	<label for="missionUserSelect" class="col-sm-3 control-label" >Attribué à</label>
       <div class="col-sm-9">
-        <input type="text" data-role="tagsinput" id="missionUserSelectTag">
-      </div>
+        <div class="input-group">
+          <select class="form-control" id="missionUserSelect"></select>
+          <span class="input-group-btn">
+            <button class="btn btn-success addUserOptionBtn" type="button"><span class="glyphicon glyphicon-plus-sign"></span></button>
+          </span>
+          <script type="text/html" id="templateUserOptions">
+            <option data-template-bind='[{"attribute": "value", "value": "userId"}]' data-content="userName"></option>
+          </script>
+        </div>
+
+        <div id="missionUserList" class="list-group">
+        </div>
+        <script type="text/html" id="templateMissionUserOption">
+          <span class="list-group-item missionUserItem" data-template-bind='[{"attribute": "data-user-id", "value": "userId"}]' data-content-prepend="userName"><a href="#" class="deleteUserOptionBtn"><span class="glyphicon glyphicon-minus-sign pull-right "></span></a></span>
+        </script>
+  	</div>
   </div>
 </form>

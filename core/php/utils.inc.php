@@ -843,3 +843,13 @@ function getStateText($state){
 
 	return $STATE->stateList[$state]->text;
 }
+
+function getZoneStateEqLogic($state){
+	global $STATE;
+	
+	if(property_exists($STATE->stateList[$state] , 'eqLogicState')){
+		return $STATE->stateList[$state]->eqLogicState;
+	}else{
+		return false;
+	}
+}

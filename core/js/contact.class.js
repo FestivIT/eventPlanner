@@ -1,48 +1,21 @@
-eventplanner.eqLink = {
+eventplanner.contact = {
     dataReady: $.Deferred(),
     container: {},
-    type: {
-        1: 'Eth',
-        2: 'Wifi2.4',
-        3: 'Wifi5',
-        4: 'VDSL'
-    },
-    eqLinkItem: function(){ 
-        this.getEqLogics = function(_fullData = false){
-            return [eventplanner.eqLogic.byId(this.eqLinkEqLogicId1, _fullData),
-                    eventplanner.eqLogic.byId(this.eqLinkEqLogicId2, _fullData)];
-        }
-        
-        this.getPointsLocalisation = function(){
-            var eqLogic1 = eventplanner.eqLogic.byId(this.eqLinkEqLogicId1);
-            var eqLogic2 = eventplanner.eqLogic.byId(this.eqLinkEqLogicId2);
-            var result = [];
-            
-            if(eqLogic1.eqLogicConfiguration.hasLocalisation){
-                result.push(eqLogic1.eqLogicConfiguration.localisation);
-            }else{
-                result.push(eqLogic1.getZone().zoneLocalisation);
-            }
-            
-            if(eqLogic2.eqLogicConfiguration.hasLocalisation){
-                result.push(eqLogic2.eqLogicConfiguration.localisation);
-            }else{
-                result.push(eqLogic2.getZone().zoneLocalisation);
-            }
-            
-            return result;
+    contactItem: function(){ 
+        this.getZone = function(_fullData = false){
+            return eventplanner.zone.byId(this.contactZoneId, _fullData);
         }
     },
     
 
     // Chargement initial des données depuis le serveur
     load: function(){
-        return eventplanner.loadDataFromServer('eqLink');
+        return eventplanner.loadDataFromServer('contact');
     },
 
     // enregistrement
     save: function(_params) {
-        return eventplanner.saveDataToServer('eqLink', _params);
+        return eventplanner.saveDataToServer('contact', _params);
     },
 
     // Accés aux données
@@ -54,7 +27,7 @@ eventplanner.eqLink = {
             });
 
             // Tri
-            dataSelection.sort(this.compareEqLogicId1Asc);
+            dataSelection.sort(this.compareName);
 
             // Si on demande les data consolidées (pour l'utilisation avec les template)
             if(_fulldata){
@@ -96,13 +69,13 @@ eventplanner.eqLink = {
             var dataSelection = Array();
 
             Object.keys(this.container).forEach(function(id) {
-               if(eventplanner.eqLink.container[id].eqLinkEventId == _eventId){
-                    dataSelection.push(eventplanner.eqLink.container[id]);
+               if(eventplanner.contact.container[id].contactEventId == _eventId){
+                    dataSelection.push(eventplanner.contact.container[id]);
                 }
             });
 
             // Tri
-            dataSelection.sort(this.compareEqLogicId1Asc);
+            dataSelection.sort(this.compareName);
 
             // Si on demande les data consolidées (pour l'utilisation avec les template)
             if(_fulldata){
@@ -117,19 +90,19 @@ eventplanner.eqLink = {
     },
 
     // Accés aux données
-    byEqLogicId: function(_eqLogicId, _fulldata = false){
+    byZoneId: function(_zoneId, _fulldata = false){
         if(this.dataReady.state() == 'resolved'){
             // Selection des données à conserver dans le container:
             var dataSelection = Array();
 
             Object.keys(this.container).forEach(function(id) {
-               if((eventplanner.eqLink.container[id].eqLinkEqLogicId1 == _eqLogicId) || (eventplanner.eqLink.container[id].eqLinkEqLogicId2 == _eqLogicId)){
-                    dataSelection.push(eventplanner.eqLink.container[id]);
+               if(eventplanner.contact.container[id].contactZoneId == _zoneId){
+                    dataSelection.push(eventplanner.contact.container[id]);
                 }
             });
 
             // Tri
-            dataSelection.sort(this.compareEqLogicId1Asc);
+            dataSelection.sort(this.compareName);
 
             // Si on demande les data consolidées (pour l'utilisation avec les template)
             if(_fulldata){
@@ -144,37 +117,28 @@ eventplanner.eqLink = {
     },
 
     getFullData: function(_data){
-        var processData = function(_eqLinkData){
+        var processData = function(_contactData){
             // Event
-            var event = eventplanner.event.byId(_eqLinkData.eqLinkEventId);
+            var event = eventplanner.event.byId(_contactData.contactEventId);
             if(!is_object(event)){
                 event = {};
             }
 
-            // EqLogic1
-            var eqLogic1 = eventplanner.eqLogic.byId(_eqLinkData.eqLinkEqLogicId1, true);
-            if(!is_object(eqLogic1)){
-                eqLogic1 = {};
+            // Zone
+            var zone = eventplanner.zone.byId(_contactData.contactZoneId, true);
+            if(!is_object(zone)){
+                zone = {};
             }
 
-            // EqLogic2
-            var eqLogic2 = eventplanner.eqLogic.byId(_eqLinkData.eqLinkEqLogicId2, true);
-            if(!is_object(eqLogic1)){
-                eqLogic2 = {};
-            }
-
-            var newEqLinkData = $.extend(true, {}, _eqLinkData, event);
-            newEqLinkData.eqLogic1 = eqLogic1;
-            newEqLinkData.eqLogic2 = eqLogic2;
-            newEqLinkData.eqLinkTypeName = eventplanner.eqLink.type[newEqLinkData.eqLinkType];
+            var newContactData = $.extend(true, {}, _contactData, event, zone);
            
             // Concaténation
-            return newEqLinkData;
+            return newContactData;
         }
        
        if(is_object(_data)){
             // c'est un objet, donc un seul enregistrement à traiter
-            if(_data.hasOwnProperty('eqLinkId')){
+            if(_data.hasOwnProperty('contactId')){
                 return processData(_data);
             }           
         }else if(is_array(_data)){
@@ -182,7 +146,7 @@ eventplanner.eqLink = {
             var dataArray = [];
             
             _data.forEach(function(element) {
-                if(element.hasOwnProperty('eqLinkId')){
+                if(element.hasOwnProperty('contactId')){
                     dataArray.push(processData(element));
                 }
             });
@@ -193,10 +157,10 @@ eventplanner.eqLink = {
         }
     },
 
-    compareEqLogicId1Asc: function(a,b) {
-      if (a.eqLinkEqLogicId1 < b.eqLinkEqLogicId1)
+    compareName: function(a,b) {
+      if (a.contactName < b.contactName)
         return -1;
-      if (a.eqLinkEqLogicId1 > b.eqLinkEqLogicId1)
+      if (a.contactName > b.contactName)
         return 1;
       return 0;
     }

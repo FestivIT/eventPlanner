@@ -48,14 +48,13 @@ class zone {
 		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
 	}
 
-	public static function updateState($_listId, $_state) {
-
+	public static function updateState($_listId, $_state, $_eqLogicState) {
         $sqlIdList = '(';
 		$separator = '';
 
         foreach ($_listId as $id) {
         	$zone = zone::byId($id);
-
+			
         	if(is_object($zone)){
         		if($zone->getState() != $_state){
         			$oldState = $zone->getState();
@@ -67,7 +66,13 @@ class zone {
 	        		$sqlIdList .= $separator . $id;
 		    		$separator = ', ';
         		}
+        		
+        		if($_eqLogicState){
+	        		$zone->setEqLogicState(getZoneStateEqLogic($_state));
+	        	}
         	}
+        	
+        	
 		}
 
 		$sqlIdList .= ")";
@@ -97,6 +102,22 @@ class zone {
 			}
 		}
 		return $this;
+	}
+
+	public function formatForFront(){
+		$return = utils::addPrefixToArray(utils::o2a($this), get_class($this));
+		return $return;
+	}
+	
+	public function setEqLogicState($_state){
+		$eqLogics = eqLogic::byZoneId($this->getId());
+		$eqLogicsId = array();
+		
+		foreach ($eqLogics as $eqLogic) {
+			array_push ($eqLogicsId, $eqLogic->getId());
+		}
+		
+		eqLogic::updateState($eqLogicsId, $_state);
 	}
 
 	public function remove() {

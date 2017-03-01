@@ -76,19 +76,22 @@
 					"text": "En attente",
 					"colorClass": "active",
 					"mapMarkerColor": "lightgray",
-					"mapMarkerIcon": "glyphicon-arrow-down"
+					"mapMarkerIcon": "glyphicon-arrow-down",
+					"eqLogicState": "100"
 				},
 				"201": {
 					"text": "A installer",
 					"colorClass": "warning",
 					"mapMarkerColor": "orange",
-					"mapMarkerIcon": "glyphicon-arrow-down"
+					"mapMarkerIcon": "glyphicon-arrow-down",
+					"eqLogicState": "120"
 				},
 				"202": {
 					"text": "Terminé",
 					"colorClass": "success",
 					"mapMarkerColor": "green",
-					"mapMarkerIcon": "glyphicon-arrow-down"
+					"mapMarkerIcon": "glyphicon-arrow-down",
+					"eqLogicState": "122"
 				},
 				"203": {
 					"text": "Probléme",
@@ -104,13 +107,22 @@
 					"text": "A désinstaller",
 					"colorClass": "danger",
 					"mapMarkerColor": "red",
-					"mapMarkerIcon": "glyphicon-arrow-up"
+					"mapMarkerIcon": "glyphicon-arrow-up",
+					"eqLogicState": "140"
 				},
 				"221": {
+					"text": "Désinstallé - à récupérer",
+					"colorClass": "danger",
+					"mapMarkerColor": "orange",
+					"mapMarkerIcon": "glyphicon-arrow-up",
+					"eqLogicState": "141"
+				},
+				"222": {
 					"text": "Démontage terminé",
 					"colorClass": "success",
 					"mapMarkerColor": "green",
-					"mapMarkerIcon": "glyphicon-arrow-up"
+					"mapMarkerIcon": "glyphicon-arrow-up",
+					"eqLogicState": "141"
 				}
 			}
 		}]

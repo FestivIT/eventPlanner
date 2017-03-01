@@ -47,6 +47,12 @@ class matType {
 		return $this;
 	}
 
+	public function formatForFront(){
+		$return = utils::addPrefixToArray(utils::o2a($this), get_class($this));
+		$return['attributes'] = matTypeAttribute::listIdByMatTypeId($this->getId());
+		return $return;
+	}
+
 	public function remove() {
 		return DB::remove($this);
 	}
@@ -65,7 +71,7 @@ class matType {
 		return $this->parentId;
 	}
 	public function getAttributes() {
-		return false;
+		return matTypeAttribute::byMatTypeId($this->getId());
 	}
 
 	public function setId($id) {
@@ -81,4 +87,5 @@ class matType {
 		
 	}
 }
+
 ?>

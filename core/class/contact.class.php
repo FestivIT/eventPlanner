@@ -3,15 +3,15 @@
 /* * ***************************Includes********************************* */
 require_once dirname(__FILE__) . '/../../core/php/core.inc.php';
 
-class eqLink {
+class contact {
 	/*     * *************************Attributs****************************** */
 
 	private $id;
 	private $eventId;
-	private $eqLogicId1;
-	private $eqLogicId2;
-	private $type;
-	private $configuration;
+	private $name;
+	private $fct;
+	private $zoneId;
+	private $coord;
 
 
 	/*     * ***********************Méthodes statiques*************************** */
@@ -22,14 +22,14 @@ class eqLink {
 		);
 
 		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-        FROM eqLink
+        FROM contact
         WHERE id=:id';
 		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ROW, PDO::FETCH_CLASS, __CLASS__);
 	}
 
 	public static function all() {
 		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-        FROM eqLink';
+        FROM contact';
 		return DB::Prepare($sql, array(), DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
 	}
 
@@ -39,19 +39,19 @@ class eqLink {
 		);
 
 		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-        FROM eqLink
+        FROM contact
         WHERE eventId=:eventId';
 		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
 	}
 
-	public static function byEqLogicId($_eqLogicId) {
+	public static function byZoneId($_zoneId) {
 		$values = array(
-			'eqLogicId' => $_eqLogicId,
+			'zoneId' => $_zoneId,
 		);
 
 		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-        FROM eqLink
-        WHERE eqLogicId1=:eqLogicId OR eqLogicId2=:eqLogicId';
+        FROM contact
+        WHERE zoneId=:zoneId';
 		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
 	}
 
@@ -59,19 +59,15 @@ class eqLink {
 	/*     * *********************Méthodes d'instance************************* */
 
 	public function save($_addMsg = true) {
-		if($this->configuration == null){
-			$this->configuration = array();
-		}
-
 		if($this->getId() == null){
 			DB::save($this);
 			if($_addMsg){
-				msg::add($this->getEventId(), null, null, $_SESSION['user']->getId(), "Création du lien", 'eqLink', 'add', $this);
+				msg::add($this->getEventId(), $this->getZoneId(), null, $_SESSION['user']->getId(), "Création du contact", 'contact', 'add', $this);
 			}
 		}else{
 			DB::save($this);
 			if($_addMsg){
-				msg::add($this->getEventId(), null, null, $_SESSION['user']->getId(), "Mise à jour du lien.", 'eqLink', 'update', $this);
+				msg::add($this->getEventId(), $this->getZoneId(), null, $_SESSION['user']->getId(), "Mise à jour du contact.", 'contact', 'update', $this);
 			}
 		}
 		return $this;
@@ -84,7 +80,7 @@ class eqLink {
 
 	public function remove($_addMsg = true) {
 		if($_addMsg){
-			msg::add($this->getEventId(), null, null, $_SESSION['user']->getId(), "Suppression du lien.", 'eqLink', 'remove', $this);
+			msg::add($this->getEventId(), $this->getZoneId(), null, $_SESSION['user']->getId(), "Suppression du contact.", 'contact', 'remove', $this);
 		}
 
 		return DB::remove($this);
@@ -100,23 +96,20 @@ class eqLink {
 	public function getEventId() {
 		return $this->eventId;
 	}
-	public function getEqLogicId1() {
-		return $this->eqLogicId1;
+	public function getName() {
+		return $this->name;
 	}
-	public function getEqLogic1() {
-		return eqLogic::byId($this->eqLogicId1);
+	public function getFct() {
+		if($this->fct == ''){
+			$this->fct = null;
+		}
+		return $this->fct;
 	}
-	public function getEqLogicId2() {
-		return $this->eqLogicId2;
+	public function getZoneId() {
+		return $this->zoneId;
 	}
-	public function getEqLogic2() {
-		return eqLogic::byId($this->eqLogicId2);
-	}
-	public function getType() {
-		return $this->type;
-	}	
-	public function getConfiguration($_key = '', $_default = '') {
-		return utils::getJsonAttr($this->configuration, $_key, $_default);
+	public function getCoord() {
+		return $this->coord;
 	}
 
 	public function setId($id) {
@@ -125,17 +118,17 @@ class eqLink {
 	public function setEventId($eventId) {
 		$this->eventId = $eventId;
 	}
-	public function setEqLogicId1($eqLogicId1) {
-		$this->eqLogicId1 = $eqLogicId1;
+	public function setName($name) {
+		$this->name = $name;
 	}
-	public function setEqLogicId2($eqLogicId2) {
-		$this->eqLogicId2 = $eqLogicId2;
+	public function setFct($fct) {
+		$this->fct = $fct;
 	}
-	public function setType($type) {
-		$this->type = $type;
+	public function setZoneId($zoneId) {
+		$this->zoneId = $zoneId;
 	}
-	public function setConfiguration($_key, $_value) {
-		$this->configuration = utils::setJsonAttr($this->configuration, $_key, $_value);
+	public function setCoord($coord) {
+		$this->coord = $coord;
 	}
 
 }

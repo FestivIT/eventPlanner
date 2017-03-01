@@ -2,62 +2,17 @@ eventplanner.user = {
     dataReady: $.Deferred(),
     container: {},
     connectCheck: 0,
+    userItem: function(){ 
+    },
     
     // Chargement initial des données depuis le serveur
     load: function(){
-    	this.dataReady = $.Deferred();
-    	this.container = {};
-    	
-        var params = {
-            success: function(_data, _date) {
-                _data.forEach(function(element) {
-                    eventplanner.user.container[element.userId] = element;
-                });
-                
-                eventplanner.user.dataReady.resolve();
-            }
-        };
-
-        var params = $.extend({}, eventplanner.private.default_params, params || {});
-
-        var paramsAJAX = eventplanner.private.getParamsAJAX(params);
-        paramsAJAX.url = 'core/ajax/user.ajax.php';
-        paramsAJAX.data = {
-            action: 'all',
-            fullData: true
-        };
-        $.ajax(paramsAJAX);
-
-        return this.dataReady;
+        return eventplanner.loadDataFromServer('user');
     },
-    
-    // enregistrement d'un user
+
+    // enregistrement
     save: function(_params) {
-        var paramsRequired = ['user'];
-        var paramsSpecifics =  {
-        	pre_success: function(_data){
-	        	if(_data.state == 'ok'){
-	        		eventplanner.user.updateData(_data.result);
-	        	}
-	        	return _data;
-        	}
-        };
-
-        try {
-            eventplanner.private.checkParamsRequired(_params || {}, paramsRequired);
-        } catch (e) {
-            (_params.error || paramsSpecifics.error || eventplanner.private.default_params.error)(e);
-            return;
-        }
-
-        var params = $.extend({}, eventplanner.private.default_params, paramsSpecifics, _params || {});
-        var paramsAJAX = eventplanner.private.getParamsAJAX(params);
-        paramsAJAX.url = 'core/ajax/user.ajax.php';
-        paramsAJAX.data = {
-            action: 'save',
-            user: json_encode(_params.user),
-        };
-        return $.ajax(paramsAJAX);
+        return eventplanner.saveDataToServer('user', _params);
     },
     
     // login d'un user
@@ -93,14 +48,6 @@ eventplanner.user = {
 		        	}
 		        	return _data;
 	        	}
-	        	/*pre_success: function(data) {
-	                if (data.state != 'ok') {
-	                    return {state: 'ok', result: false};
-	                } else {
-	                    eventplanner.user.connectCheck = Math.round(+new Date() / 1000);
-	                    return {state: 'ok', result: true};
-	                }
-	            }*/
 	        };
 	        try {
 	            eventplanner.private.checkParamsRequired(_params || {}, paramsRequired);
@@ -135,8 +82,9 @@ eventplanner.user = {
 	    }
 	    var params = $.extend({}, eventplanner.private.default_params, paramsSpecifics, _params || {});
 	    var paramsAJAX = eventplanner.private.getParamsAJAX(params);
-	    paramsAJAX.url = 'core/ajax/user.ajax.php';
+	    paramsAJAX.url = 'core/ajax/ajax.php';
 	    paramsAJAX.data = {
+            type: 'user',
 	        action: 'get'
 	    };
 	    return $.ajax(paramsAJAX);
@@ -206,12 +154,7 @@ eventplanner.user = {
     },
     
     // Accés aux données
-    byId: function(_id, _fulldata = false){
-    	// si l'ID n'est pas trouvé, alors relancer un LOAD pour essayer de le trouver.
-    	// (cas d'un user qui serait créé entre temps... voir comment industrialisé ça)
-    	// (peut-être via l'intégration des messages sans "EventID" dans toutes les requettes (peu importe l'event)
-    	// (notamment pour la mise à jour des user + matType...)
-    	
+    byId: function(_id, _fulldata = false){    	
         if(this.dataReady.state() == 'resolved'){
 
             // Selection des données à conserver dans le container:
@@ -246,24 +189,4 @@ eventplanner.user = {
       return 0;
     }
 }
-/*
-eventplanner.user.remove = function(_params) {
-    var paramsRequired = ['id'];
-    var paramsSpecifics = {};
-    try {
-        eventplanner.private.checkParamsRequired(_params || {}, paramsRequired);
-    } catch (e) {
-        (_params.error || paramsSpecifics.error || eventplanner.private.default_params.error)(e);
-        return;
-    }
-    var params = $.extend({}, eventplanner.private.default_params, paramsSpecifics, _params || {});
-    var paramsAJAX = eventplanner.private.getParamsAJAX(params);
-    paramsAJAX.url = 'core/ajax/user.ajax.php';
-    paramsAJAX.data = {
-        action: 'remove',
-        id: _params.id
-    };
-    $.ajax(paramsAJAX);
-}
-*/
 

@@ -97,6 +97,11 @@ class eqReal {
 		}
 		return $this;
 	}
+	
+	public function formatForFront(){
+		$return = utils::addPrefixToArray(utils::o2a($this), get_class($this));
+		return $return;
+	}
 
 	public function remove() {
 		return DB::remove($this);

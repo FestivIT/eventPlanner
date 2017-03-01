@@ -39,7 +39,7 @@ if (init('p') == '' && isConnect()) {
  
     <meta name="application-name" content="eventPlanner">  
     <meta name="msapplication-TileColor" content="#2196f3">  
-    <meta name="msapplication-TileImage" content="/assets/favicons/mstile-144x144.png">  
+    <meta name="msapplication-TileImage" content="desktop/img/logo114.png">  
     <meta name="theme-color" content="#2196f3"> 
 
     <link rel="apple-touch-icon" href="desktop/img/logo25.png"/>
@@ -106,6 +106,7 @@ include_file('3rdparty', 'bootstrap-switch/bootstrap-switch.min', 'js');
 include_file('3rdparty', 'bootstrap-datepicker/bootstrap-datepicker.min', 'js');
 include_file('3rdparty', 'bootstrap-tokenfield/bootstrap-tokenfield.min', 'js');
 include_file('3rdparty', 'bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min', 'js');
+include_file('3rdparty', 'bootstrap-treeview/bootstrap-treeview.min', 'js');
 include_file('3rdparty', 'leaflet/leaflet', 'js');
 include_file('3rdparty', 'leaflet/leaflet.awesome-markers.min', 'js');
 include_file('3rdparty', 'leaflet/Leaflet.ImageOverlay.Rotated', 'js');
@@ -131,6 +132,7 @@ include_file('3rdparty', 'bootstrap-datepicker/bootstrap-datepicker.min', 'css')
 include_file('3rdparty', 'bootstrap-tokenfield/bootstrap-tokenfield.min', 'css');
 include_file('3rdparty', 'bootstrap-tokenfield/tokenfield-typeahead.min', 'css');
 include_file('3rdparty', 'bootstrap-wysihtml5/bootstrap3-wysihtml5.min', 'css');
+include_file('3rdparty', 'bootstrap-treeview/bootstrap-treeview.min', 'css');
 include_file('3rdparty', 'leaflet/leaflet', 'css');
 include_file('3rdparty', 'leaflet/leaflet.awesome-markers', 'css');
 include_file('3rdparty', 'leaflet/leaflet.easy-button', 'css');
@@ -151,6 +153,7 @@ include_file('desktop', 'commun', 'css');
 	        <div class="navbar-header">
 	          <div class="navbar-icon-container">
 	          	<a href="#" class="navbar-icon pull-right visible-xs" id="nav-btn"><i class="fa fa-bars fa-lg white"></i></a>
+	          	<a href="#" class="navbar-icon pull-right visible-xs navBarBtn" data-link="eventinfos"><i class="glyphicon glyphicon-info-sign"></i></a>
 	          	<a href="#" class="navbar-icon pull-right visible-xs navBarBtn" data-link="mission"><i class="glyphicon glyphicon-list-alt"></i></a>
 	          	<a href="#" class="navbar-icon pull-right visible-xs navBarBtn" data-link="maincourante"><i class="glyphicon glyphicon-pencil"></i></a>
 	          	<a href="#" class="navbar-icon pull-right visible-xs navBarBtn" data-link="planning"><i class="glyphicon glyphicon-calendar"></i></a>
@@ -169,6 +172,19 @@ include_file('desktop', 'commun', 'css');
 	                <span id="searchicon" class="fa fa-search form-control-feedback"></span>
 	            </div>
 	          </form>
+
+	          <div class="btn-group navbar-btn navbar-right mapModeMenu" style="display: none;">
+				  <button type="button" class="btn btn-default mapModeMenuLabel">Mode: Démontage</button>
+				  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				    <span class="caret"></span>
+				    <span class="sr-only">Toggle Dropdown</span>
+				  </button>
+				  <ul class="dropdown-menu">
+				    <li><a href="#" class="mapModeMenuBtn" data-mapmode="global">Mode: Global</a></li>
+				    <li><a href="#" class="mapModeMenuBtn" data-mapmode="montage">Mode: Montage</a></li>
+				    <li><a href="#" class="mapModeMenuBtn" data-mapmode="demontage">Mode: Démontage</a></li>
+				  </ul>
+				</div>
 
 	          <ul class="nav navbar-nav">
 	            <li class="dropdown">

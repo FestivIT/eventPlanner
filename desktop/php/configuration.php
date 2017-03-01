@@ -33,32 +33,14 @@
 		</div>
 	</div>
 	
+	
 	<div class="col-sm-6">
 		<div class="panel panel-primary">
 		  	<div class="panel-heading">
 		  		Types de matériel
 		  		<button type="button" class="btn btn-success btn-xs pull-right editMatTypeBtn" data-matType-id="new"><span class="glyphicon glyphicon-plus-sign"></span> Ajouter</button>
 		  	</div>
-			
-			<table class="table table-striped table-hover table-condensed matTypeTable" id="matTypeTable">
-				<thead>
-					<tr>
-						<th>Nom</th>
-						<th class="text-right">Actions</th>
-					</tr>
-				</thead>
-				<tbody>
-				</tbody>
-			</table>
-			<script type="text/html" id="templateMatTypeTable">
-				<tr class="matTypeItem" data-template-bind='[{"attribute": "data-id", "value": "matTypeId"}]'>
-					<th class="col-xs-11" scope="row" data-content="matTypeName"></th>
-					<td class="col-xs-1" style="text-align: right;">
-						<button type="button" class="btn btn-primary btn-xs dupMatTypeBtn" data-template-bind='[{"attribute": "data-matType-id", "value": "matTypeId"}]' title="Dupliquer"><span class="glyphicon glyphicon-duplicate"></span></button> 
-						<button type="button" class="btn btn-warning btn-xs editMatTypeBtn" data-template-bind='[{"attribute": "data-matType-id", "value": "matTypeId"}]' title="Modifier"><span class="glyphicon glyphicon-pencil"></span></button>
-					</td>
-				</tr>
-			</script>
+		  	<div class="matTypeTable" id="matTypeTable"></div>
 		</div>
 	</div>
 	
@@ -90,7 +72,3 @@
 		</div>
 	</div>
 </div>
-
-<?php
-	//include_file('desktop', 'configuration', 'js');
-?>
