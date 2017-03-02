@@ -9,6 +9,15 @@ eventplanner.matType = {
     	this.getAttributes = function(_fullData = false){
 			return eventplanner.matTypeAttribute.byMatTypeId(this.matTypeId, _fullData);
     	}
+    	
+    	this.getAllAttributes = function(_fullData = false){
+    		if(this.matTypeParentId != null){
+				var parentMatType = eventplanner.matType.byId(this.matTypeParentId);
+				return this.getAttributes().concat(parentMatType.getAllAttributes());
+			}else{
+				return this.getAttributes();
+			}
+    	}
     },
 
     // Chargement initial des données depuis le serveur

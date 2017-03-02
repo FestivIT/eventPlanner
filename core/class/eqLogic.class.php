@@ -131,11 +131,24 @@ class eqLogic {
 	public function getZoneId() {
 		return $this->zoneId;
 	}
+	public function getZone(){
+		return zone::byId($this->zoneId);
+	}
 	public function getMatTypeId() {
 		return $this->matTypeId;
 	}
+	public function getMatType(){
+		return matType::byId($this->matTypeId);
+	}
 	public function getEqRealId() {
 		return $this->eqRealId;
+	}	
+	public function getEqReal(){
+		if($this->eqRealId != null){
+			return zone::byId($this->eqRealId);
+		}else{
+			return false;
+		}
 	}
 	public function getIp() {
 		return $this->ip;

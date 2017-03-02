@@ -115,8 +115,8 @@
 									  </div>
 									</div>
 					    			<div class="row">
-									  <div class="col-xs-2"><label class="control-label">IP:</label></div>
-									  <div class="col-xs-10"><span class="label label-info" data-content="eqLogicIp"></span></div>
+					    				<div class="col-xs-12 eqLogicListAttribute" data-template-bind='[{"attribute": "data-eq-logic-id", "value": "eqLogicId"}]'>
+					    				</div>
 									</div>
 									<div class="row">
 									  <div class="col-sm-2"><label class="control-label">Liens:</label></div>
@@ -154,11 +154,18 @@
 		  </div>
 		</script>
 		<script type="text/html" id="templateEqLinkTable">
-						<div class="row">
-						  <div class="col-xs-2"><span class="label label-primary" data-content="eqLinkType"></span></div>
-						  <div class="col-xs-10"><span class="label label-info"><span data-content="eqLinkTargetEqLogicZoneName"></span> <span data-content="eqLinkTargetEqLogicMatTypeName"></span> <span data-content="eqLinkTargetEqLogicEqRealName"></span></span></div>
-						</div>
-				</script>
+				<div class="row">
+				  <div class="col-xs-2"><span class="label label-primary" data-content="eqLinkType"></span></div>
+				  <div class="col-xs-10"><span class="label label-info"><span data-content="eqLinkTargetEqLogicZoneName"></span> <span data-content="eqLinkTargetEqLogicMatTypeName"></span> <span data-content="eqLinkTargetEqLogicEqRealName"></span></span></div>
+				</div>
+		</script>
+
+		<script type="text/html" id="templateEqConfigurationEqLogicAttribute">
+			<div class="row">
+			  <div class="col-xs-2"><label class="control-label" data-content="matTypeAttributeName"></label></div>
+			  <div class="col-xs-10"><span class="label label-info" data-content="eqLogicAttributeValue"></span></div>
+			</div>
+		</script>
     </div>
     <div role="tabpanel" class="tab-pane" id="carte">
       <div class="modalMap" data-template-bind='[{"attribute": "id", "value": "modalId", "formatter": "prepend", "formatOptions": "mapZone"}]'></div>

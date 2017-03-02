@@ -111,7 +111,7 @@ try {
 
 		// Mission: traitement des zones et users
 		if(($class == 'mission') && array_key_exists('users',$json)){
-			$missionUsers = missionUserAssociation::byMissionId($json['id']);
+			$missionUsers = missionUserAssociation::byMissionId($el->getId());
 			foreach ($missionUsers as $missionUser){
 				if(array_key_exists($missionUser->getUserId(),$json['users'])){
 					// Si l'utilisateur est déjà sur cette mission, on le supprime de la liste à ajouter
@@ -125,7 +125,7 @@ try {
 			// Pour les ID restants, on créer les liaisons
 			foreach ($json['users'] as $userId){
 				$missionUser = new missionUserAssociation();
-				$missionUser->setMissionId($json['id']);
+				$missionUser->setMissionId($el->getId());
 				$missionUser->setUserId($userId);
 				$missionUser->save();
 
@@ -133,7 +133,7 @@ try {
 		}
 
 		if(($class == 'mission') && array_key_exists('zones',$json)){
-			$missionZones = missionZoneAssociation::byMissionId($json['id']);
+			$missionZones = missionZoneAssociation::byMissionId($el->getId());
 			foreach ($missionZones as $missionZone){
 				if(array_key_exists($missionZone->getZoneId(),$json['zones'])){
 					// Si la zone est déjà sur cette mission, on la supprime de la liste à ajouter
@@ -154,33 +154,79 @@ try {
 			}
 		}
 
+		// MatTypeAttributes
 		if(($class == 'matType') && array_key_exists('attributes',$json)){
-			$matTypeAttributes = matTypeAttribute::byMatTypeId($json['id']);
+			$matTypeAttributes = matTypeAttribute::byMatTypeId($el->getId());
+			
+			// Pour chacun des attribut de la base (déjà connus)
 			foreach ($matTypeAttributes as $matTypeAttribute){
+				
+				// On regarde chacun des attributs transmis pour retrouver celui (le connu) qu'on est entrain de traiter
+				$attrFind = false;
 				foreach ($json['attributes'] as $i => $jsonAttribute){
 					if($matTypeAttribute->getId() == $jsonAttribute['id']){
 						// Si l'attribut existe déjà, on le met à jour
 						$matTypeAttribute->setName($jsonAttribute['name']);
 						$matTypeAttribute->setOptions($jsonAttribute['options']);
 						$matTypeAttribute->save();
+						$attrFind = true;
 						unset($json['attributes'][$i]);
-					}else{
-						// sinon, on le supprime de la BDD
-						$matTypeAttribute->remove();
 					}
+				}
+				
+				// Si on a pas trouvé l'attr dans les attr transmis, alors il faut le supprimer
+				if(!$attrFind){
+					$matTypeAttribute->remove();
 				}
 			}
 
 			// Pour les ID restants, on créer les attributs
 			foreach ($json['attributes'] as $jsonAttribute){
 				$matTypeAttribute = new matTypeAttribute();
-				$matTypeAttribute->setMatTypeId($json['id']);
+				$matTypeAttribute->setMatTypeId($el->getId());
 				$matTypeAttribute->setName($jsonAttribute['name']);
 				$matTypeAttribute->setOptions($jsonAttribute['options']);
 				$matTypeAttribute->save();
 			}
 		}
 
+		// EqLogicAttributes
+		if(($class == 'eqLogic') && array_key_exists('attributes',$json)){
+			$eqLogicAttributes = eqLogicAttribute::byEqLogicId($el->getId());
+			
+			// Pour chacun des attribut de la base (déjà connus)
+			foreach ($eqLogicAttributes as $eqLogicAttribute){
+				
+				// On regarde chacun des attributs transmis pour retrouver celui (le connu) qu'on est entrain de traiter
+				$attrFind = false;
+				foreach ($json['attributes'] as $i => $jsonAttribute){
+					if($eqLogicAttribute->getId() == $jsonAttribute['id']){
+						// Si l'attribut existe déjà, on le met à jour
+						$eqLogicAttribute->setValue($jsonAttribute['value']);
+						$eqLogicAttribute->setMatTypeAttributeId($jsonAttribute['matTypeAttributeId']);
+						$eqLogicAttribute->save();
+						$attrFind = true;
+						unset($json['attributes'][$i]);
+					}
+				}
+				
+				// Si on a pas trouvé l'attr dans les attr transmis, alors il faut le supprimer
+				if(!$attrFind){
+					$eqLogicAttribute->remove();
+				}
+			}
+
+			// Pour les ID restants, on créer les attributs
+			foreach ($json['attributes'] as $jsonAttribute){
+				$eqLogicAttribute = new eqLogicAttribute();
+				$eqLogicAttribute->setEqLogicId($el->getId());
+				$eqLogicAttribute->setValue($jsonAttribute['value']);
+				$eqLogicAttribute->setMatTypeAttributeId($jsonAttribute['matTypeAttributeId']);
+				$eqLogicAttribute->save();
+			}
+		}
+
+		// Sauvegarde avec création du MSG
 		$el->save(true);
 
 		ajax::success($el->formatForFront());

@@ -535,25 +535,11 @@ eventplanner.ui.configuration = {
 			console.log('Delete matType: ' + matTypeId);
 		});
 
-		$("#matTypeTable").bind("addItem", function(event, _matTypeId){
-			var newItem = $('<div>').loadTemplate($("#templateMatTypeTable"), eventplanner.matType.byId(_matTypeId, true));
-			$(this).find('tbody').append($(newItem).contents());
-
-			$('#matTypeTable').trigger('update');
-		});
-
-		$("#matTypeTable").delegate(".matTypeItem", "updateItem", function(){
-			var matTypeId = $(this).attr('data-id');
-			var newItem = $('<div>').loadTemplate($("#templateMatTypeTable"), eventplanner.matType.byId(matTypeId, true));
-			$(this).replaceWith($(newItem).contents());
-
-			$('#matTypeTable').trigger('update');
-		});
-
-		$("#matTypeTable").delegate(".matTypeItem", "removeItem", function(){
-			$(this).remove();
-			$('#matTypeTable').trigger('update');
-		});
+		$("#matTypeTable").bind("refreshMatTypeTable", function(thisModal){
+			return function(){
+				thisModal.constructMatTypeTable();
+			}	
+		}(this));
 
 		$('#configuration').delegate('.editMatTypeBtn', 'click', function () {
 			var matTypeId = $(this).attr('data-matType-id');
@@ -998,16 +984,16 @@ eventplanner.ui.map = {
 						    },{
 						        text: 'Créer une mission',
 						        callback: function(e) {
-							      	var currentZone = eventplanner.zone.byId(e.relatedTarget.zoneId);
-							      	var currentEvent = eventplanner.event.byId(eventplanner.ui.currentUser.userEventId);
-
 									var missionData = {
 										missionId: '',
-										missionEventId: currentEvent.eventId,
-										missionZones: [currentZone],
+										missionEventId: eventplanner.ui.currentUser.userEventId,
+										missionZones: [e.relatedTarget.zoneId.toString()],
+										missionUsers: [],
 										missionState: 400
 									}
-							      	var missionConfModal = new eventplanner.ui.modal.EpModalMissionConfiguration(missionData);							      
+									
+									var missionItem = $.extend(new eventplanner.mission.missionItem(), missionData);
+									var missionConfModal = new eventplanner.ui.modal.EpModalMissionConfiguration(missionItem);							      
 									missionConfModal.open();
 							    }
 						    },  {
@@ -1182,17 +1168,18 @@ eventplanner.ui.planning = {
 			var zoneList = [];
 
 			$.each($('#planningTable .planningZoneCb:checked'), function( index, zoneCb) {
-			  zoneList.push(eventplanner.zone.byId($(zoneCb).data('zoneId')));
+			  zoneList.push($(zoneCb).data('zoneId'));
 			});
-
-	      	var currentEvent = eventplanner.event.byId(eventplanner.ui.currentUser.userEventId);
-			var missionData = {
+	      	
+	      	var missionData = {
 				missionId: '',
-				missionEventId: currentEvent.eventId,
+				missionEventId: eventplanner.ui.currentUser.userEventId,
 				missionZones: zoneList,
+				missionUsers: [],
 				missionState: 400
 			}
-	      	var missionConfModal = new eventplanner.ui.modal.EpModalMissionConfiguration(missionData);
+			var missionItem = $.extend(new eventplanner.mission.missionItem(), missionData);
+			var missionConfModal = new eventplanner.ui.modal.EpModalMissionConfiguration(missionItem);
 			missionConfModal.open();
 
 			return false;
@@ -1221,7 +1208,7 @@ eventplanner.ui.planning = {
 
 		$('#planningTable').delegate( '.planningZoneCb', 'change' ,function(event) {
 			var zoneId = $(this).data('zone-id');
-			$('#planningTable .planningEqCb[data-zone-id=' + zoneId + ']').prop('checked', $(this).prop('checked'));
+			$('#planningTable .planningEqCb[data-zone-id=' + zoneId + ']').not('.cbSearchHidden').prop('checked', $(this).prop('checked'));
 		});
 		
 		// TRIGGER ADDITEM
@@ -1290,22 +1277,30 @@ eventplanner.ui.planning = {
 			$('#planningSearch').parent().removeClass('has-error');
 			// Réinitialisation: on affiche tout
 			$('#planning .zoneItem').show();
-			$('#planning .eqLogicItem').show();
+			$('#planning .eqLogicItem')
+				.show()
+				.find('input[type=checkbox]').removeClass("cbSearchHidden");
 		}else{
 			$('#planningSearch').parent().addClass('has-error');
 			// On cache tout par défaut
 			$('#planning .zoneItem').hide();
-			$('#planning .eqLogicItem').hide();
+			$('#planning .eqLogicItem')
+				.hide()
+				.find('input[type=checkbox]').addClass("cbSearchHidden");
 			
 			//Puis on affiche que ce que l'on cherche
 			//On passe chaque zone en revue
 			$("#planning .zoneItem").each(function(){
 				$(this).find(".planningZoneName:contains('" + searchVal + "')")
 					.closest('.zoneItem').show()
-					.find('.eqLogicItem').show();
+					.find('.eqLogicItem')
+						.show()
+						.find('input[type=checkbox]').removeClass("cbSearchHidden");
 				
 				$(this).find(".eqLogicItem:contains('" + searchVal + "')")
-					.closest('.eqLogicItem').show()
+					.closest('.eqLogicItem')
+						.show()
+						.find('input[type=checkbox]').removeClass("cbSearchHidden")
 					.closest('.zoneItem').show();
 			});
 		}
@@ -1526,14 +1521,15 @@ eventplanner.ui.mission ={
 			var missionId = $(this).attr('data-mission-id');
 			
 			if(missionId == 'new'){
-				var currentEvent = eventplanner.event.byId(eventplanner.ui.currentUser.userEventId);
 				var missionData = {
 					missionId: '',
-					missionEventId: currentEvent.eventId,
+					missionEventId: eventplanner.ui.currentUser.userEventId,
+					missionZones: [],
+					missionUsers: [],
 					missionState: 400
 				}
-				
-				var missionConfModal = new eventplanner.ui.modal.EpModalMissionConfiguration(missionData);
+				var missionItem = $.extend(new eventplanner.mission.missionItem(), missionData);
+				var missionConfModal = new eventplanner.ui.modal.EpModalMissionConfiguration(missionItem);
 				missionConfModal.open();
 			}else{
 				var missionConfModal = new eventplanner.ui.modal.EpModalMissionConfiguration(eventplanner.mission.byId(missionId, true));
@@ -2155,6 +2151,9 @@ eventplanner.ui.modal.EpModalZone = function(_zone){
 		// Complément des eqLinks
 		$.each(eqLogicList, function(thisModal){
 			return function(index, eqLogic){
+				// Construction de la liste des attributs
+				thisModal.constructAttributeTable(eqLogic)
+				// Construction de la liste des liens
 				thisModal.constructEqLinkTable(eqLogic.eqLogicId);
 			}
 		}(this));
@@ -2169,6 +2168,21 @@ eventplanner.ui.modal.EpModalZone = function(_zone){
 				eqMarker.bindPopup('<div><b>' + eq.matTypeName + ' - ' + eq.eqRealName + '</b>');
 			}
 		}, this);
+	}
+
+	this.constructAttributeTable = function(eqLogic){
+		this.modal.find('.eqLogicListAttribute[data-eq-logic-id=' + eqLogic.eqLogicId + ']').empty();
+
+		eqLogic.getEqLogicAttributes().forEach(function(thisModal, eqLogicId){
+			return function(attr){
+				var attrData = {
+					matTypeAttributeName: eventplanner.matTypeAttribute.byId(attr.eqLogicAttributeMatTypeAttributeId).matTypeAttributeName,
+					eqLogicAttributeValue: attr.eqLogicAttributeValue
+				}
+
+				thisModal.modal.find('.eqLogicListAttribute[data-eq-logic-id=' + eqLogicId + ']').loadTemplate(thisModal.modal.find("#templateEqConfigurationEqLogicAttribute"), attrData, {append: true});
+			}
+		}(this, eqLogic.eqLogicId));
 	}
 	
 	this.constructEqLinkTable = function(eqLogicId){
@@ -2222,6 +2236,7 @@ eventplanner.ui.modal.EpModalEqConfiguration = function(_eqLogic){
 	this.preShow = function(){
 		this.modal.find("#eqLogicMatTypeId").change(this, function(event) {
 			event.data.constructAndSelectEqReal();
+			event.data.constructAttributeTable();
 		});
 
 		if(is_array(this.data.eqLogicLocalisation)){
@@ -2280,6 +2295,7 @@ eventplanner.ui.modal.EpModalEqConfiguration = function(_eqLogic){
 		}(this)});
 		
 		this.constructAndSelectEqReal();
+		this.constructAttributeTable();
 	}
 
 	this.postShow = function(){
@@ -2327,7 +2343,8 @@ eventplanner.ui.modal.EpModalEqConfiguration = function(_eqLogic){
 			        ip: $(this).find("#eqLogicIp").val(),
 			        comment: $(this).find("#eqLogicComment").val(),
 			        state: $(this).find("#eqLogicState").val(),
-			        eqLinks: event.data.getEqLinks()
+			        eqLinks: event.data.getEqLinks(),
+			        attributes: []
 			    };
 
 			    if($(this).find("#eqLocalisation").bootstrapSwitch('state')){
@@ -2335,6 +2352,18 @@ eventplanner.ui.modal.EpModalEqConfiguration = function(_eqLogic){
 			    }else{
 			    	eqParam.localisation = null;
 			    }
+
+			    $(this).find(".eqLogicAttribute").each(function(_eqParam){
+			    	return function(i, eqLogicAttribute){
+			    		if($(eqLogicAttribute).val() != ''){
+					    	_eqParam.attributes.push({
+					    		id: $(eqLogicAttribute).attr('data-attribute-id'),
+					    		value: $(eqLogicAttribute).val(),
+					    		matTypeAttributeId: $(eqLogicAttribute).attr('data-mat-type-attribute-id')
+					    	});
+					    }
+			    	}
+			    }(eqParam));
 
 			    eventplanner.eqLogic.save({
 			      eqLogic: eqParam,
@@ -2411,7 +2440,7 @@ eventplanner.ui.modal.EpModalEqConfiguration = function(_eqLogic){
 						.attr("value", 'None')
 						.text("Aucun"));
 
-	  this.modal.find("#eqLogicEqRealId").loadTemplate($("#templateEqRealOptions"), eventplanner.eqReal.byMatTypeId($('#eqLogicMatTypeId option:selected').val()), {append: true});
+	  this.modal.find("#eqLogicEqRealId").loadTemplate($("#templateEqRealOptions"), eventplanner.eqReal.byMatTypeId(this.modal.find('#eqLogicMatTypeId option:selected').val()), {append: true});
 	  this.modal.find('#eqLogicEqRealId option[value="' + this.data.eqLogicEqRealId + '"]').prop('selected', true);
 	}
 
@@ -2470,6 +2499,18 @@ eventplanner.ui.modal.EpModalEqConfiguration = function(_eqLogic){
 		this.modal.find("tr[data-eq-link-id=" + eqLink.eqLinkId + "] .eqLinkEqLogicIdSelect option[value=" + eqLogicId + "]").prop('selected', true);
 		this.modal.find("tr[data-eq-link-id=" + eqLink.eqLinkId + "] .eqLinkTypeSelect  option[value=" + eqLink.eqLinkType + "]").prop('selected', true);
 
+	}
+
+	this.constructAttributeTable = function(){
+		this.modal.find("#attributs").loadTemplate(this.modal.find("#templateEqConfigurationEqLogicAttribute"), eventplanner.matType.byId(this.modal.find('#eqLogicMatTypeId option:selected').val()).getAllAttributes());
+		
+		this.data.getEqLogicAttributes().forEach(function(thisModal){
+			return function(attr){
+				thisModal.modal.find(".eqLogicAttribute[data-mat-type-attribute-id=" + attr.eqLogicAttributeMatTypeAttributeId + "]")
+					.val(attr.eqLogicAttributeValue)
+					.attr('data-attribute-id', attr.eqLogicAttributeId);
+			}
+		}(this));
 	}
 }
 
@@ -2741,14 +2782,13 @@ eventplanner.ui.modal.EpModalMissionConfiguration = function(_mission){
 	this.preShow = function(){
 		// ZONES
 		this.modal.find("#missionZoneSelect").loadTemplate($("#templateZoneOptions"), eventplanner.zone.all());
-		if(typeof eventplanner.mission.byId(this.data.missionId) === 'object') {
-			$.each(eventplanner.mission.byId(this.data.missionId).getZones(), function(thisModal){
-				return function(i,item){
-					thisModal.modal.find("#missionZoneList").loadTemplate($("#templateMissionZoneOption"),item, {append: true});
-					thisModal.modal.find('#missionZoneSelect option[value=' + item.zoneId + ']').remove();
-				}
-			}(this));
-		}
+		$.each(this.data.getZones(), function(thisModal){
+			return function(i,item){
+				thisModal.modal.find("#missionZoneList").loadTemplate($("#templateMissionZoneOption"),item, {append: true});
+				thisModal.modal.find('#missionZoneSelect option[value=' + item.zoneId + ']').remove();
+			}
+		}(this));
+		
 		this.sortList(this.modal.find(".missionZoneItem"), this.modal.find("#missionZoneList"));
 		this.sortList(this.modal.find("#missionZoneSelect option"), this.modal.find("#missionZoneSelect"));
 
@@ -2770,14 +2810,12 @@ eventplanner.ui.modal.EpModalMissionConfiguration = function(_mission){
 
 		// USERS
 		this.modal.find("#missionUserSelect").loadTemplate($("#templateUserOptions"), eventplanner.user.all());
-		if(typeof eventplanner.mission.byId(this.data.missionId) === 'object') {
-			$.each(eventplanner.mission.byId(this.data.missionId).getUsers(), function(thisModal){
-				return function(i,item){
-					thisModal.modal.find("#missionUserList").loadTemplate($("#templateMissionUserOption"),item, {append: true});
-					thisModal.modal.find('#missionUserSelect option[value=' + item.userId + ']').remove();
-				}
-			}(this));
-		}
+		$.each(this.data.getUsers(), function(thisModal){
+			return function(i,item){
+				thisModal.modal.find("#missionUserList").loadTemplate($("#templateMissionUserOption"),item, {append: true});
+				thisModal.modal.find('#missionUserSelect option[value=' + item.userId + ']').remove();
+			}
+		}(this));
 		this.sortList(this.modal.find(".missionUserItem"), this.modal.find("#missionUserList"));
 		this.sortList(this.modal.find("#missionUserSelect option"), this.modal.find("#missionUserSelect"));
 
@@ -2872,8 +2910,8 @@ eventplanner.ui.modal.EpModalMissionConfiguration = function(_mission){
 		var newDivOrder = itemList.sort(function (a, b) {
 			
 			// Récupération des valeurs souhaitées pour le tri:
-			var contentA = $(a).text();
-			var contentB = $(b).text();
+			var contentA = $(a).text().toLowerCase();
+			var contentB = $(b).text().toLowerCase();
 			
 			return (contentA < contentB) ? -1 : (contentA > contentB) ? 1 : 0;
 		});
@@ -2914,6 +2952,10 @@ eventplanner.ui.modal.EpModalMatTypeConfiguration = function(_matType){
 	    		var newDiv = $("<div>").loadTemplate(event.data.modal.find("#templateMatTypeAttribute"), {matTypeAttributeId: '', matTypeAttributeName: attrName});
 	    		$(this).closest('.list-group-item').before(newDiv.contents());
 	    		event.data.modal.find("#addAttributeName").val("");
+	    	});
+	    	
+	    	this.modal.find(".deleteAttributeBtn").click(this, function(event){
+	    		$(this).closest('.list-group-item').remove();
 	    	});
 	    	
 	    	this.addParentAttribute(this.data.matTypeParentId);

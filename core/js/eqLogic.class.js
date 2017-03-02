@@ -17,16 +17,23 @@ eventplanner.eqLogic = {
     	this.getZone = function(_fullData = false){
     		return eventplanner.zone.byId(this.eqLogicZoneId, _fullData);
     	}
-    	
-    	this.getEqLinks = function(_fullData = false){
-    		return eventplanner.eqLink.byEqLogicId(this.eqLogicId, _fullData);
-    	}
+        
+        this.getEqLinks = function(_fullData = false){
+            return eventplanner.eqLink.byEqLogicId(this.eqLogicId, _fullData);
+        }
+
+        this.getEqLogicAttributes = function(_fullData = false){
+            return eventplanner.eqLogicAttribute.byEqLogicId(this.eqLogicId, _fullData);
+        }
     },
     
 
     // Chargement initial des données depuis le serveur
     load: function(){
-        return eventplanner.loadDataFromServer('eqLogic');
+        return $.when(
+                    eventplanner.loadDataFromServer('eqLogic'),
+                    eventplanner.loadDataFromServer('eqLogicAttribute')
+                );
     },
 
     // enregistrement
@@ -216,6 +223,112 @@ eventplanner.eqLogic = {
       if (a.zoneId < b.zoneId)
         return -1;
       if (a.zoneId > b.zoneId)
+        return 1;
+      return 0;
+    }
+}
+
+
+
+eventplanner.eqLogicAttribute = {
+    dataReady: $.Deferred(),
+    container: {},
+    eqLogicAttributeItem: function(){ 
+        this.getMatTypeAttribute = function(_fullData = false){
+            return eventplanner.matTypeAttribute.byId(this.eqLogicAttributeMatTypeAttributeId, _fullData);
+        }
+    },
+
+    // Chargement initial des données depuis le serveur
+    load: function(){
+        return eventplanner.loadDataFromServer('eqLogicAttribute');
+    },
+
+    // enregistrement
+    save: function(_params) {
+        return eventplanner.saveDataToServer('eqLogicAttribute', _params);
+    },
+
+    // Accés aux données
+    all: function(_fulldata = false){
+        if(this.dataReady.state() == 'resolved'){
+            // Selection des données à conserver dans le container:
+            var dataSelection = $.map(this.container, function(value, index) {
+                return [value];
+            });
+
+            // Tri
+            dataSelection.sort(this.compareNameAsc);
+
+            // Si on demande les data consolidées (pour l'utilisation avec les template)
+            if(_fulldata){
+                dataSelection = this.getFullData(dataSelection);
+            }
+            
+            return dataSelection;
+
+        }else{
+            return false;
+        }
+    },
+
+     // Accés aux données
+    byId: function(_id, _fulldata = false){
+        if(this.dataReady.state() == 'resolved'){
+
+            // Selection des données à conserver dans le container:
+            if(this.container.hasOwnProperty(_id)){
+                var dataSelection = this.container[_id];
+            }else{
+                return false;
+            }            
+
+            // Si on demande les data consolidées (pour l'utilisation avec les template)
+            if(_fulldata){
+                dataSelection = this.getFullData(dataSelection);
+            }
+            
+            return dataSelection;
+        }else{
+            return false;
+        }
+    },
+    
+    // Accés aux données
+    byEqLogicId: function(_eqLogicId, _fulldata = false){
+        if(this.dataReady.state() == 'resolved'){
+            // Selection des données à conserver dans le container:
+            var dataSelection = Array();
+
+            Object.keys(this.container).forEach(function(id) {
+               if(eventplanner.eqLogicAttribute.container[id].eqLogicAttributeEqLogicId == _eqLogicId){
+                    dataSelection.push(eventplanner.eqLogicAttribute.container[id]);
+                }
+            });
+
+            // Tri
+            dataSelection.sort(this.compareNameAsc);
+
+            // Si on demande les data consolidées (pour l'utilisation avec les template)
+            if(_fulldata){
+                dataSelection = this.getFullData(dataSelection);
+            }
+            
+            return dataSelection;
+
+        }else{
+            return false;
+        }
+    },
+
+    getFullData: function(_data){
+        return _data;
+    },
+
+    compareNameAsc: function(a,b) {
+      if (a.matTypeAttributeName < b.matTypeAttributeName)
+        return -1;
+      if (a.matTypeAttributeName > b.matTypeAttributeName)
         return 1;
       return 0;
     }
