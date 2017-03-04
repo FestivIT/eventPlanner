@@ -1,7 +1,37 @@
 eventplanner.eqReal = {
     dataReady: $.Deferred(),
     container: {},
-    eqRealItem: function(){ 
+    eqRealItem: function(_data){
+        for (var prop in _data) {
+            if (_data.hasOwnProperty(prop)) {
+                this[prop] = _data[prop];
+            }
+        }
+
+        if(!this.hasOwnProperty('eqRealId')){
+            this.eqRealId = ''; // Nouveau matériel
+        }
+        if(!this.hasOwnProperty('eqRealDisciplineId')){
+            //throw "eqRealDisciplineId manquant!";
+            this.eqRealDisciplineId = 1; // TEMPORAIRE
+            console.log('eqRealDisciplineId temporaire: 1');
+        }
+        if(!this.hasOwnProperty('eqRealMatTypeId')){
+            this.eqRealMatTypeId = eventplanner.matType.all()[0].getId(); // Sélection par défaut d'un type...
+        }
+        if(!this.hasOwnProperty('eqRealName')){
+            this.eqRealName = ""; 
+        }
+        if(!this.hasOwnProperty('eqRealComment')){
+            this.eqRealComment = ""; 
+        }
+        if(!this.hasOwnProperty('eqRealState')){
+            this.eqRealState = 300; 
+        }
+        if(!this.hasOwnProperty('eqRealLocalisation')){
+            this.eqRealLocalisation = ""; 
+        }
+
     	this.getMatType = function(_fullData = false){
 			return eventplanner.matType.byId(this.eqRealMatTypeId, _fullData);
     	}

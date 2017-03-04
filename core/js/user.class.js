@@ -2,7 +2,53 @@ eventplanner.user = {
     dataReady: $.Deferred(),
     container: {},
     connectCheck: 0,
-    userItem: function(){ 
+    userItem: function(_data){
+        for (var prop in _data) {
+            if (_data.hasOwnProperty(prop)) {
+                this[prop] = _data[prop];
+            }
+        }
+
+        if(!this.hasOwnProperty('userId')){
+            this.userId = ''; // Nouvel utilisateur
+        }
+        if(!this.hasOwnProperty('userDisciplineId')){
+            //throw "userDisciplineId manquant!";
+            this.userDisciplineId = 1; // TEMPORAIRE
+            console.log('userDisciplineId temporaire: 1');
+        } 
+        if(!this.hasOwnProperty('userLogin')){
+            this.userLogin = '';
+        } 
+        if(!this.hasOwnProperty('userName')){
+            this.userName = '';
+        } 
+        if(!this.hasOwnProperty('userEventId')){
+            this.userEventId = null;
+        } 
+        if(!this.hasOwnProperty('userActionOnScan')){
+            this.userActionOnScan = 'zone';
+        } 
+        if(!this.hasOwnProperty('userSlackID')){
+            this.userSlackID = '';
+        } 
+        if(!this.hasOwnProperty('userEnable')){
+            this.userEnable = '1';
+        }
+        if(!this.hasOwnProperty('userLastConnection')){
+            this.userLastConnection = '0000-00-00 00:00:00';
+        }
+        if(!this.hasOwnProperty('userRights')){
+            this.userRights = {};
+        }
+
+        this.getEvent = function(_fullData = false){
+            return eventplanner.event.byId(this.userEventId, _fullData);
+        }
+
+        this.getDiscipline = function(_fullData = false){
+            return eventplanner.discipline.byId(this.userDisciplineId, _fullData);
+        }
     },
     
     // Chargement initial des données depuis le serveur

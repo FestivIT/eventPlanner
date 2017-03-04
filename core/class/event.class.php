@@ -70,7 +70,11 @@ class event {
 		return $return;
 	}
 
-	public function remove() {
+	public function remove($_addMsg = true) {
+		if($_addMsg){
+			msg::add($this->getId(), null, null, $_SESSION['user']->getId(), "Suppression de l'événement." , 'event', 'remove', $this);
+		}
+
 		return DB::remove($this);
 	}
 

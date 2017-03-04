@@ -8,6 +8,7 @@ class user {
 	/*     * *************************Attributs****************************** */
 
 	private $id;
+	private $disciplineId;
 	private $login;
 	private $name;
 	private $password;
@@ -168,7 +169,11 @@ class user {
 		return $return;
 	}
 
-	public function remove() {
+	public function remove($_addMsg = true) {
+		if($_addMsg){
+			msg::add(null, null, null, $_SESSION['user']->getId(), "Suppression de l'utilisateur: " . $this->getName() , 'user', 'remove', $this);
+		}
+
 		return DB::remove($this);
 	}
 
@@ -188,6 +193,10 @@ class user {
 
 	public function getId() {
 		return $this->id;
+	}
+
+	public function getDisciplineId() {
+		return $this->disciplineId;
 	}
 
 	public function getLogin() {
@@ -220,6 +229,10 @@ class user {
 
 	public function setId($id) {
 		$this->id = $id;
+	}
+
+	public function setDisciplineId($disciplineId) {
+		$this->disciplineId = $disciplineId;
 	}
 
 	public function setLogin($login) {

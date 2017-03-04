@@ -92,7 +92,7 @@ body {
 
 .modalMap {
   width: auto;
-  height: 180px;
+  height: 280px;
   box-shadow: 0 0 10px rgba(0,0,0,0.5);
 }
 .leaflet-control-layers {
@@ -114,6 +114,10 @@ body {
 @media (min-width: 768px) {
 	.eqLogicLabel{
 		float: right !important;
+	}
+	
+	.modalMap {
+	  height: 400px;
 	}
 }
 

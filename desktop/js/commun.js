@@ -158,6 +158,20 @@ $.addTemplateFormatter("formatMissionZones", function(missionId, templateId) {
 $.addTemplateFormatter("formatContactCoord", function(contactId, templateId) {
     return $('<div>').loadTemplate($('#' + templateId), eventplanner.contact.byId(contactId).contactCoord).html();
 });
+$.addTemplateFormatter("contactCoord", function(contactId, coordType) {
+    var result = "";
+    var contact = eventplanner.contact.byId(contactId);
+
+    if(contact){
+    	contact.contactCoord.forEach(function(coord){
+	    	if(coord.type == coordType){
+	    		result = coord.value;
+	    	}
+	    });
+    }
+    
+    return result;
+});
 
 function formatDateYmd2Dmy(date){
 	return date.split("-").reverse().join("/");

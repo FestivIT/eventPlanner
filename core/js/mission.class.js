@@ -1,7 +1,43 @@
 eventplanner.mission = {
     dataReady: $.Deferred(),
     container: {},
-    missionItem: function(){ 
+    missionItem: function(_data){ 
+        for (var prop in _data) {
+            if (_data.hasOwnProperty(prop)) {
+                this[prop] = _data[prop];
+            }
+        }
+
+        if(!this.hasOwnProperty('missionId')){
+            this.zoneId = ''; // Nouvelle mission
+        }
+        if(!this.hasOwnProperty('missionEventId')){
+            throw "missionEventId manquant!";
+        }
+        if(!this.hasOwnProperty('missionDisciplineId')){
+            //throw "missionDisciplineId manquant!";
+            this.missionDisciplineId = 1; // TEMPORAIRE
+            console.log('missionDisciplineId temporaire: 1');
+        }
+        if(!this.hasOwnProperty('missionName')){
+            this.missionName = "";
+        }
+        if(!this.hasOwnProperty('missionComment')){
+            this.missionComment = "";
+        }
+        if(!this.hasOwnProperty('missionState')){
+            this.missionState = 400;
+        }
+        if(!this.hasOwnProperty('missionDate')){
+            this.missionDate = '0000-00-00 00:00:00';
+        }
+        if(!this.hasOwnProperty('missionZones')){
+            this.missionZones = [];
+        }
+        if(!this.hasOwnProperty('missionUsers')){
+            this.missionUsers = [];
+        }
+
         this.getUsers = function(_fullData = false){
             var userList = [];
             this.missionUsers.forEach(function(userId){

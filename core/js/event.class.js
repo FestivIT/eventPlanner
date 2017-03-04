@@ -1,7 +1,37 @@
 eventplanner.event = {
     dataReady: $.Deferred(),
     container: {},
-    eventItem: function(){
+    eventItem: function(_data){
+        for (var prop in _data) {
+            if (_data.hasOwnProperty(prop)) {
+                this[prop] = _data[prop];
+            }
+        }
+
+        if(!this.hasOwnProperty('eventId')){
+            this.eventId = ''; // Nouveau event
+        }
+        if(!this.hasOwnProperty('eventName')){
+            this.eventName = "";
+        }
+        if(!this.hasOwnProperty('eventLocalisation')){
+            this.eventLocalisation = [48.856614, 2.352222];
+        }
+        if(!this.hasOwnProperty('eventVille')){
+            this.eventVille = "";
+        }
+        if(!this.hasOwnProperty('eventStartDate')){
+            this.eventStartDate = new Date().toISOString().slice(0,10);
+        }
+        if(!this.hasOwnProperty('eventEndDate')){
+            this.eventEndDate = new Date().toISOString().slice(0,10);
+        }
+        if(!this.hasOwnProperty('eventGeneralInfo')){
+            this.eventGeneralInfo = "";
+        }
+        if(!this.hasOwnProperty('eventConfiguration')){
+            this.eventConfiguration = {};
+        }
     },
 
     // Chargement initial des données depuis le serveur

@@ -1,7 +1,42 @@
 eventplanner.eqLogic = {
     dataReady: $.Deferred(),
     container: {},
-    eqLogicItem: function(){ 
+    eqLogicItem: function(_data){
+        for (var prop in _data) {
+            if (_data.hasOwnProperty(prop)) {
+                this[prop] = _data[prop];
+            }
+        }
+        if(!this.hasOwnProperty('eqLogicId')){
+            this.eqLogicId = ''; // Nouveau équipement
+        }
+        if(!this.hasOwnProperty('eqLogicEventId')){
+            throw "eqLogicEventId manquant!";
+        }
+        if(!this.hasOwnProperty('eqLogicDisciplineId')){
+            //throw "eqLogicDisciplineId manquant!";
+            this.eqLogicDisciplineId = 1; // TEMPORAIRE
+            console.log('eqLogicDisciplineId temporaire: 1');
+        }
+        if(!this.hasOwnProperty('eqLogicZoneId')){
+            this.eqLogicZoneId = eventplanner.zone.all()[0].getId(); // Sélection par défaut d'une zone...
+        }
+        if(!this.hasOwnProperty('eqLogicMatTypeId')){
+            this.eqLogicMatTypeId = eventplanner.matType.all()[0].getId(); // Sélection par défaut d'un type...
+        }
+        if(!this.hasOwnProperty('eqLogicEqRealId')){
+            this.eqLogicEqRealId = null;
+        }
+        if(!this.hasOwnProperty('eqLogicComment')){
+            this.eqLogicComment = ''; 
+        }
+        if(!this.hasOwnProperty('eqLogicState')){
+            this.eqLogicState = 100; 
+        }
+        if(!this.hasOwnProperty('eqLogicLocalisation')){
+            this.eqLogicLocalisation = ''; 
+        }
+
     	this.getEvent = function(_fullData = false){
     		return eventplanner.event.byId(this.eqLogicEventId, _fullData);
     	}
@@ -24,6 +59,14 @@ eventplanner.eqLogic = {
 
         this.getEqLogicAttributes = function(_fullData = false){
             return eventplanner.eqLogicAttribute.byEqLogicId(this.eqLogicId, _fullData);
+        }
+
+        this.duplicate = function(){
+            var eqLogicItem = new eventplanner.eqLogic.eqLogicItem(this);
+            eqLogicItem.eqLogicId = '';
+            eqLogicItem.eqLogicEqRealId = null;
+
+            return eqLogicItem;
         }
     },
     
@@ -228,12 +271,28 @@ eventplanner.eqLogic = {
     }
 }
 
-
-
 eventplanner.eqLogicAttribute = {
     dataReady: $.Deferred(),
     container: {},
-    eqLogicAttributeItem: function(){ 
+    eqLogicAttributeItem: function(_data){
+        for (var prop in _data) {
+            if (_data.hasOwnProperty(prop)) {
+                this[prop] = _data[prop];
+            }
+        }
+        if(!this.hasOwnProperty('eqLogicAttributeId')){
+            this.eqLogicAttributeId = ''; // Nouveau attribut
+        }
+        if(!this.hasOwnProperty('eqLogicAttributeEqLogicId')){
+            throw "eqLogicAttributeEqLogicId manquant!";
+        }
+        if(!this.hasOwnProperty('eqLogicAttributeMatTypeAttributeId')){
+            throw "eqLogicAttributeMatTypeAttributeId manquant!";
+        }
+        if(!this.hasOwnProperty('eqLogicAttributeValue')){
+            this.eqLogicAttributeValue = '';
+        }
+
         this.getMatTypeAttribute = function(_fullData = false){
             return eventplanner.matTypeAttribute.byId(this.eqLogicAttributeMatTypeAttributeId, _fullData);
         }

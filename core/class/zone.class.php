@@ -8,6 +8,7 @@ class zone {
 
 	private $id;
 	private $eventId;
+	private $eventLevelId;
 	private $name;
 	private $localisation;
 	private $installDate;
@@ -120,7 +121,11 @@ class zone {
 		eqLogic::updateState($eqLogicsId, $_state);
 	}
 
-	public function remove() {
+	public function remove($_addMsg = true) {
+		if($_addMsg){
+			msg::add($this->getEventId(), $this->getId(), null, $_SESSION['user']->getId(), "Suppression de la zone." , 'zone', 'remove', $this);
+		}
+
 		return DB::remove($this);
 	}
 
@@ -133,6 +138,9 @@ class zone {
 	}
 	public function getEventId() {
 		return $this->eventId;
+	}
+	public function getEventLevelId() {
+		return $this->eventLevelId;
 	}
 	public function getName() {
 		return $this->name;
@@ -158,6 +166,9 @@ class zone {
 	}
 	public function setEventId($eventId) {
 		$this->eventId = $eventId;
+	}
+	public function setEventLevelId($eventLevelId) {
+		$this->eventLevelId = $eventLevelId;
 	}
 	public function setName($name) {
 		$this->name = $name;

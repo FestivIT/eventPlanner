@@ -8,6 +8,7 @@ class eqLogic {
 
 	private $id;
 	private $eventId;
+	private $disciplineId;
 	private $zoneId;
 	private $matTypeId;
 	private $eqRealId;
@@ -114,7 +115,11 @@ class eqLogic {
 		return $return;
 	}
 
-	public function remove() {
+	public function remove($_addMsg = true) {
+		if($_addMsg){
+			msg::add($this->getEventId(), $this->getZoneId(), $this->getId(), $_SESSION['user']->getId(), "Suppression de l'équipement." , 'eqLogic', 'remove', $this);
+		}
+
 		return DB::remove($this);
 	}
 
@@ -127,6 +132,9 @@ class eqLogic {
 	}
 	public function getEventId() {
 		return $this->eventId;
+	}
+	public function getDisciplineId() {
+		return $this->disciplineId;
 	}
 	public function getZoneId() {
 		return $this->zoneId;
@@ -171,6 +179,9 @@ class eqLogic {
 	}
 	public function setEventId($eventId) {
 		$this->eventId = $eventId;
+	}
+	public function setDisciplineId($disciplineId) {
+		$this->disciplineId = $disciplineId;
 	}
 	public function setZoneId($zoneId) {
 		$this->zoneId = $zoneId;

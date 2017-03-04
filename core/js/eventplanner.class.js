@@ -60,13 +60,13 @@ eventplanner = {
     	if(is_object(_data)){
     		// c'est un objet, donc un seul enregistrement à traiter
     		if(_data.hasOwnProperty(_type + 'Id')){
-    			eventplanner[_type].container[_data[_type + 'Id']] = $.extend(new eventplanner[_type][_type + 'Item'](), _data);
+    			eventplanner[_type].container[_data[_type + 'Id']] = new eventplanner[_type][_type + 'Item'](_data);
     		}    		
     	}else{
     		// c'est un array, donc plusieurs enregistrement à traiter
     		_data.forEach(function(element) {
                 if(element.hasOwnProperty(_type + 'Id')){
-    				eventplanner[_type].container[element[_type + 'Id']] = $.extend(new eventplanner[_type][_type + 'Item'](), element);
+    				eventplanner[_type].container[element[_type + 'Id']] = new eventplanner[_type][_type + 'Item'](element);
 	    		}
             });
     	}

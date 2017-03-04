@@ -3,13 +3,12 @@
 /* * ***************************Includes********************************* */
 require_once dirname(__FILE__) . '/../../core/php/core.inc.php';
 
-class matType {
+class discipline {
 	/*     * *************************Attributs****************************** */
 
 	private $id;
+	private $organisationId;
 	private $name;
-	private $disciplineId;
-	private $parentId;
 
 
 	/*     * ***********************Méthodes statiques*************************** */
@@ -18,31 +17,42 @@ class matType {
 		$values = array(
 			'id' => $_id,
 		);
+
 		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-        FROM matType
+        FROM discipline
         WHERE id=:id';
 		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ROW, PDO::FETCH_CLASS, __CLASS__);
 	}
 
 	public static function all() {
 		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-       	FROM matType
-	   	ORDER BY `name`';
+        FROM discipline';
 		return DB::Prepare($sql, array(), DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
 	}
-	
+
+	public static function byOrganisationId($_organisationId) {
+		$values = array(
+			'organisationId' => $_organisationId,
+		);
+
+		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
+        FROM discipline
+        WHERE organisationId=:organisationId';
+		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
+	}
+
 	/*     * *********************Méthodes d'instance************************* */
 
 	public function save($_addMsg = true) {
 		if($this->getId() == null){
 			DB::save($this);
 			if($_addMsg){
-				msg::add(null, null, null, $_SESSION['user']->getId(), "Création du type de matériel: " . $this->getName(), 'matType', 'add', $this);
+				msg::add(null, null, null, $_SESSION['user']->getId(), "Création de la discipline", 'discipline', 'add', $this);
 			}
 		}else{
 			DB::save($this);
 			if($_addMsg){
-				msg::add(null, null, null, $_SESSION['user']->getId(), "Mise à jour du type de matériel: " . $this->getName(), 'matType', 'update', $this);
+				msg::add(null, null, null, $_SESSION['user']->getId(), "Mise à jour de la discipline", 'discipline', 'update', $this);
 			}
 		}
 		return $this;
@@ -50,13 +60,12 @@ class matType {
 
 	public function formatForFront(){
 		$return = utils::addPrefixToArray(utils::o2a($this), get_class($this));
-		$return['attributes'] = matTypeAttribute::listIdByMatTypeId($this->getId());
 		return $return;
 	}
 
 	public function remove($_addMsg = true) {
 		if($_addMsg){
-			msg::add(null, null, null, $_SESSION['user']->getId(), "Suppression du type de matériel."  . $this->getName(), 'matType', 'remove', $this);
+			msg::add(null, null, null, $_SESSION['user']->getId(), "Suppression de la discipline.", 'discipline', 'remove', $this);
 		}
 
 		return DB::remove($this);
@@ -69,34 +78,22 @@ class matType {
 	public function getId() {
 		return $this->id;
 	}
+	public function getOrganisationId() {
+		return $this->organisationId;
+	}
 	public function getName() {
 		return $this->name;
-	}
-	public function getDisciplineId() {
-		return $this->disciplineId;
-	}
-	public function getParentId() {
-		return $this->parentId;
-	}
-	public function getAttributes() {
-		return matTypeAttribute::byMatTypeId($this->getId());
 	}
 
 	public function setId($id) {
 		$this->id = $id;
 	}
+	public function setOrganisationId($organisationId) {
+		$this->organisationId = $organisationId;
+	}
 	public function setName($name) {
 		$this->name = $name;
 	}
-	public function setDisciplineId($disciplineId) {
-		$this->disciplineId = $disciplineId;
-	}
-	public function setParentId($parentId) {
-		$this->parentId = $parentId;
-	}
-	public function addAttributes($name, $option) {
-		
-	}
-}
 
+}
 ?>

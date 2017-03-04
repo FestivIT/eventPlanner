@@ -3,13 +3,13 @@
 /* * ***************************Includes********************************* */
 require_once dirname(__FILE__) . '/../../core/php/core.inc.php';
 
-class matType {
+class eventLevel {
 	/*     * *************************Attributs****************************** */
 
 	private $id;
 	private $name;
-	private $disciplineId;
-	private $parentId;
+	private $eventId;
+	private $planId;
 
 
 	/*     * ***********************Méthodes statiques*************************** */
@@ -19,16 +19,26 @@ class matType {
 			'id' => $_id,
 		);
 		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-        FROM matType
+        FROM eventLevel
         WHERE id=:id';
 		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ROW, PDO::FETCH_CLASS, __CLASS__);
 	}
 
 	public static function all() {
 		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-       	FROM matType
+       	FROM eventLevel
 	   	ORDER BY `name`';
 		return DB::Prepare($sql, array(), DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
+	}
+
+	public static function byEventId($_eventId) {
+		$values = array(
+			'eventId' => $_eventId,
+		);
+		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
+        FROM eventLevel
+        WHERE eventId=:eventId';
+		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
 	}
 	
 	/*     * *********************Méthodes d'instance************************* */
@@ -37,12 +47,12 @@ class matType {
 		if($this->getId() == null){
 			DB::save($this);
 			if($_addMsg){
-				msg::add(null, null, null, $_SESSION['user']->getId(), "Création du type de matériel: " . $this->getName(), 'matType', 'add', $this);
+				msg::add($this->getEventId(), null, null, $_SESSION['user']->getId(), "Création du niveau: " . $this->getName(), 'eventLevel', 'add', $this);
 			}
 		}else{
 			DB::save($this);
 			if($_addMsg){
-				msg::add(null, null, null, $_SESSION['user']->getId(), "Mise à jour du type de matériel: " . $this->getName(), 'matType', 'update', $this);
+				msg::add($this->getEventId(), null, null, $_SESSION['user']->getId(), "Mise à jour du niveau: " . $this->getName(), 'eventLevel', 'update', $this);
 			}
 		}
 		return $this;
@@ -56,7 +66,7 @@ class matType {
 
 	public function remove($_addMsg = true) {
 		if($_addMsg){
-			msg::add(null, null, null, $_SESSION['user']->getId(), "Suppression du type de matériel."  . $this->getName(), 'matType', 'remove', $this);
+			msg::add($this->getEventId(), null, null, $_SESSION['user']->getId(), "Suppression du niveau." . $this->getName() , 'eventLevel', 'remove', $this);
 		}
 
 		return DB::remove($this);
@@ -72,14 +82,11 @@ class matType {
 	public function getName() {
 		return $this->name;
 	}
-	public function getDisciplineId() {
-		return $this->disciplineId;
+	public function getEventId() {
+		return $this->eventId;
 	}
-	public function getParentId() {
-		return $this->parentId;
-	}
-	public function getAttributes() {
-		return matTypeAttribute::byMatTypeId($this->getId());
+	public function getPlanId() {
+		return $this->planId;
 	}
 
 	public function setId($id) {
@@ -88,14 +95,11 @@ class matType {
 	public function setName($name) {
 		$this->name = $name;
 	}
-	public function setDisciplineId($disciplineId) {
-		$this->disciplineId = $disciplineId;
+	public function setEventId($eventId) {
+		$this->eventId = $eventId;
 	}
-	public function setParentId($parentId) {
-		$this->parentId = $parentId;
-	}
-	public function addAttributes($name, $option) {
-		
+	public function setPlanId($planId) {
+		$this->planId = $planId;
 	}
 }
 

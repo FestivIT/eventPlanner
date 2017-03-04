@@ -1,65 +1,41 @@
-eventplanner.zone = {
+eventplanner.plan = {
     dataReady: $.Deferred(),
     container: {},
-    zoneItem: function(_data){ 
+    planItem: function(_data){ 
         for (var prop in _data) {
             if (_data.hasOwnProperty(prop)) {
                 this[prop] = _data[prop];
             }
         }
 
-        if(!this.hasOwnProperty('zoneId')){
-            this.zoneId = ''; // Nouvelle zone
+        if(!this.hasOwnProperty('planId')){
+            this.planId = ''; // Nouveau plan
         }
-        if(!this.hasOwnProperty('zoneEventId')){
-            throw "zoneEventId manquant!";
+        if(!this.hasOwnProperty('planOrganisationId')){
+            //throw "planOrganisationId manquant!";
+            this.planOrganisationId = 1; // TEMPORAIRE
+            console.log('planOrganisationId temporaire: 1');
         }
-        if(!this.hasOwnProperty('zoneEventLevelId')){
-            //throw "zoneEventLevelId manquant!";
-            this.zoneEventLevelId = 1; // TEMPORAIRE
-            console.log('zoneEventLevelId temporaire: 1');
+        if(!this.hasOwnProperty('planName')){
+            this.planName = "";
         }
-        if(!this.hasOwnProperty('zoneLocalisation')){
-            throw "zoneLocalisation manquant!";
-        }
-        if(!this.hasOwnProperty('zoneInstallDate')){
-            throw "zoneInstallDate manquant!";
-        }
-        if(!this.hasOwnProperty('zoneUninstallDate')){
-            throw "zoneUninstallDate manquant!";
-        }
-        if(!this.hasOwnProperty('zoneState')){
-            this.zoneState = 200;
-        }
-        if(!this.hasOwnProperty('zoneComment')){
-            this.zoneComment = "";
+        if(!this.hasOwnProperty('planBounds')){
+            this.planBounds = [];
         }
         
-    	this.getEvent = function(_fullData = false){
-            return eventplanner.event.byId(this.zoneEventId, _fullData);
+    	this.getOrganisation = function(_fullData = false){
+            return eventplanner.organisation.byId(this.planOrganisationId, _fullData);
         }
-
-        this.getEventLevel = function(_fullData = false){
-            return eventplanner.eventLevel.byId(this.zoneEventLevelId, _fullData);
-        }
-    	
-    	this.getEqLogics = function(_fullData = false){
-    		return eventplanner.eqLogic.byZoneId(this.zoneId, _fullData);
-    	}
     },
     
     // Chargement initial des données depuis le serveur
     load: function(){
-        return eventplanner.loadDataFromServer('zone');
+        return eventplanner.loadDataFromServer('plan');
     },
 
     // enregistrement
     save: function(_params) {
-        return eventplanner.saveDataToServer('zone', _params);
-    },
-
-    updateState: function(_params) {
-        return eventplanner.updateStateToServer('zone' ,_params);
+        return eventplanner.saveDataToServer('plan', _params);
     },
 
     // Accés aux données
@@ -120,9 +96,9 @@ eventplanner.zone = {
     },
 
     compareNameAsc: function(a,b) {
-      if (a.zoneName < b.zoneName)
+      if (a.planName < b.planName)
         return -1;
-      if (a.zoneName > b.zoneName)
+      if (a.planName > b.planName)
         return 1;
       return 0;
     }

@@ -2,7 +2,12 @@ eventplanner.msg = {
     dataReady: $.Deferred(),
     container: {},
     lastMsgId: 0,
-    msgItem: function(){
+    msgItem: function(_data){
+        for (var prop in _data) {
+            if (_data.hasOwnProperty(prop)) {
+                this[prop] = _data[prop];
+            }
+        }
     },
 
     // Chargement initial des données depuis le serveur
@@ -113,6 +118,7 @@ eventplanner.msg = {
         return eventplanner.saveDataToServer('msg', _params);
     },
 
+    /*
     updateData: function(_data){
     	if(is_object(_data)){
     		// c'est un objet, donc un seul enregistrement à traiter
@@ -128,6 +134,7 @@ eventplanner.msg = {
             });
     	}
     },
+    */
 
     // Accés aux données
     all: function(_fulldata = false){

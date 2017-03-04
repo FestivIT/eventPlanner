@@ -21,10 +21,13 @@
 		
 		
 		<div role="tabpanel" class="tab-pane" id="contact">
+			<div class="well">
+			<button type="button" class="btn btn-success editContactBtn" data-contact-id="new">Ajouter un nouveau contact</button>
+			</div>
 			<ul class="list-group contactTable" id="eventInfoContactTable">
 			</ul>
 			<script type="text/html" id="templateEventInfoContactTable">
-				<li class="list-group-item msgItem" data-template-bind='[{"attribute": "data-id", "value": "msgId"}]'>
+				<li class="list-group-item contactItem" data-template-bind='[{"attribute": "data-id", "value": "contactId"}]'>
 		  			<div class="row">
 			  			<div class="col-xs-8 col-sm-5">
 							<strong><span data-content="contactName"></span></strong><br>
@@ -35,8 +38,8 @@
 						</div>
 						<div class="col-sm-3 hidden-xs" data-template-bind='[{"attribute": "content", "value": "contactId", "formatter": "formatContactCoord", "formatOptions": "templateContactCoord"}]'></div>
 						<div class="col-xs-4 col-sm-1" style="text-align: right;">
-							<button type="button" class="btn btn-warning btn-xs editMissionBtn" data-template-bind='[{"attribute": "data-mission-id", "value": "missionId"}]' title="Modifier"><span class="glyphicon glyphicon-pencil"></span></button> 
-							<button type="button" class="btn btn-danger btn-xs deleteMissionBtn" data-template-bind='[{"attribute": "data-mission-id", "value": "missionId"}]' title="Supprimer"><span class="glyphicon glyphicon-remove"></span></button>
+							<button type="button" class="btn btn-warning btn-xs editContactBtn" data-template-bind='[{"attribute": "data-contact-id", "value": "contactId"}]' title="Modifier"><span class="glyphicon glyphicon-pencil"></span></button> 
+							<button type="button" class="btn btn-danger btn-xs deleteContactBtn" data-template-bind='[{"attribute": "data-contact-id", "value": "contactId"}]' title="Supprimer"><span class="glyphicon glyphicon-remove"></span></button>
 						</div>
 					</div>
 					<div class="row hidden-sm hidden-md hidden-lg">

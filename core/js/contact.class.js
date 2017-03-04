@@ -1,7 +1,31 @@
 eventplanner.contact = {
     dataReady: $.Deferred(),
     container: {},
-    contactItem: function(){ 
+    contactItem: function(_data){ 
+        for (var prop in _data) {
+            if (_data.hasOwnProperty(prop)) {
+                this[prop] = _data[prop];
+            }
+        }
+        if(!this.hasOwnProperty('contactId')){
+            this.contactId = ''; // Nouveau contact
+        }
+        if(!this.hasOwnProperty('contactEventId')){
+            throw "contactEventId manquant!";
+        }
+        if(!this.hasOwnProperty('contactName')){
+            this.contactName = '';
+        }
+        if(!this.hasOwnProperty('contactFct')){
+            this.contactFct = '';
+        }
+        if(!this.hasOwnProperty('contactZoneId')){
+            this.contactZoneId = null;
+        }
+        if(!this.hasOwnProperty('contactCoord')){
+            this.contactCoord = [];
+        }
+
         this.getZone = function(_fullData = false){
             return eventplanner.zone.byId(this.contactZoneId, _fullData);
         }

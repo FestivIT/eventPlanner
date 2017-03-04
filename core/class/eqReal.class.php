@@ -8,6 +8,7 @@ class eqReal {
 
 	private $id;
 	private $matTypeId;
+	private $disciplineId;
 	private $name;
 	private $comment;
 	private $state;
@@ -103,7 +104,11 @@ class eqReal {
 		return $return;
 	}
 
-	public function remove() {
+	public function remove($_addMsg = true) {
+		if($_addMsg){
+			msg::add(null, null, null, $_SESSION['user']->getId(), "Suppression du matériel." , 'eqReal', 'remove', $this);
+		}
+
 		return DB::remove($this);
 	}
 
@@ -116,6 +121,9 @@ class eqReal {
 	}
 	public function getName() {
 		return $this->name;
+	}
+	public function getDisciplineId() {
+		return $this->disciplineId;
 	}
 	public function getMatTypeId() {
 		return $this->matTypeId;
@@ -135,6 +143,9 @@ class eqReal {
 	}
 	public function setName($name) {
 		$this->name = $name;
+	}
+	public function setDisciplineId($disciplineId) {
+		$this->disciplineId = $disciplineId;
 	}
 	public function setMatTypeId($matTypeId) {
 		$this->matTypeId = $matTypeId;

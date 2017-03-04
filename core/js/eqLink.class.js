@@ -7,7 +7,31 @@ eventplanner.eqLink = {
         3: 'Wifi5',
         4: 'VDSL'
     },
-    eqLinkItem: function(){ 
+    eqLinkItem: function(_data){
+        for (var prop in _data) {
+            if (_data.hasOwnProperty(prop)) {
+                this[prop] = _data[prop];
+            }
+        }
+        if(!this.hasOwnProperty('eqLinkId')){
+            this.eqLinkId = ''; // Nouveau lien
+        }
+        if(!this.hasOwnProperty('eqLinkEventId')){
+            throw "eqLinkEventId manquant!";
+        }
+        if(!this.hasOwnProperty('eqLinkEqLogicId1')){
+            this.eqLinkEqLogicId1 = '';
+        }
+        if(!this.hasOwnProperty('eqLinkEqLogicId2')){
+            this.eqLinkEqLogicId2 = '';
+        }
+        if(!this.hasOwnProperty('eqLinkType')){
+            this.eqLinkType = eventplanner.eqLink.type[1];
+        }
+        if(!this.hasOwnProperty('eqLinkConfiguration')){
+            this.eqLinkConfiguration = [];
+        }
+
         this.getEqLogics = function(_fullData = false){
             return [eventplanner.eqLogic.byId(this.eqLinkEqLogicId1, _fullData),
                     eventplanner.eqLogic.byId(this.eqLinkEqLogicId2, _fullData)];
