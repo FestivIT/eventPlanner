@@ -1,5 +1,4 @@
 <form class="form-horizontal" id="matTypeForm">
-	<input type="text" id="matTypeId" style="display: none;" data-value="matTypeId">
 	<div class="panel panel-primary">
   	  <div class="panel-heading">Général</div>
   	  <div class="panel-body">

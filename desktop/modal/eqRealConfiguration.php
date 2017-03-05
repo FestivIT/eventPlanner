@@ -1,6 +1,4 @@
 <form class="form-horizontal" id="eqRealForm">
-  <input type="text" id="eqRealId" style="display: none;" data-value="eqRealId">
-  <input type="text" id="eqRealState" style="display: none;" data-value="eqRealState">
   <div class="form-group">
       <label for="eqRealMatTypeId" class="col-sm-3 control-label" >Type de matériel</label>
       <div class="col-sm-9">

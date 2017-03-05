@@ -1,7 +1,4 @@
 <form class="form-horizontal" id="eqLogicForm">
-	<input type="text" id="eqLogicId" style="display: none;" data-value="eqLogicId">
-	<input type="text" id="eqLogicEventId" style="display: none;" data-value="eqLogicEventId">
-	<input type="text" id="eqLogicState" style="display: none;" data-value="eqLogicState">
 	<!-- Nav tabs -->
 	<ul class="nav nav-tabs" role="tablist">
 		<li role="presentation" class="active"><a href="#general" aria-controls="general" role="tab" data-toggle="tab">Général</a></li>

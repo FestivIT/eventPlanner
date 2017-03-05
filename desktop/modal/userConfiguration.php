@@ -1,5 +1,4 @@
 <form class="form-horizontal" id="userForm">
-<input type="text" id="userId" style="display: none;" data-value="userId">
   <div class="form-group">
       <label for="name" class="col-sm-3 control-label" >Nom</label>
       <div class="col-sm-9">

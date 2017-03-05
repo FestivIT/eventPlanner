@@ -2332,14 +2332,14 @@ eventplanner.ui.modal.EpModalEqConfiguration = function(_eqLogic){
 
 			this.modal.find('#eqLogicForm').submit(this, function(event) {
 			    var eqParam = {
-			        id: $(this).find("#eqLogicId").val(),
-			        eventId: $(this).find("#eqLogicEventId").val(),
+			        id: event.data.data.eqLogicId,
+			        eventId: event.data.data.eqLogicEventId,
 			        zoneId: $(this).find("#eqLogicZoneId").val(),
 			        matTypeId: $(this).find("#eqLogicMatTypeId").val(),
 			        eqRealId: $(this).find("#eqLogicEqRealId").val() == "None" ? null : $(this).find("#eqLogicEqRealId").val(),
 			        ip: $(this).find("#eqLogicIp").val(),
 			        comment: $(this).find("#eqLogicComment").val(),
-			        state: $(this).find("#eqLogicState").val(),
+			        state: event.data.data.eqLogicState,
 			        eqLinks: event.data.getEqLinks(),
 			        attributes: []
 			    };
@@ -2580,12 +2580,12 @@ eventplanner.ui.modal.EpModalZoneConfiguration = function(_zone){
 			this.modal.find('#zoneForm').submit(this, function(event) {
 			    var zoneParam = {
 			        id: event.data.data.zoneId,
-			        eventId: $(this).find("#zoneEventId").val(),
+			        eventId: event.data.data.zoneEventId,
 			        name: $(this).find("#zoneName").val(),
 			        localisation: event.data.zoneMarker.getLatLng(),
 			        installDate: formatDateDmy2Ymd($(this).find("#zoneInstallDate").val()),
 			        uninstallDate: formatDateDmy2Ymd($(this).find("#zoneUninstallDate").val()),
-			        state: $(this).find("#zoneState").val(),
+			        state: event.data.data.zoneState,
 			        comment: $(this).find("#zoneComment").val()
 			    };
 
@@ -2647,7 +2647,7 @@ eventplanner.ui.modal.EpModalEventConfiguration = function(_event){
 			
 			this.modal.find('#eventForm').submit(this, function(event) {
 			    var eventParam = {
-			        id: $(this).find("#eventId").val(),
+			        id: event.data.data.eventId,
 			        name: $(this).find("#eventName").val(),
 			        ville: $(this).find("#eventVille").val(),
 			        localisation: event.data.eventMarker.getLatLng(),
@@ -2728,11 +2728,11 @@ eventplanner.ui.modal.EpModalEqRealConfiguration = function(_eqReal){
 			
 			this.modal.find('#eqRealForm').submit(this, function(event) {
 			    var eqRealParam = {
-			        id: $(this).find("#eqRealId").val(),
+			        id: event.data.data.eqRealId,
 			        matTypeId: $(this).find("#eqRealMatTypeId").val(),
 			        name: $(this).find("#eqRealName").val(),
 			        comment: $(this).find("#eqRealComment").val(),
-			        state: $(this).find("#eqRealState").val(),
+			        state: event.data.data.eqRealState,
 			        localisation: ""
 			    };
 			   
@@ -2855,10 +2855,10 @@ eventplanner.ui.modal.EpModalMissionConfiguration = function(_mission){
 		
 		this.modal.find('#missionForm').submit(this, function(event) {
 		    var missionParam = {
-		        id: $(this).find("#missionId").val(),
+		        id: event.data.data.missionId,
 		        name: $(this).find("#missionName").val(),
 		        comment: $(this).find("#missionComment").val(),
-		        eventId: $(this).find("#missionEventId").val(),
+		        eventId: event.data.data.missionEventId,
 		        state: $(this).find("#stateSelect").val(),
 		        zones: [],
 		        users: [],
@@ -2959,7 +2959,7 @@ eventplanner.ui.modal.EpModalMatTypeConfiguration = function(_matType){
 			
 			this.modal.find('#matTypeForm').submit(this, function(event) {
 			    var matTypeParam = {
-			        id: $(this).find("#matTypeId").val(),
+			        id: event.data.data.matTypeId,
 			        name: $(this).find("#matTypeName").val(),
 			        parentId: $(this).find("#matTypeParentId").val() == "" ? null : $(this).find("#matTypeParentId").val(),
 			        attributes: []

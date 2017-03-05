@@ -1,8 +1,4 @@
 <form class="form-horizontal" id="zoneForm">
-	<input type="text" id="zoneId" style="display: none;" data-value="zoneId">
-	<input type="text" id="zoneEventId" style="display: none;" data-value="zoneEventId">
-	<input type="text" id="zoneState" style="display: none;" data-value="zoneState">
-
   <div class="form-group">
     	<label for="zoneName" class="col-sm-3 control-label" >Nom</label>
     	<div class="col-sm-9">
