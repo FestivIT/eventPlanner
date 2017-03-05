@@ -1687,10 +1687,30 @@ eventplanner.ui.eventinfos = {
 		
 		
 		// CONTACT
-		var contactList = 
 		$("#eventInfoContactTable").loadTemplate(
 			$("#templateEventInfoContactTable"), 
 			eventplanner.contact.all(true));
+
+		$("#eventInfoContactTable").bind("addItem", function(event, _contactId){
+			console.log(_contactId);
+			var newItem = $('<div>').loadTemplate($("#templateEventInfoContactTable"), eventplanner.contact.byId(_contactId, true));
+			$(this).append($(newItem).contents());
+
+			$('#eventInfoContactTable').trigger('update');
+		});
+
+		$("#eventInfoContactTable").delegate(".contactItem", "updateItem", function(){
+			var contactId = $(this).attr('data-id');
+			var newItem = $('<div>').loadTemplate($("#templateEventInfoContactTable"), eventplanner.contact.byId(contactId, true));
+			$(this).replaceWith($(newItem).contents());
+
+			$('#eventInfoContactTable').trigger('update');
+		});
+
+		$("#eventInfoContactTable").delegate(".contactItem", "removeItem", function(){
+			$(this).remove();
+			$('#eventInfoContactTable').trigger('update');
+		});
 		
 		$('#contact').delegate('.editContactBtn', 'click', function () {
 			var contactId = $(this).attr('data-contact-id');
@@ -2087,6 +2107,11 @@ eventplanner.ui.modal.EpModalZone = function(_zone){
 	
 	this.constructZone = function(){
 		this.modal.find("#zoneInfo").loadTemplate(this.modal.find("#templateZoneInfo"), this.data);
+
+		// Contacts
+		$("#zoneContactList").loadTemplate(
+			$("#templateZoneContact"), 
+			eventplanner.contact.byZoneId(this.data.zoneId, true));
 	}
 
 	this.constructMsgTable = function(){
@@ -3074,36 +3099,39 @@ eventplanner.ui.modal.EpModalContactConfiguration = function(_contact){
 	
 	this.postShow = function(){
 			this.modal.find('#contactForm').submit(this, function(event) {
-			    /*
-			    var userParam = {
-			        id: event.data.data.userId,
-			        login: $(this).find("#userLogin").val(),
-			        name: $(this).find("#userName").val(),
-			        actionOnScan: event.data.data.userActionOnScan,
-			        slackID: event.data.data.userSlackID,
-			    	lastConnection: event.data.data.userLastConnection,
-			        rights: event.data.data.userRights,
-			        enable: ($(this).find("#userEnable").bootstrapSwitch('state') ? "1" : "0")
-			    };
+			    var contactParam = {
+			        id: event.data.data.contactId,
+			        eventId: event.data.data.contactEventId,
+			        name: $(this).find("#contactName").val(),
+			        fct: $(this).find("#contactFct").val(),
+			        zoneId: $(this).find("#contactZoneId").val(),
+			        coord: []
+			        };
 			    
-			    if(userParam.id == ''){
-			    	userParam.password = userParam.login;
-			    }
+			    $(this).find(".contactCoord").each(function(_contactParam){
+			    	return function(i, contactCoord){
+			    		if($(contactCoord).val() != ''){
+					    	_contactParam.coord.push({
+					    		type: $(contactCoord).attr('data-coord-type'),
+					    		value: $(contactCoord).val()
+					    	});
+					    }
+			    	}
+			    }(contactParam));
 
-			    eventplanner.user.save({
-			      user: userParam,
+			    eventplanner.contact.save({
+			      contact: contactParam,
 			      success: function(thisModal){
 								return function(_data) {
 									eventplanner.ui.checkNewMsg();
 							        thisModal.close();
-									eventplanner.ui.notification('success', "Utilisateur enregistré.");	
+									eventplanner.ui.notification('success', "Contact enregistré.");	
 								}
 							}(event.data),
 				  error: function(_data){
-			        eventplanner.ui.notification('error', "Impossible d'enregistrer l'utilisateur. " + _data.message);
+			        eventplanner.ui.notification('error', "Impossible d'enregistrer le contact. " + _data.message);
 			      }	
 			    });
-				*/
 			    return false;
 			});
 		}

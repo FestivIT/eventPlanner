@@ -76,7 +76,7 @@ try {
 		if (!isset($el) || !is_object($el)) {
 			$el = new $class();
 			utils::a2o($el, $json);
-			$el->save(false); // Première sauvegarde dans le cas
+			$el->save(true); // Première sauvegarde dans le cas où on a pas d'ID: création
 			$el->refresh();
 		}
 		

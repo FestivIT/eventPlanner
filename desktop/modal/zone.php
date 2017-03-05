@@ -31,6 +31,12 @@
 							<div class="row">
 							  <div class="col-xs-4"><label class="control-label">Désinstallation:</label></div>
 							  <div class="col-xs-8"><span class="label label-primary" data-content="zoneUninstallDate" data-format="formatDateYmd2Dmy"></span></div>
+							</div>		
+							<div class="row">
+							  <div class="col-xs-4"><label class="control-label">Contact:</label></div>
+							  <div class="col-xs-8" id="zoneContactList">
+							  	
+							  </div>
 							</div>
 						</div>
 					</div>
@@ -42,6 +48,22 @@
 						</div>
 					</div>
 				</div>
+			</script>
+			<script type="text/html" id="templateZoneContact">
+				<div class="row">
+					<div class="col-sm-6">	
+						<strong><span data-content="contactName">Test Name</span></strong><br>
+						<small><span data-content="contactFct">Test fct</span></small>
+					</div>
+					<div class="col-sm-6" data-template-bind='[{"attribute": "content", "value": "contactId", "formatter": "formatContactCoord", "formatOptions": "templateZoneContactCoord"}]'>
+					</div>
+				</div>
+			</script>
+			<script type="text/html" id="templateZoneContactCoord">
+				 <span class="label label-info">
+				 	<span data-content="type"></span>: 
+				 	<span data-content="value"></span>
+				 </span><br>
 			</script>
 		</div>
 		<div class="col-sm-12">    
