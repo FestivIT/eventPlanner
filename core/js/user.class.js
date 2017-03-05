@@ -49,6 +49,10 @@ eventplanner.user = {
         this.getDiscipline = function(_fullData = false){
             return eventplanner.discipline.byId(this.userDisciplineId, _fullData);
         }
+
+        this.remove = function(_params = {}){
+            return eventplanner.user.remove($.extend(_params, {id: this.userId}));
+        }
     },
     
     // Chargement initial des données depuis le serveur
@@ -59,6 +63,11 @@ eventplanner.user = {
     // enregistrement
     save: function(_params) {
         return eventplanner.saveDataToServer('user', _params);
+    },
+
+    // suppression
+    remove: function(_params) {
+        return eventplanner.removeDataFromServer('user', _params);
     },
     
     // login d'un user
@@ -90,7 +99,7 @@ eventplanner.user = {
 	        var paramsSpecifics =  {
 	        	pre_success: function(_data){
 		        	if(_data.state == 'ok'){
-		        		eventplanner.ui.currentUser = _data.result;
+		        		
 		        	}
 		        	return _data;
 	        	}

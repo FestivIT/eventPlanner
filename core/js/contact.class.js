@@ -29,6 +29,10 @@ eventplanner.contact = {
         this.getZone = function(_fullData = false){
             return eventplanner.zone.byId(this.contactZoneId, _fullData);
         }
+
+        this.remove = function(_params = {}){
+            return eventplanner.contact.remove($.extend(_params, {id: this.contactId}));
+        }
     },
     
 
@@ -40,6 +44,11 @@ eventplanner.contact = {
     // enregistrement
     save: function(_params) {
         return eventplanner.saveDataToServer('contact', _params);
+    },
+
+    // suppression
+    remove: function(_params) {
+        return eventplanner.removeDataFromServer('contact', _params);
     },
 
     // Accés aux données

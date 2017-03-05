@@ -27,6 +27,10 @@ eventplanner.eventLevel = {
         this.getPlan = function(_fullData = false){
             return eventplanner.plan.byId(this.eventLevelPlanId, _fullData);
         }
+
+        this.remove = function(_params = {}){
+            return eventplanner.eventLevel.remove($.extend(_params, {id: this.eventLevelId}));
+        }
     },
 
     // Chargement initial des données depuis le serveur
@@ -37,6 +41,11 @@ eventplanner.eventLevel = {
     // enregistrement
     save: function(_params) {
         return eventplanner.saveDataToServer('eventLevel', _params);
+    },
+
+    // suppression
+    remove: function(_params) {
+        return eventplanner.removeDataFromServer('eventLevel', _params);
     },
 
     // Accés aux données

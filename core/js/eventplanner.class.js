@@ -32,8 +32,9 @@ eventplanner = {
 	            	return function(_data) {
 	            		if(_data.state == 'ok'){
 			        		eventplanner.updateDataFromServer(_type, _data.result);
+                            _data.result = new eventplanner[_type][_type + 'Item'](_data.result);
 			        	}
-			        	return _data;
+                        return _data;
 	            	}
 	        	}(_type)
         };
@@ -55,6 +56,37 @@ eventplanner = {
         paramsAJAX.data[_type] = json_encode(_params[_type]);
         return $.ajax(paramsAJAX);
 	},
+
+    removeDataFromServer : function(_type, _params){
+        var paramsRequired = ['id'];
+        var paramsSpecifics =  {
+            pre_success: function(_type){
+                    return function(_data) {
+                        if(_data.state == 'ok'){
+                            // _data.result
+                        }
+                        return _data;
+                    }
+                }(_type)
+        };
+
+        try {
+            eventplanner.private.checkParamsRequired(_params || {}, paramsRequired);
+        } catch (e) {
+            (_params.error || paramsSpecifics.error || eventplanner.private.default_params.error)(e);
+            return;
+        }
+
+        var params = $.extend({}, eventplanner.private.default_params, paramsSpecifics, _params || {});
+        var paramsAJAX = eventplanner.private.getParamsAJAX(params);
+        paramsAJAX.url = 'core/ajax/ajax.php';
+        paramsAJAX.data = {
+            type: _type,
+            id: _params.id,
+            action: 'remove'
+        };
+        return $.ajax(paramsAJAX);
+    },
 
 	updateDataFromServer: function(_type , _data){
     	if(is_object(_data)){

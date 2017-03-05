@@ -18,6 +18,10 @@ eventplanner.discipline = {
         if(!this.hasOwnProperty('disciplineName')){
             this.disciplineName = ''; 
         }
+
+        this.remove = function(_params = {}){
+            return eventplanner.discipline.remove($.extend(_params, {id: this.disciplineId}));
+        }
     },
     
 
@@ -29,6 +33,11 @@ eventplanner.discipline = {
     // enregistrement
     save: function(_params) {
         return eventplanner.saveDataToServer('discipline', _params);
+    },
+
+    // suppression
+    remove: function(_params) {
+        return eventplanner.removeDataFromServer('discipline', _params);
     },
 
     // Accés aux données

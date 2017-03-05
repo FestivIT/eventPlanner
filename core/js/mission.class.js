@@ -53,6 +53,10 @@ eventplanner.mission = {
             })
             return zoneList;
         }
+
+        this.remove = function(_params = {}){
+            return eventplanner.mission.remove($.extend(_params, {id: this.missionId}));
+        }
     },
 
     // Chargement initial des données depuis le serveur
@@ -63,6 +67,11 @@ eventplanner.mission = {
     // enregistrement d'une mission
     save: function(_params) {
         return eventplanner.saveDataToServer('mission', _params);
+    },
+
+    // suppression
+    remove: function(_params) {
+        return eventplanner.removeDataFromServer('mission', _params);
     },
 
     updateState: function(_params) {

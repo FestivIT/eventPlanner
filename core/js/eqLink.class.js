@@ -56,6 +56,10 @@ eventplanner.eqLink = {
             
             return result;
         }
+
+        this.remove = function(_params = {}){
+            return eventplanner.eqLink.remove($.extend(_params, {id: this.eqLinkId}));
+        }
     },
     
 
@@ -67,6 +71,11 @@ eventplanner.eqLink = {
     // enregistrement
     save: function(_params) {
         return eventplanner.saveDataToServer('eqLink', _params);
+    },
+
+    // suppression
+    remove: function(_params) {
+        return eventplanner.removeDataFromServer('eqLink', _params);
     },
 
     // Accés aux données

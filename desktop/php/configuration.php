@@ -22,11 +22,12 @@
 				<tr class="eventItem" data-template-bind='[{"attribute": "data-id", "value": "eventId"}]'>
 					<th class="col-xs-4" scope="row" data-content="eventName"></th>
 					<td class="col-xs-4" data-content="eventVille"></td>
-					<td class="col-xs-3" data-content="eventStartDate" data-format="formatDateYmd2Dmy"></td>
-					<td class="col-xs-1" style="text-align: right;">
+					<td class="col-xs-2" data-content="eventStartDate" data-format="formatDateYmd2Dmy"></td>
+					<td class="col-xs-2" style="text-align: right;">
 						<button type="button" class="btn btn-success btn-xs selectEventBtn" data-template-bind='[{"attribute": "data-event-id", "value": "eventId"}]' title="Selectionner"><span class="glyphicon glyphicon-ok"></span></button> 
 						<button type="button" class="btn btn-primary btn-xs dupEventBtn" data-template-bind='[{"attribute": "data-event-id", "value": "eventId"}]' title="Dupliquer"><span class="glyphicon glyphicon-duplicate"></span></button> 
 						<button type="button" class="btn btn-warning btn-xs editEventBtn" data-template-bind='[{"attribute": "data-event-id", "value": "eventId"}]' title="Modifier"><span class="glyphicon glyphicon-pencil"></span></button>
+						<button type="button" class="btn btn-danger btn-xs deleteEventBtn" data-template-bind='[{"attribute": "data-event-id", "value": "eventId"}]' title="Supprimer"><span class="glyphicon glyphicon-remove"></span></button>
 					</td>
 				</tr>
 			</script>
@@ -66,6 +67,7 @@
 					<th class="col-xs-11" scope="row" data-content="userName"></th>
 					<td class="col-xs-1" style="text-align: right;">
 						<button type="button" class="btn btn-warning btn-xs editUserBtn" data-template-bind='[{"attribute": "data-user-id", "value": "userId"}]' title="Modifier"><span class="glyphicon glyphicon-pencil"></span></button>
+						<button type="button" class="btn btn-danger btn-xs deleteUserBtn" data-template-bind='[{"attribute": "data-user-id", "value": "userId"}]' title="Supprimer"><span class="glyphicon glyphicon-remove"></span></button>
 					</td>
 				</tr>
 			</script>

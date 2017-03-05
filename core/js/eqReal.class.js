@@ -39,6 +39,10 @@ eventplanner.eqReal = {
     	this.getEqLogics = function(_fullData = false){
 			return eventplanner.eqLogic.byEqRealId(this.eqRealId, _fullData);
     	}
+
+        this.remove = function(_params = {}){
+            return eventplanner.eqReal.remove($.extend(_params, {id: this.eqRealId}));
+        }
     },
 
     // Chargement initial des données depuis le serveur
@@ -49,6 +53,11 @@ eventplanner.eqReal = {
     // enregistrement
     save: function(_params) {
         return eventplanner.saveDataToServer('eqReal', _params);
+    },
+
+    // suppression
+    remove: function(_params) {
+        return eventplanner.removeDataFromServer('eqReal', _params);
     },
 
     updateState: function(_params) {

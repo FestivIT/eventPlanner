@@ -26,6 +26,10 @@ eventplanner.plan = {
     	this.getOrganisation = function(_fullData = false){
             return eventplanner.organisation.byId(this.planOrganisationId, _fullData);
         }
+
+        this.remove = function(_params = {}){
+            return eventplanner.plan.remove($.extend(_params, {id: this.planId}));
+        }
     },
     
     // Chargement initial des données depuis le serveur
@@ -36,6 +40,11 @@ eventplanner.plan = {
     // enregistrement
     save: function(_params) {
         return eventplanner.saveDataToServer('plan', _params);
+    },
+
+    // suppression
+    remove: function(_params) {
+        return eventplanner.removeDataFromServer('plan', _params);
     },
 
     // Accés aux données

@@ -40,6 +40,11 @@ eventplanner.matType = {
 				return this.getAttributes();
 			}
     	}
+
+        this.remove = function(_params = {}){
+            return eventplanner.matType.remove($.extend(_params, {id: this.matTypeId}));
+        }
+        
     },
 
     // Chargement initial des données depuis le serveur
@@ -53,6 +58,11 @@ eventplanner.matType = {
     // enregistrement
     save: function(_params) {
         return eventplanner.saveDataToServer('matType', _params);
+    },
+
+    // suppression
+    remove: function(_params) {
+        return eventplanner.removeDataFromServer('matType', _params);
     },
 
     // Accés aux données

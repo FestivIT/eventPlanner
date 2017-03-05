@@ -14,6 +14,10 @@ eventplanner.organisation = {
         if(!this.hasOwnProperty('organisationName')){
             this.organisationName = "";
         }
+
+        this.remove = function(_params = {}){
+            return eventplanner.organisation.remove($.extend(_params, {id: this.organisationId}));
+        }
     },
     
     // Chargement initial des données depuis le serveur
@@ -24,6 +28,11 @@ eventplanner.organisation = {
     // enregistrement
     save: function(_params) {
         return eventplanner.saveDataToServer('organisation', _params);
+    },
+
+    // suppression
+    remove: function(_params) {
+        return eventplanner.removeDataFromServer('organisation', _params);
     },
 
     // Accés aux données

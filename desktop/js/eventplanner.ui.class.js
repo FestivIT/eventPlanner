@@ -161,12 +161,20 @@ eventplanner.ui = {
 		        eventplanner.ui.notification('success', "Message enregistré.");
 		      },
 		      error: function(_data){
-		        eventplanner.ui.notification('error', "Impossible d'enregistrer le message. " + _data.message);
+		        eventplanner.ui.notification('error', "Impossible d'enregistrer le message.<br>" + _data.message);
 		      }
 		    });
 		    
 			return false;
 		});
+
+		$( ".epNavBtn" )
+		  .mouseenter(function() {
+		    $( this ).find( ".epNavTitle" ).show();
+		  })
+		  .mouseleave(function() {
+		    $( this ).find( ".epNavTitle" ).hide();
+		  });
 	},
 
 	initState: function (){
@@ -472,9 +480,37 @@ eventplanner.ui.configuration = {
 		this.constructUserTable();
 
 	// EVENT TRIGGER
-		$('#eventTable').delegate('.deleteEventBtn', 'click', function () {
-			var eventId = $(this).attr('data-event-id');
-			console.log('Delete event: ' + eventId);
+		$('#eventTable').delegate('.deleteEventBtn', 'click', function (e) {
+			var event = eventplanner.event.byId($(this).attr('data-event-id'));
+			bootbox.confirm({
+			    message: "<strong>Confirmer la suppression de l'événement " + event.eventName + " ?</strong>",
+			    buttons: {
+			        confirm: {
+			            label: 'Oui',
+			            className: 'btn-success'
+			        },
+			        cancel: {
+			            label: 'Non',
+			            className: 'btn-danger'
+			        }
+			    },
+			    callback: function (result) {
+			    	if(result){
+			    		event.remove({
+			    			success: function(_data) {
+											eventplanner.ui.checkNewMsg();
+											eventplanner.ui.notification('success', "Evenement supprimé! ");	
+										},
+							error: function(_data){
+								eventplanner.ui.notification('error', "Impossible de supprimer l'événement.<br>" + _data.message);
+							}
+			    		});
+			    	}
+			    }
+			});
+
+			e.preventDefault();
+			return false;
 		});
 
 		$("#eventTable").bind("addItem", function(event, _userId){
@@ -526,9 +562,37 @@ eventplanner.ui.configuration = {
 		});
 
 	// MATTYPE TRIGGER
-		$('#matTypeTable').delegate('.deleteMatTypeBtn', 'click', function () {
-			var matTypeId = $(this).attr('data-matType-id');
-			console.log('Delete matType: ' + matTypeId);
+		$('#matTypeTable').delegate('.deleteMatTypeBtn', 'click', function (event) {
+			var matType = eventplanner.matType.byId($(this).attr('data-matType-id'));
+			bootbox.confirm({
+			    message: "Attention, cela va supprimer l'ensemble des attributs liés à ce type et déprogrammer les équipements ainsi que les matériels qui utilisent ce type.<br><br><strong>Confirmer la suppression du type " + matType.matTypeName + " ?</strong>",
+			    buttons: {
+			        confirm: {
+			            label: 'Oui',
+			            className: 'btn-success'
+			        },
+			        cancel: {
+			            label: 'Non',
+			            className: 'btn-danger'
+			        }
+			    },
+			    callback: function (result) {
+			    	if(result){
+			    		matType.remove({
+			    			success: function(_data) {
+											eventplanner.ui.checkNewMsg();
+											eventplanner.ui.notification('success', "Type de matériel supprimé! ");	
+										},
+							error: function(_data){
+								eventplanner.ui.notification('error', "Impossible de supprimer le type de matériel.<br>" + _data.message);
+							}
+			    		});
+			    	}
+			    }
+			});
+
+			event.preventDefault();
+			return false;
 		});
 
 		$("#matTypeTable").bind("refreshMatTypeTable", function(thisModal){
@@ -551,9 +615,37 @@ eventplanner.ui.configuration = {
 		});
 
 	// USER TRIGGER
-		$('#userTable').delegate('.deleteUserBtn', 'click', function () {
-			var userId = $(this).attr('data-user-id');
-			console.log('Delete user: ' + userId);
+		$('#userTable').delegate('.deleteUserBtn', 'click', function (event) {
+			var user = eventplanner.user.byId($(this).attr('data-user-id'));
+			bootbox.confirm({
+			    message: "<strong>Confirmer la suppression de l'utilisateur " + user.userName + " ?</strong>",
+			    buttons: {
+			        confirm: {
+			            label: 'Oui',
+			            className: 'btn-success'
+			        },
+			        cancel: {
+			            label: 'Non',
+			            className: 'btn-danger'
+			        }
+			    },
+			    callback: function (result) {
+			    	if(result){
+			    		user.remove({
+			    			success: function(_data) {
+											eventplanner.ui.checkNewMsg();
+											eventplanner.ui.notification('success', "Utilisateur supprimé! ");	
+										},
+							error: function(_data){
+								eventplanner.ui.notification('error', "Impossible de supprimer l'utilisateur.<br>" + _data.message);
+							}
+			    		});
+			    	}
+			    }
+			});
+
+			event.preventDefault();
+			return false;
 		});
 
 		$("#userTable").bind("addItem", function(event, _userId){
@@ -619,7 +711,7 @@ eventplanner.ui.configuration = {
 			if(matTypeByParentId[id] != undefined){
 				matTypeByParentId[id].forEach(function(matType){
 					var node = {
-							text: matType.matTypeName,
+							text: matType.matTypeName + '<button type="button" class="btn btn-danger btn-xs deleteMatTypeBtn pull-right" data-matType-id="' + matType.matTypeId + '" title="Supprimer"><span class="glyphicon glyphicon-remove"></span></button>',
 							matType: matType,
 							selectable: true
 						}
@@ -649,6 +741,7 @@ eventplanner.ui.configuration = {
 				matTypeModal.open();
 		  	}
 		});
+
 	},
 
 	constructUserTable: function(){
@@ -702,9 +795,37 @@ eventplanner.ui.inventaire ={
 			return false;
 		});
 
-		$('#eqRealTable').delegate('.deleteEqRealBtn', 'click', function () {
-			var eqRealId = $(this).attr('data-eqReal-id');
-			console.log('Delete eq: ' + eqRealId);
+		$('#eqRealTable').delegate('.deleteEqRealBtn', 'click', function (event) {
+			var eqReal = eventplanner.eqReal.byId($(this).attr('data-eqReal-id'));
+			bootbox.confirm({
+			    message: "<strong>Confirmer la suppression du matériel " + eqReal.eqRealName + " ?</strong>",
+			    buttons: {
+			        confirm: {
+			            label: 'Oui',
+			            className: 'btn-success'
+			        },
+			        cancel: {
+			            label: 'Non',
+			            className: 'btn-danger'
+			        }
+			    },
+			    callback: function (result) {
+			    	if(result){
+			    		eqReal.remove({
+			    			success: function(_data) {
+											eventplanner.ui.checkNewMsg();
+											eventplanner.ui.notification('success', "Matériel supprimé! ");	
+										},
+							error: function(_data){
+								eventplanner.ui.notification('error', "Impossible de supprimer le matériel.<br>" + _data.message);
+							}
+			    		});
+			    	}
+			    }
+			});			
+
+			event.preventDefault();
+			return false;
 		});
 
 		$("#eqRealTable").bind("addItem", function(event, _eqRealId){
@@ -1361,9 +1482,37 @@ eventplanner.ui.equipements = {
 			eqModal.open();
 		});
 
-		$('#eqLogicTable').delegate('.deleteEqBtn', 'click', function () {
-			var eqId = $(this).attr('data-eq-id');
-			console.log('Delete eq: ' + eqId);
+		$('#eqLogicTable').delegate('.deleteEqBtn', 'click', function (event) {
+			var eqLogic = eventplanner.eqLogic.byId($(this).attr('data-eq-id'), true);
+			bootbox.confirm({
+			    message: "<strong>Confirmer la suppression de l'équipement " + eqLogic.zoneName + " " + eqLogic.matTypeName + " " + (eqLogic.eqRealName || '') + " ?</strong>",
+			    buttons: {
+			        confirm: {
+			            label: 'Oui',
+			            className: 'btn-success'
+			        },
+			        cancel: {
+			            label: 'Non',
+			            className: 'btn-danger'
+			        }
+			    },
+			    callback: function (result) {
+			    	if(result){
+			    		eqLogic.remove({
+			    			success: function(_data) {
+											eventplanner.ui.checkNewMsg();
+											eventplanner.ui.notification('success', "Equipement supprimé! ");	
+										},
+							error: function(_data){
+								eventplanner.ui.notification('error', "Impossible de supprimer l'équipement.<br>" + _data.message);
+							}
+			    		});
+			    	}
+			    }
+			});
+
+			event.preventDefault();
+			return false;
 		});
 
 		$("#eqLogicTable").bind("addItem", function(event, _eqId){
@@ -1435,9 +1584,37 @@ eventplanner.ui.zones ={
 			}
 		});
 
-		$('#zoneTable').delegate('.deleteZoneBtn', 'click', function () {
-			var zoneId = $(this).attr('data-zone-id');
-			console.log('Delete zone: ' + zoneId);
+		$('#zoneTable').delegate('.deleteZoneBtn', 'click',  function (event) {
+			var zone = eventplanner.zone.byId($(this).attr('data-zone-id'));
+			bootbox.confirm({
+			    message: "<strong>Confirmer la suppression de la zone " + zone.zoneName + " ?</strong>",
+			    buttons: {
+			        confirm: {
+			            label: 'Oui',
+			            className: 'btn-success'
+			        },
+			        cancel: {
+			            label: 'Non',
+			            className: 'btn-danger'
+			        }
+			    },
+			    callback: function (result) {
+			    	if(result){
+			    		zone.remove({
+			    			success: function(_data) {
+											eventplanner.ui.checkNewMsg();
+											eventplanner.ui.notification('success', "Zone supprimée! ");	
+										},
+							error: function(_data){
+								eventplanner.ui.notification('error', "Impossible de supprimer la zone.<br>" + _data.message);
+							}
+			    		});
+			    	}
+			    }
+			});
+
+			event.preventDefault();
+			return false;
 		});
 
 		$("#zoneTable").bind("addItem", function(event, _zoneId){
@@ -1499,9 +1676,37 @@ eventplanner.ui.mission ={
 			return false;
 		});
 	
-		$('#missionTable').delegate('.deleteMissionBtn', 'click', function () {
-			var missionId = $(this).attr('data-mission-id');
-			console.log('Delete mission: ' + missionId);
+		$('#missionTable').delegate('.deleteMissionBtn', 'click', function (event) {
+			var mission = eventplanner.mission.byId($(this).attr('data-mission-id'));
+			bootbox.confirm({
+			    message: "<strong>Confirmer la suppression de la mission " + mission.missionName + " ?</strong>",
+			    buttons: {
+			        confirm: {
+			            label: 'Oui',
+			            className: 'btn-success'
+			        },
+			        cancel: {
+			            label: 'Non',
+			            className: 'btn-danger'
+			        }
+			    },
+			    callback: function (result) {
+			    	if(result){
+			    		mission.remove({
+			    			success: function(_data) {
+											eventplanner.ui.checkNewMsg();
+											eventplanner.ui.notification('success', "Mission supprimée! ");	
+										},
+							error: function(_data){
+								eventplanner.ui.notification('error', "Impossible de supprimer la mission.<br>" + _data.message);
+							}
+			    		});
+			    	}
+			    }
+			});
+
+			event.preventDefault();
+			return false;
 		});
 
 		$("#missionTable").bind("addItem", function(event, _missionId){
@@ -1568,7 +1773,7 @@ eventplanner.ui.scan = {
 									}
 								}(event.data),
 						error: function(_data){
-							eventplanner.ui.notification('error', "Impossible de modifier l'état. " + _data.message);
+							eventplanner.ui.notification('error', "Impossible de modifier l'état.<br>" + _data.message);
 						}	
 						});
 				}else{
@@ -1589,7 +1794,7 @@ eventplanner.ui.scan = {
 								}
 							}(event.data),
 					error: function(_data){
-						eventplanner.ui.notification('error', "Impossible de modifier l'état. " + _data.message);
+						eventplanner.ui.notification('error', "Impossible de modifier l'état.<br>" + _data.message);
 					}	
 					});
 			}
@@ -1666,7 +1871,7 @@ eventplanner.ui.eventinfos = {
 						eventplanner.ui.notification('success', "Changement enregistré.");	
 					},
 				  error: function(_data){
-			        eventplanner.ui.notification('error', "Impossible d'enregistrer la modification. " + _data.message);
+			        eventplanner.ui.notification('error', "Impossible d'enregistrer la modification.<br>" + _data.message);
 			      }	
 			    });
 			});
@@ -1725,6 +1930,39 @@ eventplanner.ui.eventinfos = {
 				var contactModal = new eventplanner.ui.modal.EpModalContactConfiguration(eventplanner.contact.byId(contactId));	
 				contactModal.open();
 			}
+		});
+
+		$('#contact').delegate('.deleteContactBtn', 'click', function (event) {
+			var contact = eventplanner.contact.byId($(this).attr('data-contact-id'));
+			bootbox.confirm({
+			    message: "<strong>Confirmer la suppression du contact " + contact.contactName + " ?</strong>",
+			    buttons: {
+			        confirm: {
+			            label: 'Oui',
+			            className: 'btn-success'
+			        },
+			        cancel: {
+			            label: 'Non',
+			            className: 'btn-danger'
+			        }
+			    },
+			    callback: function (result) {
+			    	if(result){
+			    		contact.remove({
+			    			success: function(_data) {
+											eventplanner.ui.checkNewMsg();
+											eventplanner.ui.notification('success', "Contact supprimé! ");	
+										},
+							error: function(_data){
+								eventplanner.ui.notification('error', "Impossible de supprimer le contact.<br>" + _data.message);
+							}
+			    		});
+			    	}
+			    }
+			});
+
+			event.preventDefault();
+			return false;
 		});
 
 		// CONFIGURATION
@@ -1835,7 +2073,7 @@ eventplanner.ui.userinfos = {
 						eventplanner.ui.notification('success', "Changement enregistré.");	
 					},
 				  error: function(_data){
-			        eventplanner.ui.notification('error', "Impossible d'enregistrer la modification. " + _data.message);
+			        eventplanner.ui.notification('error', "Impossible d'enregistrer la modification.<br>" + _data.message);
 			      }	
 			    });
 
@@ -1857,7 +2095,7 @@ eventplanner.ui.userinfos = {
 						eventplanner.ui.notification('success', "Changement enregistré.");	
 					},
 				  error: function(_data){
-			        eventplanner.ui.notification('error', "Impossible d'enregistrer la modification. " + _data.message);
+			        eventplanner.ui.notification('error', "Impossible d'enregistrer la modification.<br>" + _data.message);
 			      }	
 			    });
 			    
@@ -1880,7 +2118,7 @@ eventplanner.ui.userinfos = {
 						eventplanner.ui.notification('success', "Changement enregistré.");	
 					},
 				  error: function(_data){
-			        eventplanner.ui.notification('error', "Impossible d'enregistrer la modification. " + _data.message);
+			        eventplanner.ui.notification('error', "Impossible d'enregistrer la modification.<br>" + _data.message);
 			      }	
 			    });
 
@@ -2372,7 +2610,7 @@ eventplanner.ui.modal.EpModalEqConfiguration = function(_eqLogic){
 								}
 							}(event.data),
 			      error: function(_data){
-			        eventplanner.ui.notification('error', "Impossible d'enregistrer l'équipement. " + _data.message);
+			        eventplanner.ui.notification('error', "Impossible d'enregistrer l'équipement.<br>" + _data.message);
 			      }
 			    });
 			    
@@ -2604,7 +2842,7 @@ eventplanner.ui.modal.EpModalZoneConfiguration = function(_zone){
 								}
 							}(event.data),
 				  error: function(_data){
-			        eventplanner.ui.notification('error', "Impossible d'enregistrer la zone. " + _data.message);
+			        eventplanner.ui.notification('error', "Impossible d'enregistrer la zone.<br>" + _data.message);
 			      }			  
 			    });
 			    return false;
@@ -2666,7 +2904,7 @@ eventplanner.ui.modal.EpModalEventConfiguration = function(_event){
 								}
 							}(event.data),
 				  error: function(_data){
-			        eventplanner.ui.notification('error', "Impossible d'enregistrer l'événement. " + _data.message);
+			        eventplanner.ui.notification('error', "Impossible d'enregistrer l'événement.<br>" + _data.message);
 			      }			  
 			    });
 			    return false;
@@ -2746,7 +2984,7 @@ eventplanner.ui.modal.EpModalEqRealConfiguration = function(_eqReal){
 								}
 							}(event.data),
 				  error: function(_data){
-			        eventplanner.ui.notification('error', "Impossible d'enregistrer le matériel. " + _data.message);
+			        eventplanner.ui.notification('error', "Impossible d'enregistrer le matériel.<br>" + _data.message);
 			      }			  
 			    });
 
@@ -2889,7 +3127,7 @@ eventplanner.ui.modal.EpModalMissionConfiguration = function(_mission){
 							}
 						}(event.data),
 			  error: function(_data){
-		        eventplanner.ui.notification('error', "Impossible d'enregistrer la mission. " + _data.message);
+		        eventplanner.ui.notification('error', "Impossible d'enregistrer la mission.<br>" + _data.message);
 		      }			  
 		    });
 
@@ -2985,7 +3223,7 @@ eventplanner.ui.modal.EpModalMatTypeConfiguration = function(_matType){
 								}
 							}(event.data),
 				  error: function(_data){
-			        eventplanner.ui.notification('error', "Impossible d'enregistrer le type de matériel. " + _data.message);
+			        eventplanner.ui.notification('error', "Impossible d'enregistrer le type de matériel.<br>" + _data.message);
 			      }	
 			    });
 			    return false;
@@ -3062,7 +3300,7 @@ eventplanner.ui.modal.EpModalUserConfiguration = function(_user){
 								}
 							}(event.data),
 				  error: function(_data){
-			        eventplanner.ui.notification('error', "Impossible d'enregistrer l'utilisateur. " + _data.message);
+			        eventplanner.ui.notification('error', "Impossible d'enregistrer l'utilisateur.<br>" + _data.message);
 			      }	
 			    });
 			    return false;
@@ -3129,7 +3367,7 @@ eventplanner.ui.modal.EpModalContactConfiguration = function(_contact){
 								}
 							}(event.data),
 				  error: function(_data){
-			        eventplanner.ui.notification('error', "Impossible d'enregistrer le contact. " + _data.message);
+			        eventplanner.ui.notification('error', "Impossible d'enregistrer le contact.<br>" + _data.message);
 			      }	
 			    });
 			    return false;
@@ -3258,7 +3496,7 @@ eventplanner.ui.modal.EpModalState = function(_listId, _type, _presetState){
 										}
 									}(event.data),
 							error: function(_data){
-								eventplanner.ui.notification('error', "Impossible de modifier l'état. " + _data.message);
+								eventplanner.ui.notification('error', "Impossible de modifier l'état.<br>" + _data.message);
 							}	
 							});
 			    	break;
@@ -3275,7 +3513,7 @@ eventplanner.ui.modal.EpModalState = function(_listId, _type, _presetState){
 										}
 									}(event.data),
 							error: function(_data){
-								eventplanner.ui.notification('error', "Impossible de modifier l'état. " + _data.message);
+								eventplanner.ui.notification('error', "Impossible de modifier l'état.<br>" + _data.message);
 							}	
 							});
 			    	break;
@@ -3293,7 +3531,7 @@ eventplanner.ui.modal.EpModalState = function(_listId, _type, _presetState){
 										}
 									}(event.data),
 							error: function(_data){
-								eventplanner.ui.notification('error', "Impossible de modifier l'état. " + _data.message);
+								eventplanner.ui.notification('error', "Impossible de modifier l'état.<br>" + _data.message);
 							}	
 							});
 			    	break;
@@ -3310,7 +3548,7 @@ eventplanner.ui.modal.EpModalState = function(_listId, _type, _presetState){
 										}
 									}(event.data),
 							error: function(_data){
-								eventplanner.ui.notification('error', "Impossible de modifier l'état. " + _data.message);
+								eventplanner.ui.notification('error', "Impossible de modifier l'état.<br>" + _data.message);
 							}	
 							});
 			    	break;

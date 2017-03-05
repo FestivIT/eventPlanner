@@ -32,6 +32,10 @@ eventplanner.event = {
         if(!this.hasOwnProperty('eventConfiguration')){
             this.eventConfiguration = {};
         }
+
+        this.remove = function(_params = {}){
+            return eventplanner.event.remove($.extend(_params, {id: this.eventId}));
+        }
     },
 
     // Chargement initial des données depuis le serveur
@@ -42,6 +46,11 @@ eventplanner.event = {
     // enregistrement
     save: function(_params) {
         return eventplanner.saveDataToServer('event', _params);
+    },
+
+    // suppression
+    remove: function(_params) {
+        return eventplanner.removeDataFromServer('event', _params);
     },
 
     // Accés aux données

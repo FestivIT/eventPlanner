@@ -68,6 +68,10 @@ eventplanner.eqLogic = {
 
             return eqLogicItem;
         }
+
+        this.remove = function(_params = {}){
+            return eventplanner.eqLogic.remove($.extend(_params, {id: this.eqLogicId}));
+        }
     },
     
 
@@ -82,6 +86,11 @@ eventplanner.eqLogic = {
     // enregistrement
     save: function(_params) {
         return eventplanner.saveDataToServer('eqLogic', _params);
+    },
+
+    // suppression
+    remove: function(_params) {
+        return eventplanner.removeDataFromServer('eqLogic', _params);
     },
 
     updateState: function(_params) {

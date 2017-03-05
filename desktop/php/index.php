@@ -187,7 +187,7 @@ include_file('desktop', 'commun', 'css');
 				</div>
 
 	          <ul class="nav navbar-nav">
-	            <li class="dropdown">
+	            <li class="dropdown epNavBtn">
 	              <a id="generalDrop" href="#" role="button" class="dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-book"></i>&nbsp;&nbsp; Général<b class="caret"></b></a>
 	              <ul class="dropdown-menu">
 	                <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in"  class="navBarBtn" data-link="dashboard"><i class="glyphicon glyphicon-th"></i>&nbsp;&nbsp;Dashboard</a></li>
@@ -198,7 +198,11 @@ include_file('desktop', 'commun', 'css');
 	                <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="configuration"><i class="glyphicon glyphicon-cog"></i>&nbsp;&nbsp;Configuration</a></li>
 	              </ul>
 	            </li>
-	            <li class="dropdown">
+            	<li class="epNavBtn"><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="map"><i class="fa fa-globe white"></i><span class="epNavTitle" style="display: none;">&nbsp;&nbsp;Carte</span></a></li>
+	            <li class="epNavBtn"><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="planning"><i class="glyphicon glyphicon-calendar"></i><span class="epNavTitle" style="display: none;">&nbsp;&nbsp;Planning</span></a></li>
+                <li class="epNavBtn"><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="maincourante"><i class="glyphicon glyphicon-pencil"></i><span class="epNavTitle" style="display: none;">&nbsp;&nbsp;Main courante</span></a></li>
+                <li class="epNavBtn"><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="mission"><i class="glyphicon glyphicon-list-alt"></i><span class="epNavTitle" style="display: none;">&nbsp;&nbsp;Missions</span></a></li>
+	            <li class="dropdown epNavBtn">
 	            <?php
 
 // A reprendre pour un paramétrage à l'initialisation de l'UI
@@ -216,11 +220,6 @@ include_file('desktop', 'commun', 'css');
 	            	}
 	            ?>
 	              <ul class="dropdown-menu">
-	                <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="map"><i class="fa fa-globe white"></i>&nbsp;&nbsp;Carte</a></li>
-	                <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="planning"><i class="glyphicon glyphicon-calendar"></i>&nbsp;&nbsp;Planning</a></li>
-	                <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="maincourante"><i class="glyphicon glyphicon-pencil"></i>&nbsp;&nbsp;Main courante</a></li>
-	                <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="mission"><i class="glyphicon glyphicon-list-alt"></i>&nbsp;&nbsp;Missions</a></li>
-	                <li class="divider hidden-xs"></li>
 	                <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="equipements"><i class="glyphicon glyphicon-hdd"></i>&nbsp;&nbsp;Equipements</a></li>
 	                <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="zones"><i class="glyphicon glyphicon-map-marker"></i>&nbsp;&nbsp;Zones</a></li>
 	                <li class="divider hidden-xs"></li>

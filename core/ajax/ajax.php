@@ -247,7 +247,19 @@ try {
 			$result = $result->formatForFront();
 		}
 		ajax::success($results);
-	}	
+	}
+
+	if (init('action') == 'remove') {
+		throw new Exception('Droit insuffisant pour supprimer - ' . $class);
+
+		$el = $class::byId(init('id'));
+
+		if (isset($el) && is_object($el)) {
+			$el->remove();
+		}
+
+		ajax::success();
+	}
 
 	// MSG
 	if  (($class == 'msg') && (init('action') == 'sinceId')) {

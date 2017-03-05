@@ -46,6 +46,10 @@ eventplanner.zone = {
     	this.getEqLogics = function(_fullData = false){
     		return eventplanner.eqLogic.byZoneId(this.zoneId, _fullData);
     	}
+
+        this.remove = function(_params = {}){
+            return eventplanner.zone.remove($.extend(_params, {id: this.zoneId}));
+        }
     },
     
     // Chargement initial des données depuis le serveur
@@ -56,6 +60,11 @@ eventplanner.zone = {
     // enregistrement
     save: function(_params) {
         return eventplanner.saveDataToServer('zone', _params);
+    },
+
+    // suppression
+    remove: function(_params) {
+        return eventplanner.removeDataFromServer('zone', _params);
     },
 
     updateState: function(_params) {
