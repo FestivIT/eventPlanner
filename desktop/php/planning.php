@@ -95,10 +95,9 @@
 							</div>
 						</div>
 					</div>
-					<div class="col-sm-1 hidden-xs">
-						<span class="label label-info" data-content="eqLogicIp"></span>
+					<div class="col-sm-2 hidden-xs" data-template-bind='[{"attribute": "content", "value": "eqLogicId", "formatter": "formatEqLogicAttributes", "formatOptions": "templateEqLogicAttributes"}]'>
 					</div>
-					<div class="col-sm-4 hidden-xs">
+					<div class="col-sm-3 hidden-xs">
 						<span data-content="eqLogicComment"></span>
 					</div>
 					<div class="col-xs-6 col-sm-2">
@@ -110,4 +109,10 @@
 				</div>
 			</li>
 		</script>
+		<script type="text/html" id="templateEqLogicAttributes">
+			<span class="label label-info">
+				<span data-content="matTypeAttributeName"></span>: <span data-content="eqLogicAttributeValue"></span>
+			</span><br>
+		</script>
+		
 </div>

@@ -381,7 +381,42 @@ eventplanner.eqLogicAttribute = {
     },
 
     getFullData: function(_data){
-        return _data;
+        var processData = function(_eqLogicAttributeData){
+            // EqLogic
+            var eqLogic = eventplanner.eqLogic.byId(_eqLogicAttributeData.eqLogicAttributeEqLogicId, true);
+            if(!is_object(eqLogic)){
+                eqLogic = {};
+            }
+
+            // matTypeAttribute
+            var matTypeAttribute = _eqLogicAttributeData.getMatTypeAttribute(true);
+            if(!is_object(matTypeAttribute)){
+                matTypeAttribute = {};
+            }
+           
+            // Concaténation
+            return $.extend(true, {}, _eqLogicAttributeData, eqLogic, matTypeAttribute);
+        }
+       
+       if(is_object(_data)){
+            // c'est un objet, donc un seul enregistrement à traiter
+            if(_data.hasOwnProperty('eqLogicAttributeId')){
+                return processData(_data);
+            }           
+        }else if(is_array(_data)){
+            // c'est un array, donc plusieurs enregistrement à traiter
+            var dataArray = [];
+            
+            _data.forEach(function(element) {
+                if(element.hasOwnProperty('eqLogicAttributeId')){
+                    dataArray.push(processData(element));
+                }
+            });
+
+            return dataArray;
+        }else{
+            return _data;
+        }
     },
 
     compareNameAsc: function(a,b) {

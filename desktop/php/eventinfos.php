@@ -52,8 +52,7 @@
 			</script>
 			<script type="text/html" id="templateContactCoord">
 				 <span class="label label-info">
-				 	<span data-content="type"></span>: 
-				 	<span data-content="value"></span>
+				 	<span data-content="type"></span>: <span data-content="value"></span>
 				 </span><br>
 			</script>
 		</div>

@@ -172,6 +172,9 @@ $.addTemplateFormatter("contactCoord", function(contactId, coordType) {
     
     return result;
 });
+$.addTemplateFormatter("formatEqLogicAttributes", function(eqLogicId, templateId) {
+    return $('<div>').loadTemplate($('#' + templateId), eventplanner.eqLogic.byId(eqLogicId).getEqLogicAttributes(true)).html();
+});
 
 function formatDateYmd2Dmy(date){
 	return date.split("-").reverse().join("/");
