@@ -168,6 +168,8 @@ eventplanner.ui = {
 			return false;
 		});
 
+		// MENU
+		/*
 		$( ".epNavBtn" )
 		  .mouseenter(function() {
 		    $( this ).find( ".epNavTitle" ).show();
@@ -175,6 +177,7 @@ eventplanner.ui = {
 		  .mouseleave(function() {
 		    $( this ).find( ".epNavTitle" ).hide();
 		  });
+		*/
 	},
 
 	initState: function (){
@@ -287,6 +290,9 @@ eventplanner.ui = {
 		}else{
 			$('.mapModeMenu').hide();
 		}
+
+		$(".epNavBtn").removeClass('active');
+		$(".epNavBtn [data-link=" + _page + "]").closest(".epNavBtn").addClass('active');
 	}
 };
 
@@ -458,7 +464,7 @@ eventplanner.ui.utilitaires = {
 eventplanner.ui.configuration = {
 	title: 'Configuration',
 	init : function(){
-		$("#userTable")
+		$("#userTable, #disciplineTable, #planTable")
 	  		.tablesorter({
 			    theme : "bootstrap",
 			    widthFixed: false,
@@ -478,6 +484,8 @@ eventplanner.ui.configuration = {
 		this.constructEventTable();
 		this.constructMatTypeTable();
 		this.constructUserTable();
+		this.constructDisciplineTable();
+		this.constructPlanTable();
 
 	// EVENT TRIGGER
 		$('#eventTable').delegate('.deleteEventBtn', 'click', function (e) {
@@ -680,6 +688,20 @@ eventplanner.ui.configuration = {
 				userModal.open();
 			}
 		});
+
+		// DISCIPLINE
+		$("#disciplineTable").bind("refreshDisciplineTable", function(thisModal){
+			return function(){
+				thisModal.constructDisciplineTable();
+			}	
+		}(this));
+
+		// PLANS
+		$("#planTable").bind("refreshPlanTable", function(thisModal){
+			return function(){
+				thisModal.constructPlanTable();
+			}	
+		}(this));
 	},
 
 	constructEventTable: function(){
@@ -746,6 +768,14 @@ eventplanner.ui.configuration = {
 
 	constructUserTable: function(){
 		$("#userTable > tbody").loadTemplate($("#templateUserTable"), eventplanner.user.all());
+	},
+
+	constructDisciplineTable: function(){
+		$("#disciplineTable > tbody").loadTemplate($("#templateDisciplineTable"), eventplanner.discipline.all());
+	},
+
+	constructPlanTable: function(){
+		$("#planTable > tbody").loadTemplate($("#templatePlanTable"), eventplanner.plan.all());
 	}
 };
 
@@ -856,6 +886,48 @@ eventplanner.ui.inventaire ={
 		$('#eqRealTable').trigger('update');
 	}
 };
+
+/////////////////////////////////////////////////
+/// Type de matériel ////////////////////////////
+/////////////////////////////////////////////////
+eventplanner.ui.mattype = {
+	title: 'Types de matériels',
+	init: function(){}
+}
+
+
+/////////////////////////////////////////////////
+/// USERS       /////////////////////////////////
+/////////////////////////////////////////////////
+eventplanner.ui.users = {
+	title: 'Utilisateurs',
+	init: function(){}
+}
+
+
+/////////////////////////////////////////////////
+/// EVENEMENTS /////////////////////////////////
+/////////////////////////////////////////////////
+eventplanner.ui.events = {
+	title: 'Evenements',
+	init: function(){}
+}
+
+/////////////////////////////////////////////////
+/// PLANS ///////////////////////////////////////
+/////////////////////////////////////////////////
+eventplanner.ui.plans = {
+	title: 'Plans',
+	init: function(){}
+}
+
+/////////////////////////////////////////////////
+/// Disciplines /////////////////////////////////
+/////////////////////////////////////////////////
+eventplanner.ui.configevent = {
+	title: 'Discplines',
+	init: function(){}
+}
 
 /////////////////////////////////////////////////
 /// MAP /////////////////////////////////////////
@@ -1167,10 +1239,42 @@ eventplanner.ui.maincourante = {
 			eventplanner.ui.maincourante.constructMsgTable();
 		});
 
+		$('#searchMsgInput')
+			.keyup(this, function (event) {
+				eventplanner.ui.maincourante.constructMsgTable(true);
+
+				if($(this).val().length < 2){
+					$(this).parent().removeClass('has-error');
+				}else{
+					$(this).parent().addClass('has-error');
+				}
+			})
+			.closest('form').submit(function (event) {
+				event.preventDefault();
+				return false;
+			});
+
+		$('#searchMsgClear').click(function(){
+			$('#searchMsgInput')
+				.val('')
+				.parent().removeClass('has-error');
+
+			eventplanner.ui.maincourante.constructMsgTable(true);
+		});
+
 		this.constructMsgTable();
 	},
 
-	constructMsgTable: function(){
+	constructMsgTable: function(_searchKey = false){
+		var searchVal = $('#searchMsgInput').val();
+		if(searchVal.length >= 2){
+			if(_searchKey){
+				this.currentPage = 1;
+			}
+			var msgList = eventplanner.msg.searchAll(searchVal);
+		}else{
+			var msgList = eventplanner.msg.all(true);
+		}
 
 		if (this.currentPage <= 1) {
             $('#maincourante .previous').attr('disabled','disabled');
@@ -1178,7 +1282,7 @@ eventplanner.ui.maincourante = {
             $('#maincourante .previous').prop("disabled", false);
         }
 
-        if (this.currentPage * this.resultsPerPage > eventplanner.msg.all().length) {
+        if (this.currentPage * this.resultsPerPage > msgList.length) {
             $('#maincourante .next').attr('disabled','disabled');
         } else {
             $('#maincourante .next').prop("disabled", false);
@@ -1186,13 +1290,13 @@ eventplanner.ui.maincourante = {
 
 		$("#msgTable").loadTemplate(
 			$("#templateMsgTable"), 
-			eventplanner.msg.all(true), 
+			msgList, 
 			{
 				paged: true, 
 				pageNo: this.currentPage, 
 				elemPerPage: this.resultsPerPage
 			});
-	}
+	},
 };
 
 /////////////////////////////////////////////////
@@ -1222,6 +1326,14 @@ eventplanner.ui.planning = {
 		
 		$('#planningSearch').keyup(this, function (event) {
 			eventplanner.ui.planning.searchVal($(this).val());
+		});
+
+		$('#planningSearchClear').click(function(){
+			$('#planningSearch')
+				.val('')
+				.parent().removeClass('has-error');
+				
+			eventplanner.ui.planning.searchVal('');
 		});
 		
 		$('#planning').delegate('.editMultipleStateBtn', 'click', function () {
@@ -1484,8 +1596,11 @@ eventplanner.ui.equipements = {
 
 		$('#eqLogicTable').delegate('.deleteEqBtn', 'click', function (event) {
 			var eqLogic = eventplanner.eqLogic.byId($(this).attr('data-eq-id'), true);
+			var eqLogicName = eqLogic.zoneName + " " + eqLogic.matTypeName + " " + (eqLogic.eqRealName || '');
+
+			var eqLogic = eventplanner.eqLogic.byId($(this).attr('data-eq-id'));
 			bootbox.confirm({
-			    message: "<strong>Confirmer la suppression de l'équipement " + eqLogic.zoneName + " " + eqLogic.matTypeName + " " + (eqLogic.eqRealName || '') + " ?</strong>",
+			    message: "<strong>Confirmer la suppression de l'équipement " + eqLogicName + " ?</strong>",
 			    buttons: {
 			        confirm: {
 			            label: 'Oui',
@@ -1646,6 +1761,14 @@ eventplanner.ui.zones ={
 	}
 }
 
+/////////////////////////////////////////////////
+/// CONFIG EVENT/////////////////////////////////
+/////////////////////////////////////////////////
+eventplanner.ui.configevent = {
+	title: 'Configuration de l\'événement',
+	init: function(){}
+}
+
 
 /////////////////////////////////////////////////
 /// MISSION /////////////////////////////////////
@@ -1664,7 +1787,7 @@ eventplanner.ui.mission ={
 				var missionConfModal = new eventplanner.ui.modal.EpModalMissionConfiguration(missionItem);
 				missionConfModal.open();
 			}else{
-				var missionConfModal = new eventplanner.ui.modal.EpModalMissionConfiguration(eventplanner.mission.byId(missionId, true));
+				var missionConfModal = new eventplanner.ui.modal.EpModalMissionConfiguration(eventplanner.mission.byId(missionId));
 				missionConfModal.open();
 			}
 		});
@@ -1890,31 +2013,77 @@ eventplanner.ui.eventinfos = {
 				$('#eventInfosEditorContainer').show();
 			});
 		
+		// CONFIGURATION
 		
+		// MAP
+		//this.initMap();
+	},
+	
+	initMap : function(){
+		var currentEvent = eventplanner.event.byId(eventplanner.ui.currentUser.userEventId);
+	  	this.eventMapPlanConfig = eventplanner.ui.map.initializeEventMap('eventMapPlanConfig', currentEvent.eventId, currentEvent.eventLocalisation);
+		
+		var topleft    = L.latLng(currentEvent.eventLocalisation.lat + (180/Math.PI)*(100/6378137), currentEvent.eventLocalisation.lng + (180/Math.PI)*(-100/6378137)/Math.cos(Math.PI/180.0*currentEvent.eventLocalisation.lat)),
+		    topright   = L.latLng(currentEvent.eventLocalisation.lat + (180/Math.PI)*(100/6378137), currentEvent.eventLocalisation.lng + (-180/Math.PI)*(-100/6378137)/Math.cos(Math.PI/180.0*currentEvent.eventLocalisation.lat)),
+		    bottomleft = L.latLng(currentEvent.eventLocalisation.lat + (180/Math.PI)*(-100/6378137), currentEvent.eventLocalisation.lng + (-180/Math.PI)*(100/6378137)/Math.cos(Math.PI/180.0*currentEvent.eventLocalisation.lat));
+
+		var icon = L.AwesomeMarkers.icon({icon: '',markerColor: 'red'});
+
+		this.marker1 = L.marker(topleft, {draggable: true, icon: icon, title:'topleft'}).addTo(this.eventMapPlanConfig);
+		this.marker2 = L.marker(topright, {draggable: true, icon: icon, title:'topright'}).addTo(this.eventMapPlanConfig);
+		this.marker3 = L.marker(bottomleft, {draggable: true, icon: icon, title:'bottomleft'}).addTo(this.eventMapPlanConfig);
+
+		this.marker1.on('drag dragend', eventplanner.ui.eventinfos.repositionImage);
+		this.marker2.on('drag dragend', eventplanner.ui.eventinfos.repositionImage);
+		this.marker3.on('drag dragend', eventplanner.ui.eventinfos.repositionImage);
+
+		this.overlay = L.imageOverlay.rotated("./ressources/eventPlan/" + currentEvent.eventId + "/ld.jpg", topleft, topright, bottomleft, {
+		    opacity: 0.4,
+		    interactive: true
+		});
+		this.eventMapPlanConfig.addLayer(this.overlay);
+		
+		$('#eventinfos').on('shown.bs.tab', this, function(event) {
+		  event.data.eventMapPlanConfig.invalidateSize();
+		});
+	},
+	
+	repositionImage: function() {
+		eventplanner.ui.eventinfos.overlay.reposition(eventplanner.ui.eventinfos.marker1.getLatLng(), eventplanner.ui.eventinfos.marker2.getLatLng(), eventplanner.ui.eventinfos.marker3.getLatLng());
+	}
+};
+
+
+/////////////////////////////////////////////////
+/// CONTACT   ///////////////////////////////////
+/////////////////////////////////////////////////
+eventplanner.ui.contact = {
+	title: 'Contacts',
+	init: function(){
 		// CONTACT
-		$("#eventInfoContactTable").loadTemplate(
-			$("#templateEventInfoContactTable"), 
+		$("#contactTable").loadTemplate(
+			$("#templateContactTable"), 
 			eventplanner.contact.all(true));
 
-		$("#eventInfoContactTable").bind("addItem", function(event, _contactId){
+		$("#contactTable").bind("addItem", function(event, _contactId){
 			console.log(_contactId);
-			var newItem = $('<div>').loadTemplate($("#templateEventInfoContactTable"), eventplanner.contact.byId(_contactId, true));
+			var newItem = $('<div>').loadTemplate($("#templateContactTable"), eventplanner.contact.byId(_contactId, true));
 			$(this).append($(newItem).contents());
 
-			$('#eventInfoContactTable').trigger('update');
+			$('#contactTable').trigger('update');
 		});
 
-		$("#eventInfoContactTable").delegate(".contactItem", "updateItem", function(){
+		$("#contactTable").delegate(".contactItem", "updateItem", function(){
 			var contactId = $(this).attr('data-id');
-			var newItem = $('<div>').loadTemplate($("#templateEventInfoContactTable"), eventplanner.contact.byId(contactId, true));
+			var newItem = $('<div>').loadTemplate($("#templateContactTable"), eventplanner.contact.byId(contactId, true));
 			$(this).replaceWith($(newItem).contents());
 
-			$('#eventInfoContactTable').trigger('update');
+			$('#contactTable').trigger('update');
 		});
 
-		$("#eventInfoContactTable").delegate(".contactItem", "removeItem", function(){
+		$("#contactTable").delegate(".contactItem", "removeItem", function(){
 			$(this).remove();
-			$('#eventInfoContactTable').trigger('update');
+			$('#contactTable').trigger('update');
 		});
 		
 		$('#contact').delegate('.editContactBtn', 'click', function () {
@@ -1964,44 +2133,6 @@ eventplanner.ui.eventinfos = {
 			event.preventDefault();
 			return false;
 		});
-
-		// CONFIGURATION
-		
-		// MAP
-		this.initMap();
-	},
-	
-	initMap : function(){
-		var currentEvent = eventplanner.event.byId(eventplanner.ui.currentUser.userEventId);
-	  	this.eventMapPlanConfig = eventplanner.ui.map.initializeEventMap('eventMapPlanConfig', currentEvent.eventId, currentEvent.eventLocalisation);
-		
-		var topleft    = L.latLng(currentEvent.eventLocalisation.lat + (180/Math.PI)*(100/6378137), currentEvent.eventLocalisation.lng + (180/Math.PI)*(-100/6378137)/Math.cos(Math.PI/180.0*currentEvent.eventLocalisation.lat)),
-		    topright   = L.latLng(currentEvent.eventLocalisation.lat + (180/Math.PI)*(100/6378137), currentEvent.eventLocalisation.lng + (-180/Math.PI)*(-100/6378137)/Math.cos(Math.PI/180.0*currentEvent.eventLocalisation.lat)),
-		    bottomleft = L.latLng(currentEvent.eventLocalisation.lat + (180/Math.PI)*(-100/6378137), currentEvent.eventLocalisation.lng + (-180/Math.PI)*(100/6378137)/Math.cos(Math.PI/180.0*currentEvent.eventLocalisation.lat));
-
-		var icon = L.AwesomeMarkers.icon({icon: '',markerColor: 'red'});
-
-		this.marker1 = L.marker(topleft, {draggable: true, icon: icon, title:'topleft'}).addTo(this.eventMapPlanConfig);
-		this.marker2 = L.marker(topright, {draggable: true, icon: icon, title:'topright'}).addTo(this.eventMapPlanConfig);
-		this.marker3 = L.marker(bottomleft, {draggable: true, icon: icon, title:'bottomleft'}).addTo(this.eventMapPlanConfig);
-
-		this.marker1.on('drag dragend', eventplanner.ui.eventinfos.repositionImage);
-		this.marker2.on('drag dragend', eventplanner.ui.eventinfos.repositionImage);
-		this.marker3.on('drag dragend', eventplanner.ui.eventinfos.repositionImage);
-
-		this.overlay = L.imageOverlay.rotated("./ressources/eventPlan/" + currentEvent.eventId + "/ld.jpg", topleft, topright, bottomleft, {
-		    opacity: 0.4,
-		    interactive: true
-		});
-		this.eventMapPlanConfig.addLayer(this.overlay);
-		
-		$('#eventinfos').on('shown.bs.tab', this, function(event) {
-		  event.data.eventMapPlanConfig.invalidateSize();
-		});
-	},
-	
-	repositionImage: function() {
-		eventplanner.ui.eventinfos.overlay.reposition(eventplanner.ui.eventinfos.marker1.getLatLng(), eventplanner.ui.eventinfos.marker2.getLatLng(), eventplanner.ui.eventinfos.marker3.getLatLng());
 	}
 };
 

@@ -1,7 +1,41 @@
-<div class="well planningSearchPanel">
-	<div class="input-group">
-			<div class="input-group-btn">
-				<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+<div id='planning'>
+  	<nav class="navbar navbar-default epContextualNavBar">
+		<div class="container-fluid">
+			<div class="navbar-header">
+		    	<a class="navbar-brand" href="#">Planning</a>
+				<div class="pull-right visible-xs">
+					<div class="btn-group">
+		    			<button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							Trier <span class="caret"></span>
+						</button>
+						<ul class="dropdown-menu">
+							<li><a href="#" class="planningSortBy" data-sortby="zoneName" data-sortorder="asc"><span class="glyphicon glyphicon-sort-by-alphabet"></span> Zone</a></li>
+							<li><a href="#" class="planningSortBy" data-sortby="zoneName" data-sortorder="desc"><span class="glyphicon glyphicon-sort-by-alphabet-alt"></span> Zone</a></li>
+							<li><a href="#" class="planningSortBy" data-sortby="zoneInstallDate" data-sortorder="asc"><span class="glyphicon glyphicon-sort-by-alphabet"></span> Date installation</a></li>
+							<li><a href="#" class="planningSortBy" data-sortby="zoneInstallDate" data-sortorder="desc"><span class="glyphicon glyphicon-sort-by-alphabet-alt"></span> Date installation</a></li>
+						</ul>
+		    		</div>
+
+					<button type="button" class="btn navbar-btn btn-info btn-sm showAllZone"><span class="glyphicon glyphicon-triangle-bottom"></span></button>
+		    		<button type="button" class="btn navbar-btn btn-info btn-sm hideAllZone"><span class="glyphicon glyphicon-triangle-right"></span></button>
+		    	
+		    		<div class="btn-group">
+						<button class="btn btn-success btn-sm dropdown-toggle" id="planningAction" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						    Actions
+						    <span class="caret"></span>
+						</button>
+						<ul class="dropdown-menu" aria-labelledby="planningAction">
+						    <li><a href="#" class="editMultipleStateBtn">Changer état équipements</a></li>
+						    <li><a href="#" class="editMultipleZoneStateBtn">Changer état zones</a></li>
+						    <li role="separator" class="divider"></li>
+						    <li><a href="#" class="addMissionBtn">Créer une mission</a></li>
+						</ul>
+					</div>
+				</div>
+		    </div>
+	    	
+	    	<div class="nav navbar-nav navbar-left hidden-xs">
+				<button type="button" class="btn btn-default btn-sm navbar-btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 					Trier <span class="caret"></span>
 				</button>
 				<ul class="dropdown-menu">
@@ -11,29 +45,39 @@
 					<li><a href="#" class="planningSortBy" data-sortby="zoneInstallDate" data-sortorder="desc"><span class="glyphicon glyphicon-sort-by-alphabet-alt"></span> Date installation</a></li>
 				</ul>
 			</div>
-		  	<input type="text" class="form-control" id="planningSearch" placeholder="Filtre: Logistique, Routeur, UBNT105, 192.168.0.1...">
-		</div>
-    </div>
-</div>
 
-<div class="panel panel-primary" id='planning'>
-  	<div class="panel-heading">
-  		<button type="button" class="btn btn-xs btn-info showAllZone"><span class="glyphicon glyphicon-triangle-bottom small"></span></button>
-  		<button type="button" class="btn btn-xs btn-info hideAllZone"><span class="glyphicon glyphicon-triangle-right small"></span></button>
-  		Planning
-  		<div class="dropdown pull-right">
-		  <button class="btn btn-success btn-xs pull-right" id="planningAction" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-		    Actions
-		    <span class="caret"></span>
-		  </button>
-		  <ul class="dropdown-menu" aria-labelledby="planningAction">
-		    <li><a href="#" class="editMultipleStateBtn">Changer état équipements</a></li>
-		    <li><a href="#" class="editMultipleZoneStateBtn">Changer état zones</a></li>
-		    <li role="separator" class="divider"></li>
-		    <li><a href="#" class="addMissionBtn">Créer une mission</a></li>
-		  </ul>
+			<form class="navbar-form navbar-left planningSearchPanel">
+				<div class="input-group">
+					<span class="input-group-addon">Filtre: </span>
+				  	<input type="text" class="form-control input-sm" id="planningSearch" placeholder="Filtre: Logistique, Routeur, UBNT105, 192.168.0.1...">
+				  	<span class="input-group-btn">
+				        <button class="btn btn-danger btn-sm" type="button" id="planningSearchClear"><i class="glyphicon glyphicon-remove"></i></button>
+				    </span>
+				</div>
+			</form>
+
+			<div class="nav navbar-nav navbar-right hidden-xs">
+				<button type="button" class="btn navbar-btn btn-info btn-sm hidden-xs showAllZone"><span class="glyphicon glyphicon-triangle-bottom"></span></button>
+	    		<button type="button" class="btn navbar-btn btn-info btn-sm hidden-xs hideAllZone"><span class="glyphicon glyphicon-triangle-right"></span></button>
+	    	
+	    		<div class="btn-group">
+					<button class="btn btn-success btn-sm dropdown-toggle" id="planningAction" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					    Actions
+					    <span class="caret"></span>
+					</button>
+					<ul class="dropdown-menu" aria-labelledby="planningAction">
+					    <li><a href="#" class="editMultipleStateBtn">Changer état équipements</a></li>
+					    <li><a href="#" class="editMultipleZoneStateBtn">Changer état zones</a></li>
+					    <li role="separator" class="divider"></li>
+					    <li><a href="#" class="addMissionBtn">Créer une mission</a></li>
+					</ul>
+				</div>
+	    	</div>
+			
 		</div>
-  	</div>
+	</nav>
+  	
+  	
   		<div id="planningTable" class="panel-group eqLogicTable zoneTable" role="tablist" aria-multiselectable="true"></div>
 
   		<script type="text/html" id="templatePlanningTableZone">

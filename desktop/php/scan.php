@@ -1,11 +1,9 @@
-<div class="row" id='scan'>
-	<div class="col-sm-12">
-		<div class="panel panel-primary">
-		  	<div class="panel-heading">
-		  		Scan du matériel
-		  	</div>
-			
-			
+<div id="scan">
+	<nav class="navbar navbar-default epContextualNavBar">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<a class="navbar-brand" href="#">Scan du matériel</a>
+		    </div>
 		</div>
-	</div>
+	</nav>
 </div>

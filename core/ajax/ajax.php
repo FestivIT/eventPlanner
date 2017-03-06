@@ -42,27 +42,45 @@ try {
 		switch($class){
 			case "eqLink":
 			case "eqLogic":
+			case "eqLogicAttribute":
 			case "mission":
 			case "msg":
 			case "zone":
 			case "contact":
-				// Pour ceux-là, on ne récupère que ceux liés à l'événement en cours
+			case "eventLevel":
+				// Event Only
 				$results = $class::byEventId($_SESSION['user']->getEventId());
-				foreach ($results as &$result) {
-					$result = $result->formatForFront();
-				}
-				ajax::success($results);
+			break;
+
+			case "matType":
+			case "matTypeAttribute":
+			case "eqReal":
+			case "user":
+				// Discipline Only
+				$results = $class::byDisciplineId($_SESSION['user']->getDisciplineId());
+			break;
+
+
+			case "event":
+			case "discipline":
+			case "plan":
+				// Organisation only
+				$results = $class::byOrganisationId($_SESSION['user']->getDiscipline()->getOrganisationId());
+			break;
+
+			case "organisation":
+				$results = array($class::byId($_SESSION['user']->getDiscipline()->getOrganisationId()));
 			break;
 
 			default:
-				// Pour ceux-là, on récupére tout
-				$results = $class::all();
-				foreach ($results as &$result) {
-					$result = $result->formatForFront();
-				}
-				ajax::success($results);
+				throw new Exception('Classe non gérée: ' . $class);
 			break;
 		}
+
+		foreach ($results as &$result) {
+			$result = $result->formatForFront();
+		}
+		ajax::success($results);
 	}
 
 	if (init('action') == 'save') {

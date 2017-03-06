@@ -148,20 +148,19 @@ include_file('desktop', 'commun', 'css');
 		include_file('desktop', 'connection', 'php');
 	} else {
 	?>
-		<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+		<div id="epNavBar" class="navbar navbar-default navbar-fixed-top" role="navigation">
 	      <div class="container-fluid">
 	        <div class="navbar-header">
 	          <div class="navbar-icon-container">
-	          	<a href="#" class="navbar-icon pull-right visible-xs" id="nav-btn"><i class="fa fa-bars fa-lg white"></i></a>
+	          	<a href="#" class="navbar-icon pull-right visible-xs" id="nav-btn"><i class="fa fa-bars fa-lg"></i></a>
 	          	<a href="#" class="navbar-icon pull-right visible-xs navBarBtn" data-link="eventinfos"><i class="glyphicon glyphicon-info-sign"></i></a>
 	          	<a href="#" class="navbar-icon pull-right visible-xs navBarBtn" data-link="mission"><i class="glyphicon glyphicon-list-alt"></i></a>
 	          	<a href="#" class="navbar-icon pull-right visible-xs navBarBtn" data-link="maincourante"><i class="glyphicon glyphicon-pencil"></i></a>
 	          	<a href="#" class="navbar-icon pull-right visible-xs navBarBtn" data-link="planning"><i class="glyphicon glyphicon-calendar"></i></a>
-	          	<a href="#" class="navbar-icon pull-right visible-xs navBarBtn" data-link="map"><i class="fa fa-globe white"></i></a>
+	          	<a href="#" class="navbar-icon pull-right visible-xs navBarBtn" data-link="map"><i class="fa fa-globe"></i></a>
 	          	<a href="#" class="navbar-icon pull-right visible-xs navBarBtn" data-link="dashboard"><i class="glyphicon glyphicon-th"></i></a>
 	          </div>
 	          <a class="navbar-brand" href="<?php echo $homeLink; ?>"><span><img alt="Brand" src="desktop/img/logo25.png"></span> <span class="hidden-xs">eventPlanner</span></a>
-
 	        </div>
 
 	        <div class="navbar-collapse collapse">
@@ -171,11 +170,51 @@ include_file('desktop', 'commun', 'css');
 	                <input id="searchbox" type="search" placeholder="Rechercher" class="form-control" name="q" autocomplete="off">
 	                <span id="searchicon" class="fa fa-search form-control-feedback"></span>
 	            </div>
+
+	            
 	          </form>
 
-	          <div class="btn-group navbar-btn navbar-right mapModeMenu" style="display: none;">
-				  <button type="button" class="btn btn-default mapModeMenuLabel">Mode: Démontage</button>
-				  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          		<ul class="nav navbar-nav navbar-right">
+	          		<li class="dropdown epNavBtn">
+		                <a class="dropdown-toggle" id="accountDrop" href="#" role="button" data-toggle="dropdown"><i class="glyphicon glyphicon-folder-open"></i>&nbsp;&nbsp;<span id="epUserMenu"></span> <b class="caret"></b></a>
+		                <ul class="dropdown-menu">
+		                  	<li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="userinfos"><i class="glyphicon glyphicon-briefcase"></i>&nbsp;&nbsp;Mes infos</a></li>
+		                	<li class="divider hidden-xs"></li>
+		                	<li><a href="<?php echo $homeLink; ?>&logout=1" data-toggle="collapse" data-target=".navbar-collapse.in"><i class="glyphicon glyphicon-off"></i>&nbsp;&nbsp;Se déconnecter</a></li>
+		                </ul>
+		            </li>
+		        </ul>
+
+		        
+
+	          <ul class="nav navbar-nav">
+	            <li class="dropdown epNavBtn">
+	              <a id="generalDrop" href="#" role="button" class="dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-book"></i>&nbsp;&nbsp; <span id="epOrganisationMenu"></span><b class="caret"></b></a>
+	              <ul class="dropdown-menu">
+	                <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="inventaire"><i class="glyphicon glyphicon-th-list"></i>&nbsp;&nbsp;Inventaire Matériel</a></li>
+	                <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="utilitaires"><i class="glyphicon glyphicon-wrench"></i>&nbsp;&nbsp;Utilitaires</a></li>
+	                <li class="divider hidden-xs"></li>
+	                <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="configuration"><i class="glyphicon glyphicon-cog"></i>&nbsp;&nbsp;Configuration de l'organisation</a></li>
+					<li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="users"><i class="glyphicon glyphicon-cog"></i>&nbsp;&nbsp;Utilisateurs</a></li>
+					<li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="events"><i class="glyphicon glyphicon-cog"></i>&nbsp;&nbsp;Evenements</a></li>
+					<li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="plans"><i class="glyphicon glyphicon-cog"></i>&nbsp;&nbsp;Plans</a></li>
+					<li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="mattype"><i class="glyphicon glyphicon-cog"></i>&nbsp;&nbsp;Types de matériels</a></li>
+	              </ul>
+	            </li>
+            	<li class="dropdown epNavBtn">
+	              <a style="display: none;" id="eventDrop" href="#" role="button" class="dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-cd"></i>&nbsp;&nbsp;Evenement <b class="caret"></b></a>
+	              <ul class="dropdown-menu">
+	                <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="equipements"><i class="glyphicon glyphicon-hdd"></i>&nbsp;&nbsp;Equipements</a></li>
+	                <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="zones"><i class="glyphicon glyphicon-map-marker"></i>&nbsp;&nbsp;Zones</a></li>
+	              	<li class="divider hidden-xs"></li>
+	                <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="configevent"><i class="glyphicon glyphicon-cog"></i>&nbsp;&nbsp;Configuration de l'événement</a></li>
+	              </ul>
+	            </li>
+	          </ul>
+
+	          <div class="nav navbar-nav mapModeMenu btn-group" style="display: none;">
+				  <button type="button" class="btn navbar-btn btn-default mapModeMenuLabel">Mode: Démontage</button>
+				  <button type="button" class="btn navbar-btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 				    <span class="caret"></span>
 				    <span class="sr-only">Toggle Dropdown</span>
 				  </button>
@@ -185,61 +224,23 @@ include_file('desktop', 'commun', 'css');
 				    <li><a href="#" class="mapModeMenuBtn" data-mapmode="demontage">Mode: Démontage</a></li>
 				  </ul>
 				</div>
-
-	          <ul class="nav navbar-nav">
-	            <li class="dropdown epNavBtn">
-	              <a id="generalDrop" href="#" role="button" class="dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-book"></i>&nbsp;&nbsp; Général<b class="caret"></b></a>
-	              <ul class="dropdown-menu">
-	                <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in"  class="navBarBtn" data-link="dashboard"><i class="glyphicon glyphicon-th"></i>&nbsp;&nbsp;Dashboard</a></li>
-	                <li class="divider hidden-xs"></li>
-	                <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="inventaire"><i class="glyphicon glyphicon-th-list"></i>&nbsp;&nbsp;Inventaire Matériel</a></li>
-	                <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="utilitaires"><i class="glyphicon glyphicon-wrench"></i>&nbsp;&nbsp;Utilitaires</a></li>
-	                <li class="divider hidden-xs"></li>
-	                <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="configuration"><i class="glyphicon glyphicon-cog"></i>&nbsp;&nbsp;Configuration</a></li>
-	              </ul>
-	            </li>
-            	<li class="epNavBtn"><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="map"><i class="fa fa-globe white"></i><span class="epNavTitle" style="display: none;">&nbsp;&nbsp;Carte</span></a></li>
-	            <li class="epNavBtn"><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="planning"><i class="glyphicon glyphicon-calendar"></i><span class="epNavTitle" style="display: none;">&nbsp;&nbsp;Planning</span></a></li>
-                <li class="epNavBtn"><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="maincourante"><i class="glyphicon glyphicon-pencil"></i><span class="epNavTitle" style="display: none;">&nbsp;&nbsp;Main courante</span></a></li>
-                <li class="epNavBtn"><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="mission"><i class="glyphicon glyphicon-list-alt"></i><span class="epNavTitle" style="display: none;">&nbsp;&nbsp;Missions</span></a></li>
-	            <li class="dropdown epNavBtn">
-	            <?php
-
-// A reprendre pour un paramétrage à l'initialisation de l'UI
-
-	            	$currentEventId = $_SESSION['user']->getEventId();
-	            	if($currentEventId != 0){
-	            		$currentEvent = event::byId($currentEventId);
-	            		if(is_object($currentEvent)){
-	            			echo '<a id="eventDrop" href="#" role="button" class="dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-cd"></i>&nbsp;&nbsp;' . $currentEvent->getName() . ' <b class="caret"></b></a>';
-	            		}else{
-	            			echo '<a style="display: none;" id="eventDrop" href="#" role="button" class="dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-cd"></i>&nbsp;&nbsp;Evenement <b class="caret"></b></a>';
-	            		}
-	            	}else{
-	            		echo '<a style="display: none;" id="eventDrop" href="#" role="button" class="dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-cd"></i>&nbsp;&nbsp;Evenement <b class="caret"></b></a>';
-	            	}
-	            ?>
-	              <ul class="dropdown-menu">
-	                <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="equipements"><i class="glyphicon glyphicon-hdd"></i>&nbsp;&nbsp;Equipements</a></li>
-	                <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="zones"><i class="glyphicon glyphicon-map-marker"></i>&nbsp;&nbsp;Zones</a></li>
-	                <li class="divider hidden-xs"></li>
-	                <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="eventinfos"><i class="glyphicon glyphicon-info-sign"></i>&nbsp;&nbsp;Infos Evenement</a></li>
-	              </ul>
-	            </li>
-	            <li class="dropdown">
-	                <a class="dropdown-toggle" id="accountDrop" href="#" role="button" data-toggle="dropdown"><i class="glyphicon glyphicon-folder-open"></i>&nbsp;&nbsp;Mon compte <b class="caret"></b></a>
-	                <ul class="dropdown-menu">
-	                  	<li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="userinfos"><i class="glyphicon glyphicon-briefcase"></i>&nbsp;&nbsp;Mes infos</a></li>
-	                	<li class="divider hidden-xs"></li>
-	                	<li><a href="<?php echo $homeLink; ?>&logout=1" data-toggle="collapse" data-target=".navbar-collapse.in"><i class="glyphicon glyphicon-off"></i>&nbsp;&nbsp;Se déconnecter</a></li>
-	                </ul>
-	            </li>
-	          </ul>
 	        </div><!--/.navbar-collapse -->
 	      </div>
 	    </div>
 	    
-	    <div class="container" id="pageContainer"></div>
+	    <div id="sidebar-wrapper">
+            <ul class="sidebar-nav">
+            	<li class="epNavBtn"><a href="#" class="navBarBtn" data-link="dashboard" title="Dashboard"><i class="glyphicon glyphicon-th"></i><span class="epNavTitle" style="display: none;">&nbsp;&nbsp;Dashboard</a></span></li>
+                <li class="epNavBtn"><a href="#" class="navBarBtn" data-link="map" title="Carte"><i class="fa fa-globe"></i><span class="epNavTitle" style="display: none;">&nbsp;&nbsp;Carte</span></a></li>
+	            <li class="epNavBtn"><a href="#" class="navBarBtn" data-link="planning" title="Planning"><i class="glyphicon glyphicon-calendar"></i><span class="epNavTitle" style="display: none;">&nbsp;&nbsp;Planning</span></a></li>
+                <li class="epNavBtn"><a href="#" class="navBarBtn" data-link="maincourante" title="Main courante"><i class="glyphicon glyphicon-pencil"></i><span class="epNavTitle" style="display: none;">&nbsp;&nbsp;Main courante</span></a></li>
+                <li class="epNavBtn"><a href="#" class="navBarBtn" data-link="mission" title="Missions"><i class="glyphicon glyphicon-list-alt"></i><span class="epNavTitle" style="display: none;">&nbsp;&nbsp;Missions</span></a></li>
+                <li class="epNavBtn"><a href="#" class="navBarBtn" data-link="contact" title="Contacts"><i class="glyphicon glyphicon-user"></i><span class="epNavTitle" style="display: none;">&nbsp;&nbsp;Contacts</span></a></li>
+            	<li class="epNavBtn"><a href="#" class="navBarBtn" data-link="eventinfos" title="Infos Evenement"><i class="glyphicon glyphicon-info-sign"></i><span class="epNavTitle" style="display: none;">&nbsp;&nbsp;Infos Evenement</span></a></li>
+            </ul>
+        </div>
+        
+	    <div id="pageContainer"></div>
 	    
 		<div id="modalContainer"></div>
 		<script type="text/html" id="templateModal">

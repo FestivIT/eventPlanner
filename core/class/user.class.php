@@ -51,6 +51,16 @@ class user {
 		return $user;
 	}
 
+	public static function byDisciplineId($_disciplineId) {
+		$values = array(
+			'disciplineId' => $_disciplineId,
+		);
+		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
+        FROM user
+        WHERE disciplineId=:disciplineId';
+		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
+	}
+
 	public static function byLogin($_login) {
 		$values = array(
 			'login' => $_login,
@@ -197,6 +207,10 @@ class user {
 
 	public function getDisciplineId() {
 		return $this->disciplineId;
+	}
+
+	public function getDiscipline() {
+		return discipline::byId($this->disciplineId);
 	}
 
 	public function getLogin() {

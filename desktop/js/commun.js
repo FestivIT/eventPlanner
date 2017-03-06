@@ -2,9 +2,12 @@ $( document ).ready(function() {
 	eventplanner.user.isConnect(
 		{success: function(_data){
 			// Enregistrement de l'utilisateur.
-			
 			eventplanner.ui.currentUser = new eventplanner.user.userItem(_data);
 			$.when(eventplanner.ui.init()).then(function (){
+
+				$('#epOrganisationMenu').html(eventplanner.ui.currentUser.getDiscipline().getOrganisation().organisationName);
+				$('#epUserMenu').html(eventplanner.ui.currentUser.userName);
+				
 				var page = getUrlParameter("p");
 				if(page != false){
 					if(eventplanner.ui.hasOwnProperty(page) && eventplanner.ui[page].hasOwnProperty('init')){

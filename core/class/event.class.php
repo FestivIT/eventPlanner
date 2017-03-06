@@ -7,6 +7,7 @@ class event {
 	/*     * *************************Attributs****************************** */
 
 	private $id;
+	private $organisationId;
 	private $name;
 	private $ville;
 	private $localisation;
@@ -33,6 +34,16 @@ class event {
         FROM event
         ORDER BY `startDate` DESC';
 		return DB::Prepare($sql, array(), DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
+	}
+
+	public static function byOrganisationId($_organisationId) {
+		$values = array(
+			'organisationId' => $_organisationId,
+		);
+		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
+        FROM event
+        WHERE organisationId=:organisationId';
+		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
 	}
 
 	// A SUPRIMER APRES IMPLEMENTATION EN JS
@@ -85,6 +96,9 @@ class event {
 	public function getId() {
 		return $this->id;
 	}
+	public function getOrganisationId() {
+		return $this->organisationId;
+	}
 	public function getName() {
 		return $this->name;
 	}
@@ -109,6 +123,9 @@ class event {
 
 	public function setId($id) {
 		$this->id = $id;
+	}
+	public function setOrganisationId($organisationId) {
+		$this->organisationId = $organisationId;
 	}
 	public function setName($name) {
 		$this->name = $name;

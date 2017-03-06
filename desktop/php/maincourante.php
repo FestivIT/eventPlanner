@@ -1,28 +1,48 @@
-<div class="well">
-  <form class="form-horizontal msgForm">
-    <div class="input-group">
-      <input type="text" class="form-control msgFormInput" placeholder="Déposer un message...">
-      <span class="input-group-btn">
-        <button type="submit" class="btn btn-default">Poster</button>
-      </span>
-    </div>
-  </form>
-</div>
+<div id="maincourante">
+	<nav class="navbar navbar-default epContextualNavBar">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<a class="navbar-brand" href="#">Main courante</a>
+				<div class="pull-right visible-xs">
+					<button type="button" class="btn navbar-btn btn-info btn-sm previous"><span class="glyphicon glyphicon-triangle-left small"></span></button>
+			    	<button type="button" class="btn navbar-btn btn-info btn-sm next"><span class="glyphicon glyphicon-triangle-right small"></span></button>
+			    </div>
+		    </div>
 
-<div class="panel panel-primary" id="maincourante">
-  	<div class="panel-heading">
-  		Main courante
-      <button type="button" class="btn btn-xs btn-info next pull-right"><span class="glyphicon glyphicon-triangle-right small"></span></button>
-      <button type="button" class="btn btn-xs btn-info previous pull-right"><span class="glyphicon glyphicon-triangle-left small"></span></button>
-      
-  	</div>
+		    <form class="navbar-form navbar-left searchMsgForm">
+				<div class="input-group">
+					<span class="input-group-addon">Filtre: </span>
+					<input type="text" class="form-control input-sm" id="searchMsgInput" placeholder="Logistique, Routeur, UBNT105, Fred...">
+					<span class="input-group-btn">
+				        <button class="btn btn-danger btn-sm" type="button" id="searchMsgClear"><i class="glyphicon glyphicon-remove"></i></button>
+				    </span>
+				</div>
+			</form>
+
+		    <form class="navbar-form navbar-right msgForm">
+				<div class="input-group">
+					<input type="text" class="form-control msgFormInput input-sm" placeholder="Déposer un message...">
+					<span class="input-group-btn">
+						<button type="submit" class="btn btn-default btn-sm">Poster</button>
+					</span>
+				</div>
+			</form>
+
+			<div class="nav navbar-nav navbar-right hidden-xs">
+				<button type="button" class="btn navbar-btn btn-info btn-sm previous"><span class="glyphicon glyphicon-triangle-left small"></span></button>
+		    	<button type="button" class="btn navbar-btn btn-info btn-sm next"><span class="glyphicon glyphicon-triangle-right small"></span></button>
+		    </div>
+		</div>
+	</nav>
+	
   	<ul class="list-group msgTable" id="msgTable">
 	</ul>
 	
 	<script type="text/html" id="templateMsgTable">
 	  	<li class="list-group-item msgItem" data-template-bind='[{"attribute": "data-id", "value": "msgId"}]'>
   			<p class="pull-right small">
-  				<span data-content="msgDate" data-format="formatDateMsg"></span> - <strong><span class="label label-info" data-content="userName"></span></strong>
+  				<span data-content="msgDate" data-format="formatDateMsg"></span>
+  				<strong><span class="label label-info" data-content="userName"></span></strong>
   			</p>
   			<p>
   				<label class="label label-default" data-content="zoneName"></label>

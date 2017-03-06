@@ -49,6 +49,19 @@ class eqLogicAttribute {
 		}
 		return $list;
 	}
+
+	public static function byEventId($_eventId) {
+		$values = array(
+			'eventId' => $_eventId,
+		);
+
+		$sql = 'SELECT ' . DB::buildField(__CLASS__) . ' 
+        FROM eqLogicAttribute 
+        LEFT JOIN eqLogic 
+        ON eqLogicAttribute.eqLogicId = eqLogic.id 
+        WHERE eqLogic.eventId =:eventId';
+		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
+	}
 	
 	public function formatForFront(){
 		$return = utils::addPrefixToArray(utils::o2a($this), get_class($this));

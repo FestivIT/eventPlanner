@@ -19,6 +19,10 @@ eventplanner.discipline = {
             this.disciplineName = ''; 
         }
 
+        this.getOrganisation = function(_fullData = false){
+            return eventplanner.organisation.byId(this.disciplineOrganisationId, _fullData);
+        }
+
         this.remove = function(_params = {}){
             return eventplanner.discipline.remove($.extend(_params, {id: this.disciplineId}));
         }

@@ -30,6 +30,16 @@ class matType {
 	   	ORDER BY `name`';
 		return DB::Prepare($sql, array(), DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
 	}
+
+	public static function byDisciplineId($_disciplineId) {
+		$values = array(
+			'disciplineId' => $_disciplineId,
+		);
+		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
+        FROM matType
+        WHERE disciplineId=:disciplineId';
+		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
+	}
 	
 	/*     * *********************Méthodes d'instance************************* */
 
