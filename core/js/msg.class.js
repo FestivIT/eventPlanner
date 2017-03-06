@@ -118,24 +118,6 @@ eventplanner.msg = {
         return eventplanner.saveDataToServer('msg', _params);
     },
 
-    /*
-    updateData: function(_data){
-    	if(is_object(_data)){
-    		// c'est un objet, donc un seul enregistrement à traiter
-    		if(_data.hasOwnProperty('msgId')){
-    			this.container[_data.msgId] = _data;
-    		}    		
-    	}else{
-    		// c'est un array, donc plusieurs enregistrement à traiter
-    		_data.forEach(function(element) {
-                if(element.hasOwnProperty('msgId')){
-	    			eventplanner.msg.container[element.msgId] = element;
-	    		}
-            });
-    	}
-    },
-    */
-
     // Accés aux données
     all: function(_fulldata = false){
         if(this.dataReady.state() == 'resolved'){
@@ -232,6 +214,35 @@ eventplanner.msg = {
             if(_fulldata){
                 dataSelection = this.getFullData(dataSelection);
             }
+            
+            return dataSelection;
+
+        }else{
+            return false;
+        }
+    },
+
+    // Accés aux données
+    searchAll: function(_searchVal){
+        if(this.dataReady.state() == 'resolved'){
+            var listAll = this.all(true);
+
+            // Selection des données à conserver dans le container:
+            var dataSelection = Array();
+
+            listAll.forEach(function(msg){
+                if(msg.msgContent.toLowerCase().indexOf(_searchVal.toLowerCase()) !== -1){
+                    dataSelection.push(msg);
+                } else if(msg.hasOwnProperty('userName') && msg.userName.toLowerCase().indexOf(_searchVal.toLowerCase()) !== -1){
+                    dataSelection.push(msg);
+                } else if(msg.hasOwnProperty('zoneName') && msg.zoneName.toLowerCase().indexOf(_searchVal.toLowerCase()) !== -1){
+                    dataSelection.push(msg);
+                } else if(msg.hasOwnProperty('eqRealName') && msg.eqRealName.toLowerCase().indexOf(_searchVal.toLowerCase()) !== -1){
+                    dataSelection.push(msg);
+                } else if(msg.hasOwnProperty('matTypeName') && msg.matTypeName.toLowerCase().indexOf(_searchVal.toLowerCase()) !== -1){
+                    dataSelection.push(msg);
+                }
+            });
             
             return dataSelection;
 

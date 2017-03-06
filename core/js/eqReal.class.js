@@ -17,7 +17,7 @@ eventplanner.eqReal = {
             console.log('eqRealDisciplineId temporaire: 1');
         }
         if(!this.hasOwnProperty('eqRealMatTypeId')){
-            this.eqRealMatTypeId = eventplanner.matType.all()[0].getId(); // Sélection par défaut d'un type...
+            this.eqRealMatTypeId = eventplanner.matType.all()[0].matTypeId; // Sélection par défaut d'un type...
         }
         if(!this.hasOwnProperty('eqRealName')){
             this.eqRealName = ""; 

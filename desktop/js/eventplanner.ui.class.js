@@ -419,9 +419,12 @@ eventplanner.ui.dashboard = {
 			}
 		});
 
-		$('#dashboard').delegate('.selectMissionBtn', 'click', function () {
-			var missionConfModal = new eventplanner.ui.modal.EpModalMissionConfiguration(eventplanner.mission.byId($(this).attr('data-mission-id'), true));
+		$('#dashboard').delegate('.selectMissionBtn', 'click', function (event) {
+			var missionConfModal = new eventplanner.ui.modal.EpModalMissionConfiguration(eventplanner.mission.byId($(this).attr('data-mission-id')));
 				missionConfModal.open();
+
+			event.preventDefault();
+			return false;
 		});
 
 		$("#missionList").bind("refreshMissionTable", function(){
