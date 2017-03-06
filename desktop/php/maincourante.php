@@ -2,7 +2,7 @@
 	<nav class="navbar navbar-default epContextualNavBar">
 		<div class="container-fluid">
 			<div class="navbar-header">
-				<a class="navbar-brand" href="#">Main courante</a>
+				<a class="navbar-brand">Main courante</a>
 				<div class="pull-right visible-xs">
 					<button type="button" class="btn navbar-btn btn-info btn-sm previous"><span class="glyphicon glyphicon-triangle-left small"></span></button>
 			    	<button type="button" class="btn navbar-btn btn-info btn-sm next"><span class="glyphicon glyphicon-triangle-right small"></span></button>

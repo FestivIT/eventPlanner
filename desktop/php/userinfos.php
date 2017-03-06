@@ -2,7 +2,7 @@
 	<nav class="navbar navbar-default epContextualNavBar">
 		<div class="container-fluid">
 			<div class="navbar-header">
-		    	<a class="navbar-brand" href="#">Mon compte</a>
+		    	<a class="navbar-brand">Mon compte</a>
 		    </div>
 		</div>
 	</nav>

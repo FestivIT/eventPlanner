@@ -2,7 +2,7 @@
 	<nav class="navbar navbar-default epContextualNavBar">
 		<div class="container-fluid">
 			<div class="nav navbar-nav navbar-left">
-		    	<a class="navbar-brand" href="#">Contacts</a>
+		    	<a class="navbar-brand">Contacts</a>
 		    	<div class="pull-right hidden-sm hidden-sm hidden-lg">
 		    		<button type="button" class="btn navbar-btn btn-success editContactBtn btn-sm" data-contact-id="new"><span class="glyphicon glyphicon-plus-sign"></span> Ajouter</button>
 		    	</div>

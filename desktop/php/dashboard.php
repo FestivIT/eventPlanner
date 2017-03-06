@@ -2,7 +2,7 @@
 	<nav class="navbar navbar-default epContextualNavBar">
 		<div class="container-fluid">
 			<div class="navbar-header">
-				<a class="navbar-brand" href="#">Dashboard</a>
+				<a class="navbar-brand">Dashboard</a>
 		    </div>
 		</div>
 	</nav>

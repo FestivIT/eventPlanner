@@ -2,7 +2,7 @@
 	<nav class="navbar navbar-default epContextualNavBar">
 		<div class="container-fluid">
 			<div class="navbar-header">
-		    	<a class="navbar-brand" href="#">Equipements</a>
+		    	<a class="navbar-brand">Equipements</a>
 		    	<div class="pull-right visible-xs">
 		    		<button type="button" class="btn navbar-btn btn-success editEqBtn btn-sm" data-eq-id="new"><span class="glyphicon glyphicon-plus-sign"></span> Ajouter</button>
 		    	</div>

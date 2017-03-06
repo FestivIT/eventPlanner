@@ -2,7 +2,7 @@
 	<nav class="navbar navbar-default epContextualNavBar">
 		<div class="container-fluid">
 			<div class="navbar-header">
-		    	<a class="navbar-brand" href="#">Infos événement</a>
+		    	<a class="navbar-brand">Infos événement</a>
 		    </div>
 			
 			<div class="nav navbar-nav navbar-right hidden-xs">

@@ -278,6 +278,8 @@ eventplanner.ui = {
 	},
 
 	loadPage: function(_page, _option = {}){
+		$(".navbar-collapse").collapse("hide");
+
 		this.pageContainer.load("desktop/php/" + _page + ".php", function(){
 			eventplanner.ui[_page].init(_option);
 		});
@@ -400,7 +402,7 @@ eventplanner.ui.search = {
 eventplanner.ui.dashboard = {
 	title: 'Dashboard',
 	init: function(){
-		$('#dashboard').delegate('.selectEventBtn', 'click', function () {
+		$('#dashboard').delegate('.selectEventBtn', 'click', function (event) {
 			if($(this).attr('data-event-id') != eventplanner.ui.currentUser.userEventId){
 				eventplanner.user.save({
 					user: {
@@ -417,6 +419,9 @@ eventplanner.ui.dashboard = {
 			}else{
 				eventplanner.ui.loadPage('map');
 			}
+
+			event.preventDefault();
+			return false;
 		});
 
 		$('#dashboard').delegate('.selectMissionBtn', 'click', function (event) {

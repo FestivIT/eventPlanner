@@ -2,7 +2,7 @@
   	<nav class="navbar navbar-default epContextualNavBar">
 		<div class="container-fluid">
 			<div class="navbar-header">
-		    	<a class="navbar-brand" href="#">Planning</a>
+		    	<a class="navbar-brand">Planning</a>
 				<div class="pull-right visible-xs">
 					<div class="btn-group">
 		    			<button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

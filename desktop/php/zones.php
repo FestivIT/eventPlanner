@@ -2,7 +2,7 @@
 	<nav class="navbar navbar-default epContextualNavBar">
 		<div class="container-fluid">
 			<div class="navbar-header">
-		    	<a class="navbar-brand" href="#">Zones</a>
+		    	<a class="navbar-brand">Zones</a>
 		    	<div class="pull-right visible-xs">
 		    		<button type="button" class="btn navbar-btn btn-success editZoneBtn btn-sm" data-zone-id="new"><span class="glyphicon glyphicon-plus-sign"></span> Ajouter</button>
 		    	</div>

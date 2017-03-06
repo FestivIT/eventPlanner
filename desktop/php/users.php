@@ -2,7 +2,7 @@
 	<nav class="navbar navbar-default epContextualNavBar">
 		<div class="container-fluid">
 			<div class="nav navbar-nav navbar-left">
-		    	<a class="navbar-brand" href="#">Utilisateurs</a>
+		    	<a class="navbar-brand">Utilisateurs</a>
 		    </div>
 		</div>
 	</nav>
