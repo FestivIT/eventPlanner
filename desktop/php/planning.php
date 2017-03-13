@@ -1,83 +1,175 @@
-<div class="panel panel-primary" id='planning'>
-  	<div class="panel-heading">
-  		<button type="button" class="btn btn-xs btn-info showAllZone"><span class="glyphicon glyphicon-triangle-bottom small"></span></button>
-  		<button type="button" class="btn btn-xs btn-info hideAllZone"><span class="glyphicon glyphicon-triangle-right small"></span></button>
-  		Planning
-  		<button type="button" class="btn btn-success btn-xs pull-right editMultipleStateBtn">Etat équipements</button> 
-  		<button type="button" class="btn btn-success btn-xs pull-right editMultipleZoneStateBtn">Etat zones</button>
-  	</div>
-		<table id="planningTable" class="eqTable zoneTable"> <!-- bootstrap classes added by the uitheme widget -->
-		  <thead>
-		    <tr>
-		      <th style="width: 150px;">Zone</th>
-		      <th style="width: 160px;">Matériel</th>
-		      <th style="width: 120px;">Nom</th>
-		      <th style="width: 120px;">IP</th>
-		      <th style="width: 100px;" data-date-format="ddmmyyyy">Instal.</th>
-		      <th style="width: 100px;" data-date-format="ddmmyyyy">Désinstal.</th>
-		      <th>Commentaire</th>
-		      <th style="width: 90px;">Etat</th>
-		      <th style="width: 40px;"></th>
-		    </tr>
-		  </thead>
-		  <!--
-		  <tfoot>
-		    <tr>
-		      <th colspan="9" class="ts-pager form-horizontal">
-		        <button type="button" class="btn first"><i class="icon-step-backward glyphicon glyphicon-step-backward"></i></button>
-		        <button type="button" class="btn prev"><i class="icon-arrow-left glyphicon glyphicon-backward"></i></button>
-		        <span class="pagedisplay"></span>
-		        <button type="button" class="btn next"><i class="icon-arrow-right glyphicon glyphicon-forward"></i></button>
-		        <button type="button" class="btn last"><i class="icon-step-forward glyphicon glyphicon-step-forward"></i></button>
-		        <select class="pagesize input-mini" title="Select page size">
-		          <option selected="selected" value="10">10</option>
-		          <option value="20">20</option>
-		          <option value="30">30</option>
-		          <option value="40">40</option>
-		        </select>
-		        <select class="pagenum input-mini" title="Select page number"></select>
-		      </th>
-		    </tr>
-		  </tfoot>
-		  -->
-		  <tbody>
-		  </tbody>
-		</table>
-		<script type="text/html" id="templatePlanningTableZone">
-				<tr data-template-bind='[{"attribute": "data-zone-id", "value": "zoneId"}, {"attribute": "class", "value": "zoneZtate", "formatter": "formatStateColorClass", "formatOptions": "tablesorter-hasChildRow zoneItem "}]' >
-					<td rowspan="1"><strong><a href="#" class="toggle" data-content-append="zoneName"><span class="glyphicon glyphicon-triangle-bottom small" aria-hidden="true"></span><span class="glyphicon glyphicon-triangle-right small" style="display: none;" aria-hidden="true"></span> </a></strong></td>
-					<td colspan="3">
-						<button type="button" class="btn btn-success btn-xs zoneBtn" data-template-bind='[{"attribute": "data-zone-id", "value": "zoneId"}]'><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span></button>
-						<span class="label label-default planningZoneNbrEq">Aucun équipement</span>
-					</td>
-					<td data-content="zoneInstallDate" data-format="formatDateYmd2Dmy"></td>
-					<td data-content="zoneUninstallDate" data-format="formatDateYmd2Dmy"></td>
-					<td data-content="zoneComment"></td>
-					<td><button type="button" style="width: 100%;font-weight: bold;" data-template-bind='[{"attribute": "class", "value": "zoneState", "formatter": "formatStateColorClass", "formatOptions": "editZoneStateBtn btn btn-xs btn"},{"attribute": "content", "value": "zoneState", "formatter": "formatState"}, {"attribute": "data-zone-id", "value": "zoneId"}, {"attribute": "data-zone-state", "value": "zoneState"}]'></span></td>
-					<td>
-						<input type="checkbox" class="planningZoneCb" data-template-bind='[{"attribute": "data-zone-id", "value": "zoneId"}, {"attribute": "data-zone-state", "value": "zoneState"}]'>
-					</td>
-			</tr>
-	</script>
-	<script type="text/html" id="templatePlanningTableEq">
-			<tr class="tablesorter-childRow" data-template-bind='[{"attribute": "data-eq-id", "value": "eqLogicId"}]' >
-				<td data-content="matTypeName"></td>
-				<td data-content="eqRealName"></td>
-				<td data-content="eqLogicIp"></td>
-				<td></td>
-				<td></td>
-				<td data-content="eqLogicComment"></td>
-				<td><button type="button" style="width: 100%;font-weight: bold;" data-template-bind='[{"attribute": "class", "value": "eqLogicState", "formatter": "formatStateColorClass", "formatOptions": "editStateBtn btn btn-xs btn"},{"attribute": "content", "value": "eqLogicState", "formatter": "formatState"}, {"attribute": "data-eqLogic-id", "value": "eqLogicId"}, {"attribute": "data-eqLogic-state", "value": "eqLogicState"}]'></span></td>
-				<td>
-					<input type="checkbox" class="planningEqCb" data-template-bind='[{"attribute": "data-zone-id", "value": "zoneId"}, {"attribute": "data-eq-id", "value": "eqLogicId"}, {"attribute": "data-eqLogic-state", "value": "eqLogicState"}]'>
-				</td>
-			</tr>
-	</script>
-	
-</div>
+<div id='planning'>
+  	<nav class="navbar navbar-default epContextualNavBar">
+		<div class="container-fluid">
+			<div class="navbar-header">
+		    	<a class="navbar-brand">Planning</a>
+				<div class="pull-right visible-xs">
+					<div class="btn-group">
+		    			<button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							Trier <span class="caret"></span>
+						</button>
+						<ul class="dropdown-menu">
+							<li><a href="#" class="planningSortBy" data-sortby="zoneName" data-sortorder="asc"><span class="glyphicon glyphicon-sort-by-alphabet"></span> Zone</a></li>
+							<li><a href="#" class="planningSortBy" data-sortby="zoneName" data-sortorder="desc"><span class="glyphicon glyphicon-sort-by-alphabet-alt"></span> Zone</a></li>
+							<li><a href="#" class="planningSortBy" data-sortby="zoneInstallDate" data-sortorder="asc"><span class="glyphicon glyphicon-sort-by-alphabet"></span> Date installation</a></li>
+							<li><a href="#" class="planningSortBy" data-sortby="zoneInstallDate" data-sortorder="desc"><span class="glyphicon glyphicon-sort-by-alphabet-alt"></span> Date installation</a></li>
+						</ul>
+		    		</div>
 
-<?php
-	//include_file('desktop', 'planning', 'js');
-	//<td><span data-template-bind='[{"attribute": "class", "value": "eqLogicState", "formatter": "formatStateColorClass", "formatOptions": "label label"},{"attribute": "content", "value": "eqLogicState", "formatter": "formatState"}]'></span></td>
-				
-?>
+					<button type="button" class="btn navbar-btn btn-info btn-sm showAllZone"><span class="glyphicon glyphicon-triangle-bottom"></span></button>
+		    		<button type="button" class="btn navbar-btn btn-info btn-sm hideAllZone"><span class="glyphicon glyphicon-triangle-right"></span></button>
+		    	
+		    		<div class="btn-group">
+						<button class="btn btn-success btn-sm dropdown-toggle" id="planningAction" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						    Actions
+						    <span class="caret"></span>
+						</button>
+						<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="planningAction">
+						    <li><a href="#" class="editMultipleStateBtn">Changer état équipements</a></li>
+						    <li><a href="#" class="editMultipleZoneStateBtn">Changer état zones</a></li>
+						    <li role="separator" class="divider"></li>
+						    <li><a href="#" class="addMissionBtn">Créer une mission</a></li>
+						</ul>
+					</div>
+				</div>
+		    </div>
+	    	
+	    	<div class="nav navbar-nav navbar-left hidden-xs">
+				<button type="button" class="btn btn-default btn-sm navbar-btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					Trier <span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu">
+					<li><a href="#" class="planningSortBy" data-sortby="zoneName" data-sortorder="asc"><span class="glyphicon glyphicon-sort-by-alphabet"></span> Zone</a></li>
+					<li><a href="#" class="planningSortBy" data-sortby="zoneName" data-sortorder="desc"><span class="glyphicon glyphicon-sort-by-alphabet-alt"></span> Zone</a></li>
+					<li><a href="#" class="planningSortBy" data-sortby="zoneInstallDate" data-sortorder="asc"><span class="glyphicon glyphicon-sort-by-alphabet"></span> Date installation</a></li>
+					<li><a href="#" class="planningSortBy" data-sortby="zoneInstallDate" data-sortorder="desc"><span class="glyphicon glyphicon-sort-by-alphabet-alt"></span> Date installation</a></li>
+				</ul>
+			</div>
+
+			<form class="navbar-form navbar-left planningSearchPanel">
+				<div class="input-group">
+					<span class="input-group-addon">Filtre: </span>
+				  	<input type="text" class="form-control input-sm" id="planningSearch" placeholder="Filtre: Logistique, Routeur, UBNT105, 192.168.0.1...">
+				  	<span class="input-group-btn">
+				        <button class="btn btn-danger btn-sm" type="button" id="planningSearchClear"><i class="glyphicon glyphicon-remove"></i></button>
+				    </span>
+				</div>
+			</form>
+
+			<div class="nav navbar-nav navbar-right hidden-xs">
+				<button type="button" class="btn navbar-btn btn-info btn-sm hidden-xs showAllZone"><span class="glyphicon glyphicon-triangle-bottom"></span></button>
+	    		<button type="button" class="btn navbar-btn btn-info btn-sm hidden-xs hideAllZone"><span class="glyphicon glyphicon-triangle-right"></span></button>
+	    	
+	    		<div class="btn-group">
+					<button class="btn btn-success btn-sm dropdown-toggle" id="planningAction" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					    Actions
+					    <span class="caret"></span>
+					</button>
+					<ul class="dropdown-menu" aria-labelledby="planningAction">
+					    <li><a href="#" class="editMultipleStateBtn">Changer état équipements</a></li>
+					    <li><a href="#" class="editMultipleZoneStateBtn">Changer état zones</a></li>
+					    <li role="separator" class="divider"></li>
+					    <li><a href="#" class="addMissionBtn">Créer une mission</a></li>
+					</ul>
+				</div>
+	    	</div>
+			
+		</div>
+	</nav>
+  	
+  	
+  		<div id="planningTable" class="panel-group eqLogicTable zoneTable" role="tablist" aria-multiselectable="true"></div>
+
+  		<script type="text/html" id="templatePlanningTableZone">
+  		<div class="panel panel-default zoneItem" data-template-bind='[{"attribute": "data-id", "value": "zoneId"}]'>
+		    <div class="panel-heading" role="tab" data-template-bind='[{"attribute": "id", "value": "zoneId", "formatter": "prepend", "formatOptions": "headingPlanningZone"}]'>
+		      <h4 class="panel-title">
+		      	<div class="row">
+		      		<div class="col-xs-11 col-sm-9">
+						<div class="row">
+							<div class="col-xs-12 col-sm-6">
+								<button type="button" class="btn btn-success btn-xs zoneBtn" data-template-bind='[{"attribute": "data-zone-id", "value": "zoneId"}]'><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span></button>
+								<a role="button" data-toggle="collapse" aria-expanded="true" data-template-bind='[{"attribute": "href", "value": "zoneId", "formatter": "prepend", "formatOptions": "#collapsePlanningZone"},{"attribute": "aria-controls", "value": "zoneId", "formatter": "prepend", "formatOptions": "collapsePlanningZone"}]'>
+				      				<strong class="planningZoneName" data-content="zoneName" ></strong>
+				      			</a>
+				      			<button type="button" class="btn btn-default btn-xs visible-xs pull-right editZoneBtn" data-template-bind='[{"attribute": "data-zone-id", "value": "zoneId"}]'><span class="fa fa-cogs" aria-hidden="true"></span></button>
+							</div>
+							<div class="col-sm-6 hidden-xs">
+								<span data-content="zoneInstallDate" data-format="formatDateYmd2Dmy"></span>
+								<span class="glyphicon glyphicon-arrow-right"></span>
+								<span data-content="zoneUninstallDate" data-format="formatDateYmd2Dmy"></span>
+							</div>
+						</div>
+					</div>
+					<div class="col-sm-2 hidden-xs">
+						<button type="button" style="width: 100%;font-weight: bold;" data-template-bind='[{"attribute": "class", "value": "zoneState", "formatter": "formatStateColorClass", "formatOptions": "editZoneStateBtn btn btn-xs btn"},{"attribute": "content", "value": "zoneState", "formatter": "formatState"}, {"attribute": "data-zone-id", "value": "zoneId"}, {"attribute": "data-zone-state", "value": "zoneState"}]'></span>
+					</div>
+					<div class="col-xs-1 col-sm-1" style="padding-left: 0px;">
+						<button type="button" class="btn btn-default btn-xs hidden-xs editZoneBtn" data-template-bind='[{"attribute": "data-zone-id", "value": "zoneId"}]'><span class="fa fa-cogs" aria-hidden="true"></span></button>
+						<div class="pull-right" data-toggle="buttons">
+							<label class="btn btn-xs btn-default cbBtn">
+								<input type="checkbox" class="planningZoneCb" data-template-bind='[{"attribute": "data-zone-id", "value": "zoneId"}, {"attribute": "data-zone-state", "value": "zoneState"}]'>
+								<span class="glyphicon glyphicon-ok"></span>
+							</label>
+						</div>
+					</div>
+		      	</div>
+		      	<div class="row">
+					<div class="col-xs-5 visible-xs">
+						<small>
+							Install: <span data-content="zoneInstallDate" data-format="formatDateYmd2Dmy"></span></br>
+							Désinst: <span data-content="zoneUninstallDate" data-format="formatDateYmd2Dmy"></span>
+						</small>
+					</div><!--
+					--><div class="col-xs-6 visible-xs">
+						<button type="button" style="width: 100%;margin-top: 5px;font-weight: bold;" data-template-bind='[{"attribute": "class", "value": "zoneState", "formatter": "formatStateColorClass", "formatOptions": "editZoneStateBtn btn btn-xs btn"},{"attribute": "content", "value": "zoneState", "formatter": "formatState"}, {"attribute": "data-zone-id", "value": "zoneId"}, {"attribute": "data-zone-state", "value": "zoneState"}]'></span>
+					</div>
+		      	</div>
+		      </h4>
+		    </div>
+		    <div class="panel-collapse collapse" role="tabpanel" data-template-bind='[{"attribute": "id", "value": "zoneId", "formatter": "prepend", "formatOptions": "collapsePlanningZone"},{"attribute": "aria-labelledby", "value": "zoneId", "formatter": "prepend", "formatOptions": "headingPlanningZone"}]'>
+		      <ul class="list-group zoneEqList"></ul>
+		    </div>
+		  </div>
+		</script>
+
+		<script type="text/html" id="templatePlanningTableEq">
+			<li data-template-bind='[{"attribute": "data-id", "value": "eqLogicId"}, {"attribute": "class", "value": "eqLogicState", "formatter": "formatStateColorClass", "formatOptions": "eqLogicItem list-group-item list-group-item"}]'>
+				<div class="row">
+					<div class="col-xs-5 col-sm-4">
+						<div class="row">
+							<div class="col-sm-6">
+								<span class="label label-default" data-content="matTypeName"></span>
+							</div>
+							<div class="col-sm-6">
+								<span data-content="eqRealName"></span>
+							</div>
+						</div>
+					</div>
+					<div class="col-sm-2 hidden-xs" data-template-bind='[{"attribute": "content", "value": "eqLogicId", "formatter": "formatEqLogicAttributes", "formatOptions": "templateEqLogicAttributes"}]'>
+					</div>
+					<div class="col-sm-3 hidden-xs">
+						<span data-content="eqLogicComment"></span>
+					</div>
+					<div class="col-xs-6 col-sm-2">
+						<button type="button" style="width: 100%;font-weight: bold;" data-template-bind='[{"attribute": "class", "value": "eqLogicState", "formatter": "formatStateColorClass", "formatOptions": "editStateBtn btn btn-xs btn"},{"attribute": "content", "value": "eqLogicState", "formatter": "formatState"}, {"attribute": "data-eqLogic-id", "value": "eqLogicId"}, {"attribute": "data-eqLogic-state", "value": "eqLogicState"}]'></span>
+					</div>
+					<div class="col-xs-1 col-sm-1" style="padding-left: 0px;">
+						<button type="button" class="btn btn-default btn-xs hidden-xs editEqBtn" data-template-bind='[{"attribute": "data-eqlogic-id", "value": "eqLogicId"}]'><span class="fa fa-cogs" aria-hidden="true"></span></button>
+						<div class="pull-right" data-toggle="buttons">
+							<label class="btn btn-xs btn-default cbBtn">
+								<input type="checkbox" class="planningEqCb" data-template-bind='[{"attribute": "data-eqlogic-id", "value": "eqLogicId"}, {"attribute": "data-zone-id", "value": "zoneId"}, {"attribute": "data-eqlogic-state", "value": "eqLogicState"}]'>
+								<span class="glyphicon glyphicon-ok"></span>
+							</label>
+						</div>
+					</div>			
+				</div>
+			</li>
+		</script>
+		<script type="text/html" id="templateEqLogicAttributes">
+			<span class="label label-info">
+				<span data-content="matTypeAttributeName"></span>: <span data-content="eqLogicAttributeValue"></span>
+			</span><br>
+		</script>
+		
+</div>

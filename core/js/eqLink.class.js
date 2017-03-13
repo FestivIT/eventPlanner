@@ -2,86 +2,80 @@ eventplanner.eqLink = {
     dataReady: $.Deferred(),
     container: {},
     type: {
-        1: 'Ethernet',
-        2: 'Wifi 2,4Ghz',
-        3: 'Wifi 5Ghz',
+        1: 'Eth',
+        2: 'Wifi2.4',
+        3: 'Wifi5',
         4: 'VDSL'
+    },
+    eqLinkItem: function(_data){
+        for (var prop in _data) {
+            if (_data.hasOwnProperty(prop)) {
+                this[prop] = _data[prop];
+            }
+        }
+        if(!this.hasOwnProperty('eqLinkId')){
+            this.eqLinkId = ''; // Nouveau lien
+        }
+        if(!this.hasOwnProperty('eqLinkEventId')){
+            throw "eqLinkEventId manquant!";
+        }
+        if(!this.hasOwnProperty('eqLinkEqLogicId1')){
+            this.eqLinkEqLogicId1 = '';
+        }
+        if(!this.hasOwnProperty('eqLinkEqLogicId2')){
+            this.eqLinkEqLogicId2 = '';
+        }
+        if(!this.hasOwnProperty('eqLinkType')){
+            this.eqLinkType = eventplanner.eqLink.type[1];
+        }
+        if(!this.hasOwnProperty('eqLinkConfiguration')){
+            this.eqLinkConfiguration = [];
+        }
+
+        this.getEqLogics = function(_fullData = false){
+            return [eventplanner.eqLogic.byId(this.eqLinkEqLogicId1, _fullData),
+                    eventplanner.eqLogic.byId(this.eqLinkEqLogicId2, _fullData)];
+        }
+        
+        this.getPointsLocalisation = function(){
+            var eqLogic1 = eventplanner.eqLogic.byId(this.eqLinkEqLogicId1);
+            var eqLogic2 = eventplanner.eqLogic.byId(this.eqLinkEqLogicId2);
+            var result = [];
+            
+            if(eqLogic1.eqLogicConfiguration.hasLocalisation){
+                result.push(eqLogic1.eqLogicConfiguration.localisation);
+            }else{
+                result.push(eqLogic1.getZone().zoneLocalisation);
+            }
+            
+            if(eqLogic2.eqLogicConfiguration.hasLocalisation){
+                result.push(eqLogic2.eqLogicConfiguration.localisation);
+            }else{
+                result.push(eqLogic2.getZone().zoneLocalisation);
+            }
+            
+            return result;
+        }
+
+        this.remove = function(_params = {}){
+            return eventplanner.eqLink.remove($.extend(_params, {id: this.eqLinkId}));
+        }
     },
     
 
     // Chargement initial des données depuis le serveur
     load: function(){
-    	this.dataReady = $.Deferred();
-    	this.container = {};
-    	
-        var params = {
-            success: function(_data, _date) {
-                _data.forEach(function(element) {
-                    eventplanner.eqLink.container[element.eqLinkId] = element;
-                });
-
-                eventplanner.eqLink.dataReady.resolve();
-            }
-        };
-
-        var params = $.extend({}, eventplanner.private.default_params, params || {});
-
-        var paramsAJAX = eventplanner.private.getParamsAJAX(params);
-        paramsAJAX.url = 'core/ajax/eqLink.ajax.php';
-        paramsAJAX.data = {
-            action: 'all'
-        };
-        $.ajax(paramsAJAX);
-
-        return this.dataReady;
+        return eventplanner.loadDataFromServer('eqLink');
     },
 
-    // enregistrement d'un eqLink
+    // enregistrement
     save: function(_params) {
-        // éventuellement ajouter un futur "cache" si offline... ?
-
-        var paramsRequired = ['eqLink'];
-        var paramsSpecifics =  {
-            pre_success: function(_data){
-                if(_data.state == 'ok'){
-                    eventplanner.eqLink.updateData(_data.result);
-                    //eventplanner.msg.lastMsgDate = _data.date;
-                }
-                return _data;
-            }
-        };
-
-        try {
-            eventplanner.private.checkParamsRequired(_params || {}, paramsRequired);
-        } catch (e) {
-            (_params.error || paramsSpecifics.error || eventplanner.private.default_params.error)(e);
-            return;
-        }
-
-        var params = $.extend({}, eventplanner.private.default_params, paramsSpecifics, _params || {});
-        var paramsAJAX = eventplanner.private.getParamsAJAX(params);
-        paramsAJAX.url = 'core/ajax/eqLink.ajax.php';
-        paramsAJAX.data = {
-            action: 'save',
-            eqLink: json_encode(_params.eqLink)
-        };
-        return $.ajax(paramsAJAX);
+        return eventplanner.saveDataToServer('eqLink', _params);
     },
-    
-    updateData: function(_data){
-        if(is_object(_data)){
-            // c'est un objet, donc un seul enregistrement à traiter
-            if(_data.hasOwnProperty('eqLinkId')){
-                this.container[_data.eqLinkId] = _data;
-            }           
-        }else{
-            // c'est un array, donc plusieurs enregistrement à traiter
-            _data.forEach(function(element) {
-                if(element.hasOwnProperty('eqLinkId')){
-                    eventplanner.eqLink.container[element.eqLinkId] = element;
-                }
-            });
-        }
+
+    // suppression
+    remove: function(_params) {
+        return eventplanner.removeDataFromServer('eqLink', _params);
     },
 
     // Accés aux données

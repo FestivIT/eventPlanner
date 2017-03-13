@@ -1,81 +1,59 @@
 eventplanner.event = {
     dataReady: $.Deferred(),
     container: {},
-    
+    eventItem: function(_data){
+        for (var prop in _data) {
+            if (_data.hasOwnProperty(prop)) {
+                this[prop] = _data[prop];
+            }
+        }
+
+        if(!this.hasOwnProperty('eventId')){
+            this.eventId = ''; // Nouveau event
+        }
+        if(!this.hasOwnProperty('eventDefaultEventLevelId')){
+            this.eventDefaultEventLevelId = "";
+        }
+        if(!this.hasOwnProperty('eventName')){
+            this.eventName = "";
+        }
+        if(!this.hasOwnProperty('eventLocalisation')){
+            this.eventLocalisation = [48.856614, 2.352222];
+        }
+        if(!this.hasOwnProperty('eventVille')){
+            this.eventVille = "";
+        }
+        if(!this.hasOwnProperty('eventStartDate')){
+            this.eventStartDate = new Date().toISOString().slice(0,10);
+        }
+        if(!this.hasOwnProperty('eventEndDate')){
+            this.eventEndDate = new Date().toISOString().slice(0,10);
+        }
+        if(!this.hasOwnProperty('eventGeneralInfo')){
+            this.eventGeneralInfo = "";
+        }
+        if(!this.hasOwnProperty('eventConfiguration')){
+            this.eventConfiguration = {};
+        }
+
+        this.remove = function(_params = {}){
+            return eventplanner.event.remove($.extend(_params, {id: this.eventId}));
+        }
+    },
 
     // Chargement initial des données depuis le serveur
     load: function(){
-    	this.dataReady = $.Deferred();
-    	this.container = {};
-    	
-        var params = {
-            success: function(_data, _date) {
-                _data.forEach(function(element) {
-                    eventplanner.event.container[element.eventId] = element;
-                });
-
-                eventplanner.event.dataReady.resolve();
-            }
-        };
-
-        var params = $.extend({}, eventplanner.private.default_params, params || {});
-
-        var paramsAJAX = eventplanner.private.getParamsAJAX(params);
-        paramsAJAX.url = 'core/ajax/event.ajax.php';
-        paramsAJAX.data = {
-            action: 'all'
-        };
-        $.ajax(paramsAJAX);
-
-        return this.dataReady;
+        return eventplanner.loadDataFromServer('event');
     },
 
-    // enregistrement d'un event
+    // enregistrement
     save: function(_params) {
-        // éventuellement ajouter un futur "cache" si offline... ?
-
-        var paramsRequired = ['event'];
-        var paramsSpecifics =  {
-            pre_success: function(_data){
-                if(_data.state == 'ok'){
-                    eventplanner.event.updateData(_data.result);
-                    //eventplanner.msg.lastMsgDate = _data.date;
-                }
-                return _data;
-            }
-        };
-
-        try {
-            eventplanner.private.checkParamsRequired(_params || {}, paramsRequired);
-        } catch (e) {
-            (_params.error || paramsSpecifics.error || eventplanner.private.default_params.error)(e);
-            return;
-        }
-
-        var params = $.extend({}, eventplanner.private.default_params, paramsSpecifics, _params || {});
-        var paramsAJAX = eventplanner.private.getParamsAJAX(params);
-        paramsAJAX.url = 'core/ajax/event.ajax.php';
-        paramsAJAX.data = {
-            action: 'save',
-            event: json_encode(_params.event)
-        };
-        return $.ajax(paramsAJAX);
+        return eventplanner.saveDataToServer('event', _params);
     },
-    
-    updateData: function(_data){
-        if(is_object(_data)){
-            // c'est un objet, donc un seul enregistrement à traiter
-            if(_data.hasOwnProperty('eventId')){
-                this.container[_data.eventId] = _data;
-            }           
-        }else{
-            // c'est un array, donc plusieurs enregistrement à traiter
-            _data.forEach(function(element) {
-                if(element.hasOwnProperty('eventId')){
-                    eventplanner.event.container[element.eventId] = element;
-                }
-            });
-        }
+
+    // suppression
+    remove: function(_params) {
+        return eventplanner.removeDataFromServer('event', _params);
     },
 
     // Accés aux données
@@ -124,14 +102,6 @@ eventplanner.event = {
     },
 
     getFullData: function(_data){
-        //Traitement
-        // faire un merge des des _data + les donnée captées par le byId...
-        // NB: stocker dans les container les champs avec les préfix déjà là...
-        
-        // ! tester si c'est un tableau --> traiter chaque item (c'est une liste d'objet)
-        // si c'est un objet: traiter le seul objet
-        
-        // ! pour les missions, les champs missionZones et missionUsers sont des listes d'ID
         return _data;
     },
 

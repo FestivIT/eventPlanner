@@ -1,111 +1,74 @@
 eventplanner.zone = {
     dataReady: $.Deferred(),
     container: {},
+    zoneItem: function(_data){ 
+        for (var prop in _data) {
+            if (_data.hasOwnProperty(prop)) {
+                this[prop] = _data[prop];
+            }
+        }
+
+        if(!this.hasOwnProperty('zoneId')){
+            this.zoneId = ''; // Nouvelle zone
+        }
+        if(!this.hasOwnProperty('zoneEventId')){
+            throw "zoneEventId manquant!";
+        }
+        if(!this.hasOwnProperty('zoneEventLevelId')){
+            //throw "zoneEventLevelId manquant!";
+            this.zoneEventLevelId = 1; // TEMPORAIRE
+            console.log('zoneEventLevelId temporaire: 1');
+        }
+        if(!this.hasOwnProperty('zoneLocalisation')){
+            throw "zoneLocalisation manquant!";
+        }
+        if(!this.hasOwnProperty('zoneInstallDate')){
+            throw "zoneInstallDate manquant!";
+        }
+        if(!this.hasOwnProperty('zoneUninstallDate')){
+            throw "zoneUninstallDate manquant!";
+        }
+        if(!this.hasOwnProperty('zoneState')){
+            this.zoneState = 200;
+        }
+        if(!this.hasOwnProperty('zoneComment')){
+            this.zoneComment = "";
+        }
+        
+    	this.getEvent = function(_fullData = false){
+            return eventplanner.event.byId(this.zoneEventId, _fullData);
+        }
+
+        this.getEventLevel = function(_fullData = false){
+            return eventplanner.eventLevel.byId(this.zoneEventLevelId, _fullData);
+        }
+    	
+    	this.getEqLogics = function(_fullData = false){
+    		return eventplanner.eqLogic.byZoneId(this.zoneId, _fullData);
+    	}
+
+        this.remove = function(_params = {}){
+            return eventplanner.zone.remove($.extend(_params, {id: this.zoneId}));
+        }
+    },
     
     // Chargement initial des données depuis le serveur
     load: function(){
-    	this.dataReady = $.Deferred();
-    	this.container = {};
-    	
-        var params = {
-            success: function(_data, _date) {
-                _data.forEach(function(element) {
-                    eventplanner.zone.container[element.zoneId] = element;
-                });
-
-                eventplanner.zone.dataReady.resolve();
-            }
-        };
-
-        var params = $.extend({}, eventplanner.private.default_params, params || {});
-
-        var paramsAJAX = eventplanner.private.getParamsAJAX(params);
-        paramsAJAX.url = 'core/ajax/zone.ajax.php';
-        paramsAJAX.data = {
-            action: 'all',
-            fullData: true
-        };
-        $.ajax(paramsAJAX);
-
-        return this.dataReady;
+        return eventplanner.loadDataFromServer('zone');
     },
 
-    // enregistrement d'une zone
+    // enregistrement
     save: function(_params) {
-        // éventuellement ajouter un futur "cache" si offline... ?
-
-        var paramsRequired = ['zone'];
-        var paramsSpecifics =  {
-            pre_success: function(_data){
-                if(_data.state == 'ok'){
-                    eventplanner.zone.updateData(_data.result);
-                    //eventplanner.msg.lastMsgDate = _data.date;
-                }
-                return _data;
-            }
-        };
-
-        try {
-            eventplanner.private.checkParamsRequired(_params || {}, paramsRequired);
-        } catch (e) {
-            (_params.error || paramsSpecifics.error || eventplanner.private.default_params.error)(e);
-            return;
-        }
-
-        var params = $.extend({}, eventplanner.private.default_params, paramsSpecifics, _params || {});
-        var paramsAJAX = eventplanner.private.getParamsAJAX(params);
-        paramsAJAX.url = 'core/ajax/zone.ajax.php';
-        paramsAJAX.data = {
-            action: 'save',
-            zone: json_encode(_params.zone)
-        };
-        return $.ajax(paramsAJAX);
+        return eventplanner.saveDataToServer('zone', _params);
     },
-    
-    updateState: function(_params) {
-	    var paramsRequired = ['listId','state'];
-	    var paramsSpecifics =  {
-            pre_success: function(_data){
-                if(_data.state == 'ok'){
-                    eventplanner.zone.updateData(_data.result);
-                    //eventplanner.msg.lastMsgDate = _data.date;
-                }
-                return _data;
-            }
-        };
-	
-	    try {
-	        eventplanner.private.checkParamsRequired(_params || {}, paramsRequired);
-	    } catch (e) {
-	        (_params.error || paramsSpecifics.error || eventplanner.private.default_params.error)(e);
-	        return;
-	    }
-	
-	    var params = $.extend({}, eventplanner.private.default_params, paramsSpecifics, _params || {});
-	    var paramsAJAX = eventplanner.private.getParamsAJAX(params);
-	    paramsAJAX.url = 'core/ajax/zone.ajax.php';
-	    paramsAJAX.data = {
-	        action: 'updateState',
-	        listId: json_encode(_params.listId),
-	        state: _params.state
-	    };
-	    return $.ajax(paramsAJAX);
-	},
 
-    updateData: function(_data){
-        if(is_object(_data)){
-            // c'est un objet, donc un seul enregistrement à traiter
-            if(_data.hasOwnProperty('zoneId')){
-                this.container[_data.zoneId] = _data;
-            }           
-        }else{
-            // c'est un array, donc plusieurs enregistrement à traiter
-            _data.forEach(function(element) {
-                if(element.hasOwnProperty('zoneId')){
-                    eventplanner.zone.container[element.zoneId] = element;
-                }
-            });
-        }
+    // suppression
+    remove: function(_params) {
+        return eventplanner.removeDataFromServer('zone', _params);
+    },
+
+    updateState: function(_params) {
+        return eventplanner.updateStateToServer('zone' ,_params);
     },
 
     // Accés aux données
@@ -166,9 +129,9 @@ eventplanner.zone = {
     },
 
     compareNameAsc: function(a,b) {
-      if (a.zoneName < b.zoneName)
+      if (a.zoneName.toLowerCase() < b.zoneName.toLowerCase())
         return -1;
-      if (a.zoneName > b.zoneName)
+      if (a.zoneName.toLowerCase() > b.zoneName.toLowerCase())
         return 1;
       return 0;
     }

@@ -8,12 +8,13 @@ class zone {
 
 	private $id;
 	private $eventId;
+	private $eventLevelId;
 	private $name;
 	private $localisation;
 	private $installDate;
 	private $uninstallDate;
 	private $state;
-	private $configuration;
+	private $comment;
 
 
 	/*     * ***********************Méthodes statiques*************************** */
@@ -48,14 +49,13 @@ class zone {
 		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
 	}
 
-	public static function updateState($_listId, $_state) {
-
+	public static function updateState($_listId, $_state, $_eqLogicState) {
         $sqlIdList = '(';
 		$separator = '';
 
         foreach ($_listId as $id) {
         	$zone = zone::byId($id);
-
+			
         	if(is_object($zone)){
         		if($zone->getState() != $_state){
         			$oldState = $zone->getState();
@@ -67,7 +67,13 @@ class zone {
 	        		$sqlIdList .= $separator . $id;
 		    		$separator = ', ';
         		}
+        		
+        		if($_eqLogicState){
+	        		$zone->setEqLogicState(getZoneStateEqLogic($_state));
+	        	}
         	}
+        	
+        	
 		}
 
 		$sqlIdList .= ")";
@@ -99,7 +105,27 @@ class zone {
 		return $this;
 	}
 
-	public function remove() {
+	public function formatForFront(){
+		$return = utils::addPrefixToArray(utils::o2a($this), get_class($this));
+		return $return;
+	}
+	
+	public function setEqLogicState($_state){
+		$eqLogics = eqLogic::byZoneId($this->getId());
+		$eqLogicsId = array();
+		
+		foreach ($eqLogics as $eqLogic) {
+			array_push ($eqLogicsId, $eqLogic->getId());
+		}
+		
+		eqLogic::updateState($eqLogicsId, $_state);
+	}
+
+	public function remove($_addMsg = true) {
+		if($_addMsg){
+			msg::add($this->getEventId(), $this->getId(), null, $_SESSION['user']->getId(), "Suppression de la zone." , 'zone', 'remove', $this);
+		}
+
 		return DB::remove($this);
 	}
 
@@ -112,6 +138,9 @@ class zone {
 	}
 	public function getEventId() {
 		return $this->eventId;
+	}
+	public function getEventLevelId() {
+		return $this->eventLevelId;
 	}
 	public function getName() {
 		return $this->name;
@@ -128,12 +157,8 @@ class zone {
 	public function getLocalisation() {
 		return json_decode($this->localisation, true);
 	}
-	public function getConfiguration($_key = '', $_default = '') {
-		if($this->configuration != null){
-			return utils::getJsonAttr($this->configuration, $_key, $_default);
-		}else{
-			return $_default;
-		}
+	public function getComment() {
+		return $this->comment;
 	}
 
 	public function setId($id) {
@@ -141,6 +166,9 @@ class zone {
 	}
 	public function setEventId($eventId) {
 		$this->eventId = $eventId;
+	}
+	public function setEventLevelId($eventLevelId) {
+		$this->eventLevelId = $eventLevelId;
 	}
 	public function setName($name) {
 		$this->name = $name;
@@ -157,8 +185,8 @@ class zone {
 	public function setLocalisation($localisation) {
 		$this->localisation = json_encode($localisation, JSON_UNESCAPED_UNICODE);
 	}
-	public function setConfiguration($_key, $_value) {
-		$this->configuration = utils::setJsonAttr($this->configuration, $_key, $_value);
+	public function setComment($comment) {
+		$this->comment = $comment;
 	}
 
 }

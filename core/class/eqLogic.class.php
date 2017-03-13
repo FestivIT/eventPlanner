@@ -8,13 +8,14 @@ class eqLogic {
 
 	private $id;
 	private $eventId;
+	private $disciplineId;
 	private $zoneId;
 	private $matTypeId;
 	private $eqRealId;
 	private $ip;
 	private $comment;
 	private $state;
-	private $configuration;
+	private $localisation;
 
 
 	/*     * ***********************Méthodes statiques*************************** */
@@ -109,7 +110,16 @@ class eqLogic {
 		return $this;
 	}
 
-	public function remove() {
+	public function formatForFront(){
+		$return = utils::addPrefixToArray(utils::o2a($this), get_class($this));
+		return $return;
+	}
+
+	public function remove($_addMsg = true) {
+		if($_addMsg){
+			msg::add($this->getEventId(), $this->getZoneId(), $this->getId(), $_SESSION['user']->getId(), "Suppression de l'équipement." , 'eqLogic', 'remove', $this);
+		}
+
 		return DB::remove($this);
 	}
 
@@ -123,14 +133,30 @@ class eqLogic {
 	public function getEventId() {
 		return $this->eventId;
 	}
+	public function getDisciplineId() {
+		return $this->disciplineId;
+	}
 	public function getZoneId() {
 		return $this->zoneId;
+	}
+	public function getZone(){
+		return zone::byId($this->zoneId);
 	}
 	public function getMatTypeId() {
 		return $this->matTypeId;
 	}
+	public function getMatType(){
+		return matType::byId($this->matTypeId);
+	}
 	public function getEqRealId() {
 		return $this->eqRealId;
+	}	
+	public function getEqReal(){
+		if($this->eqRealId != null){
+			return zone::byId($this->eqRealId);
+		}else{
+			return false;
+		}
 	}
 	public function getIp() {
 		return $this->ip;
@@ -140,9 +166,12 @@ class eqLogic {
 	}
 	public function getState() {
 		return $this->state;
-	}	
-	public function getConfiguration($_key = '', $_default = '') {
-		return utils::getJsonAttr($this->configuration, $_key, $_default);
+	}
+	public function getLocalisation() {
+		return json_decode($this->localisation, true);
+	}
+	public function getAttributes() {
+		return false;
 	}
 
 	public function setId($id) {
@@ -150,6 +179,9 @@ class eqLogic {
 	}
 	public function setEventId($eventId) {
 		$this->eventId = $eventId;
+	}
+	public function setDisciplineId($disciplineId) {
+		$this->disciplineId = $disciplineId;
 	}
 	public function setZoneId($zoneId) {
 		$this->zoneId = $zoneId;
@@ -169,8 +201,8 @@ class eqLogic {
 	public function setState($state) {
 		$this->state = $state;
 	}
-	public function setConfiguration($_key, $_value) {
-		$this->configuration = utils::setJsonAttr($this->configuration, $_key, $_value);
+	public function setLocalisation($localisation) {
+		$this->localisation = json_encode($localisation, JSON_UNESCAPED_UNICODE);
 	}
 
 }

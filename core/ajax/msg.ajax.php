@@ -11,7 +11,7 @@ try {
 	ajax::init();
 
 	if (init('action') == 'all') {
-		$msg = utils::addPrefixToArray(utils::o2a(msg::byEventId($_SESSION['user']->getOptions('eventId'))), 'msg', true);
+		$msg = utils::addPrefixToArray(utils::o2a(msg::byEventId($_SESSION['user']->getEventId())), 'msg', true);
 
 		ajax::success($msg);
 	}
@@ -36,7 +36,7 @@ try {
 	}
 
 	if (init('action') == 'sinceId') {
-		$msg = utils::addPrefixToArray(utils::o2a(msg::byEventIdSinceId(init('id'), $_SESSION['user']->getOptions('eventId'))), 'msg', true);
+		$msg = utils::addPrefixToArray(utils::o2a(msg::byEventIdSinceId(init('id'), $_SESSION['user']->getEventId())), 'msg', true);
 
 		ajax::success($msg);
 	}

@@ -8,13 +8,11 @@ class mission {
 
 	private $id;
 	private $eventId;
+	private $disciplineId;
 	private $name;
-	private $users;
-	private $zones;
 	private $comment;
 	private $state;
 	private $date;
-	private $configuration;
 
 
 	/*     * ***********************Méthodes statiques*************************** */
@@ -50,19 +48,29 @@ class mission {
 	}
 
 	public static function byZoneId($_zoneId) {
-		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-        FROM mission
-        WHERE `zones` LIKE \'%\"' . $_zoneId . '\"%\'
+		$values = array(
+			'zoneId' => $_zoneId,
+		);
+		
+	    $sql = 'SELECT ' . DB::buildField(__CLASS__) . '
+	    FROM mission 
+	    LEFT OUTER JOIN missionZoneAssociation ON missionZoneAssociation.missionId = mission.id 
+	    WHERE missionZoneAssociation.zoneId =:zoneId
 	    ORDER BY `date`';
-		return DB::Prepare($sql, array(), DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
+		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
 	}
 
 	public static function byUserId($_userId) {
-		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-        FROM mission
-        WHERE `users` LIKE \'%\"' . $_userId . '\"%\'
+	    $values = array(
+			'userId' => $_userId,
+		);
+		
+	    $sql = 'SELECT ' . DB::buildField(__CLASS__) . '
+	    FROM mission 
+	    LEFT OUTER JOIN missionUserAssociation ON missionUserAssociation.missionId = mission.id 
+	    WHERE missionUserAssociation.userId =:userId
 	    ORDER BY `date`';
-		return DB::Prepare($sql, array(), DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
+		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
 	}
 
 	public static function byUserIdMaxState($_userId, $_maxState, $_fullData = false) {
@@ -110,6 +118,7 @@ class mission {
 		return DB::Prepare($sql, array(), DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
 	}
 
+
 	/*     * *********************Méthodes d'instance************************* */
 
 	public function save($_addMsg = true) {
@@ -127,7 +136,18 @@ class mission {
 		return $this;
 	}
 
-	public function remove() {
+	public function formatForFront(){
+		$mission = utils::addPrefixToArray(utils::o2a($this), 'mission');
+		$mission['missionUsers'] = missionUserAssociation::listIdByMissionId($this->getId());
+		$mission['missionZones'] = missionZoneAssociation::listIdByMissionId($this->getId());
+		return $mission;
+	}
+
+	public function remove($_addMsg = true) {
+		if($_addMsg){
+			msg::add($this->getEventId(), null, null, $_SESSION['user']->getId(), "Suppression de la mission." , 'mission', 'remove', $this);
+		}
+
 		return DB::remove($this);
 	}
 
@@ -141,14 +161,17 @@ class mission {
 	public function getEventId() {
 		return $this->eventId;
 	}
+	public function getDisciplineId() {
+		return $this->disciplineId;
+	}
 	public function getName() {
 		return $this->name;
 	}
-	public function getUsers() {
-		return json_decode($this->users, true);
+	public function getUsers(){
+	    return missionUserAssociation::byMissionId($this->getId());
 	}
-	public function getZones() {
-		return json_decode($this->zones, true);
+	public function getZones(){
+	    return missionZoneAssociation::byMissionId($this->getId());
 	}
 	public function getComment() {
 		return $this->comment;
@@ -158,9 +181,6 @@ class mission {
 	}	
 	public function getDate() {
 		return $this->date;
-	}	
-	public function getConfiguration($_key = '', $_default = '') {
-		return utils::getJsonAttr($this->configuration, $_key, $_default);
 	}
 
 	public function setId($id) {
@@ -169,14 +189,11 @@ class mission {
 	public function setEventId($eventId) {
 		$this->eventId = $eventId;
 	}
+	public function setDisciplineId($disciplineId) {
+		$this->disciplineId = $disciplineId;
+	}
 	public function setName($name) {
 		$this->name = $name;
-	}
-	public function setUsers($users) {
-		$this->users = json_encode($users, JSON_UNESCAPED_UNICODE);
-	}
-	public function setZones($zones) {
-		$this->zones = json_encode($zones, JSON_UNESCAPED_UNICODE);
 	}
 	public function setComment($comment) {
 		$this->comment = $comment;
@@ -187,9 +204,7 @@ class mission {
 	public function setDate($date) {
 		$this->date = $date;
 	}
-	public function setConfiguration($_key, $_value) {
-		$this->configuration = utils::setJsonAttr($this->configuration, $_key, $_value);
-	}
 
 }
+
 ?>

@@ -460,9 +460,9 @@ class DB {
 		foreach (self::getFields($_class) as $field) {
 			if ('_' !== $field[0]) {
 				if ($_prefix != '') {
-					$fields[] = '`' . $_prefix . '`.' . '`' . $field . '` AS `' . $_prefix . ucfirst($field) . '`';
+					$fields[] = '`' . $_class . '`.' . '`' . $field . '` AS `' . $_prefix . ucfirst($field) . '`';
 				} else {
-					$fields[] = '`' . $field . '`';
+					$fields[] = '`' . $_class . '`.' . '`' . $field . '`';
 				}
 			}
 		}

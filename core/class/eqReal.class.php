@@ -8,10 +8,11 @@ class eqReal {
 
 	private $id;
 	private $matTypeId;
+	private $disciplineId;
 	private $name;
 	private $comment;
 	private $state;
-	private $configuration;
+	private $localisation;
 
 
 	/*     * ***********************Méthodes statiques*************************** */
@@ -43,6 +44,16 @@ class eqReal {
         FROM eqReal
 		ORDER BY `matTypeId`';
 		return DB::Prepare($sql, array(), DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
+	}
+
+	public static function byDisciplineId($_disciplineId) {
+		$values = array(
+			'disciplineId' => $_disciplineId,
+		);
+		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
+        FROM eqReal
+        WHERE disciplineId=:disciplineId';
+		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
 	}
 	
 	public static function updateState($_listId, $_state) {
@@ -97,8 +108,17 @@ class eqReal {
 		}
 		return $this;
 	}
+	
+	public function formatForFront(){
+		$return = utils::addPrefixToArray(utils::o2a($this), get_class($this));
+		return $return;
+	}
 
-	public function remove() {
+	public function remove($_addMsg = true) {
+		if($_addMsg){
+			msg::add(null, null, null, $_SESSION['user']->getId(), "Suppression du matériel." , 'eqReal', 'remove', $this);
+		}
+
 		return DB::remove($this);
 	}
 
@@ -112,6 +132,9 @@ class eqReal {
 	public function getName() {
 		return $this->name;
 	}
+	public function getDisciplineId() {
+		return $this->disciplineId;
+	}
 	public function getMatTypeId() {
 		return $this->matTypeId;
 	}
@@ -120,16 +143,19 @@ class eqReal {
 	}
 	public function getState() {
 		return $this->state;
-	}	
-	public function getConfiguration($_key = '', $_default = '') {
-		return utils::getJsonAttr($this->configuration, $_key, $_default);
 	}
+	public function getLocalisation() {
+		return $this->localisation;
+	}	
 
 	public function setId($id) {
 		$this->id = $id;
 	}
 	public function setName($name) {
 		$this->name = $name;
+	}
+	public function setDisciplineId($disciplineId) {
+		$this->disciplineId = $disciplineId;
 	}
 	public function setMatTypeId($matTypeId) {
 		$this->matTypeId = $matTypeId;
@@ -140,8 +166,8 @@ class eqReal {
 	public function setState($state) {
 		$this->state = $state;
 	}
-	public function setConfiguration($_key, $_value) {
-		$this->configuration = utils::setJsonAttr($this->configuration, $_key, $_value);
+	public function setLocalisation($localisation) {
+		$this->localisation = $localisation;
 	}
 
 }

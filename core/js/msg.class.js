@@ -2,6 +2,13 @@ eventplanner.msg = {
     dataReady: $.Deferred(),
     container: {},
     lastMsgId: 0,
+    msgItem: function(_data){
+        for (var prop in _data) {
+            if (_data.hasOwnProperty(prop)) {
+                this[prop] = _data[prop];
+            }
+        }
+    },
 
     // Chargement initial des données depuis le serveur
     load: function(){
@@ -78,8 +85,9 @@ eventplanner.msg = {
         var params = $.extend({}, eventplanner.private.default_params, paramsSpecifics, _params || {});
 
         var paramsAJAX = eventplanner.private.getParamsAJAX(params);
-        paramsAJAX.url = 'core/ajax/msg.ajax.php';
+        paramsAJAX.url = 'core/ajax/ajax.php';
         paramsAJAX.data = {
+            type: 'msg',
             action: 'sinceId',
             id: this.lastMsgId
         };
@@ -89,13 +97,13 @@ eventplanner.msg = {
     processMsgData: function(_data){
         switch(_data.op) {
             case 'add':
-                var itemId = _data.content[_data.type + 'Id'];                    
-                eventplanner[_data.type].container[itemId] = _data.content;
+                var itemId = _data.content[_data.type + 'Id'];
+                eventplanner.updateDataFromServer(_data.type, _data.content);
             break;
             
             case 'update':
                 var itemId = _data.content[_data.type + 'Id'];
-                eventplanner[_data.type].container[itemId] = _data.content;
+                eventplanner.updateDataFromServer(_data.type, _data.content);
             break;
             
             case 'remove':
@@ -105,52 +113,9 @@ eventplanner.msg = {
         }
     },
 
-    // enregistrement d'un message
+    // enregistrement
     save: function(_params) {
-        // éventuellement ajouter un futur "cache" si offline... ?
-
-        var paramsRequired = ['msg'];
-        var paramsSpecifics =  {
-        	pre_success: function(_data){
-	        	if(_data.state == 'ok'){
-	        		eventplanner.msg.updateData(_data.result);
-	        		//eventplanner.msg.lastMsgDate = _data.date;
-	        	}
-	        	return _data;
-        	}
-        };
-
-        try {
-            eventplanner.private.checkParamsRequired(_params || {}, paramsRequired);
-        } catch (e) {
-            (_params.error || paramsSpecifics.error || eventplanner.private.default_params.error)(e);
-            return;
-        }
-
-        var params = $.extend({}, eventplanner.private.default_params, paramsSpecifics, _params || {});
-        var paramsAJAX = eventplanner.private.getParamsAJAX(params);
-        paramsAJAX.url = 'core/ajax/msg.ajax.php';
-        paramsAJAX.data = {
-            action: 'save',
-            msg: json_encode(_params.msg),
-        };
-        return $.ajax(paramsAJAX);
-    },
-
-    updateData: function(_data){
-    	if(is_object(_data)){
-    		// c'est un objet, donc un seul enregistrement à traiter
-    		if(_data.hasOwnProperty('msgId')){
-    			this.container[_data.msgId] = _data;
-    		}    		
-    	}else{
-    		// c'est un array, donc plusieurs enregistrement à traiter
-    		_data.forEach(function(element) {
-                if(element.hasOwnProperty('msgId')){
-	    			eventplanner.msg.container[element.msgId] = element;
-	    		}
-            });
-    	}
+        return eventplanner.saveDataToServer('msg', _params);
     },
 
     // Accés aux données
@@ -249,6 +214,35 @@ eventplanner.msg = {
             if(_fulldata){
                 dataSelection = this.getFullData(dataSelection);
             }
+            
+            return dataSelection;
+
+        }else{
+            return false;
+        }
+    },
+
+    // Accés aux données
+    searchAll: function(_searchVal){
+        if(this.dataReady.state() == 'resolved'){
+            var listAll = this.all(true);
+
+            // Selection des données à conserver dans le container:
+            var dataSelection = Array();
+
+            listAll.forEach(function(msg){
+                if(msg.msgContent.toLowerCase().indexOf(_searchVal.toLowerCase()) !== -1){
+                    dataSelection.push(msg);
+                } else if(msg.hasOwnProperty('userName') && msg.userName.toLowerCase().indexOf(_searchVal.toLowerCase()) !== -1){
+                    dataSelection.push(msg);
+                } else if(msg.hasOwnProperty('zoneName') && msg.zoneName.toLowerCase().indexOf(_searchVal.toLowerCase()) !== -1){
+                    dataSelection.push(msg);
+                } else if(msg.hasOwnProperty('eqRealName') && msg.eqRealName.toLowerCase().indexOf(_searchVal.toLowerCase()) !== -1){
+                    dataSelection.push(msg);
+                } else if(msg.hasOwnProperty('matTypeName') && msg.matTypeName.toLowerCase().indexOf(_searchVal.toLowerCase()) !== -1){
+                    dataSelection.push(msg);
+                }
+            });
             
             return dataSelection;
 

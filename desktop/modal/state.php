@@ -12,8 +12,24 @@
     </div>
   </div>
   <div class="form-group">
-    <div class="col-sm-offset-3 col-sm-9">
-      <button type="submit" class="btn btn-success">Sauvegarder</button>
+    <label class="col-sm-3 control-label" >S'applique sur:</label>
+    <div class="col-sm-9">
+    	<p id="stateToList"></p>
+   	</div>
+   	<script type="text/html" id="templateStateTo">
+		<p>
+			<span class="label label-danger" data-content="typeName"></span>&nbsp;
+			<span class="label label-primary" data-content="name"></span><br>
+		</p>
+	</script>
+  </div>
+  <div class="form-group zoneEqlogicState">
+    <label class="col-sm-3 control-label" >Appliquer sur les équipements de la zone</label>
+    <div class="col-sm-2">
+    	<input type="checkbox" id="eqLogicStateSwitch">
     </div>
+    <div class="col-sm-7">
+		<span class="label label-primary zoneEqLogicState"></span>   	
+   	</div>
   </div>
 </form>

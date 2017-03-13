@@ -1,109 +1,81 @@
 eventplanner.mission = {
     dataReady: $.Deferred(),
     container: {},
-    
+    missionItem: function(_data){ 
+        for (var prop in _data) {
+            if (_data.hasOwnProperty(prop)) {
+                this[prop] = _data[prop];
+            }
+        }
+
+        if(!this.hasOwnProperty('missionId')){
+            this.zoneId = ''; // Nouvelle mission
+        }
+        if(!this.hasOwnProperty('missionEventId')){
+            throw "missionEventId manquant!";
+        }
+        if(!this.hasOwnProperty('missionDisciplineId')){
+            //throw "missionDisciplineId manquant!";
+            this.missionDisciplineId = 1; // TEMPORAIRE
+            console.log('missionDisciplineId temporaire: 1');
+        }
+        if(!this.hasOwnProperty('missionName')){
+            this.missionName = "";
+        }
+        if(!this.hasOwnProperty('missionComment')){
+            this.missionComment = "";
+        }
+        if(!this.hasOwnProperty('missionState')){
+            this.missionState = 400;
+        }
+        if(!this.hasOwnProperty('missionDate')){
+            this.missionDate = '0000-00-00 00:00:00';
+        }
+        if(!this.hasOwnProperty('missionZones')){
+            this.missionZones = [];
+        }
+        if(!this.hasOwnProperty('missionUsers')){
+            this.missionUsers = [];
+        }
+
+        this.getUsers = function(_fullData = false){
+            var userList = [];
+            this.missionUsers.forEach(function(userId){
+                userList.push(eventplanner.user.byId(userId, _fullData));
+            })
+            return userList;
+        }
+
+        this.getZones = function(_fullData = false){
+            var zoneList = [];
+            this.missionZones.forEach(function(zoneId){
+                zoneList.push(eventplanner.zone.byId(zoneId, _fullData));
+            })
+            return zoneList;
+        }
+
+        this.remove = function(_params = {}){
+            return eventplanner.mission.remove($.extend(_params, {id: this.missionId}));
+        }
+    },
 
     // Chargement initial des données depuis le serveur
     load: function(){
-    	this.dataReady = $.Deferred();
-    	this.container = {};
-    	
-        var params = {
-            success: function(_data, _date) {
-                _data.forEach(function(element) {
-                    eventplanner.mission.container[element.missionId] = element;
-                });
-
-                eventplanner.mission.dataReady.resolve();
-            }
-        };
-
-        var params = $.extend({}, eventplanner.private.default_params, params || {});
-
-        var paramsAJAX = eventplanner.private.getParamsAJAX(params);
-        paramsAJAX.url = 'core/ajax/mission.ajax.php';
-        paramsAJAX.data = {
-            action: 'all',
-            fullData: true
-        };
-        $.ajax(paramsAJAX);
-
-        return this.dataReady;
+        return eventplanner.loadDataFromServer('mission');
     },
 
     // enregistrement d'une mission
     save: function(_params) {
-        var paramsRequired = ['mission'];
-        var paramsSpecifics =  {
-        	pre_success: function(_data){
-	        	if(_data.state == 'ok'){
-	        		eventplanner.mission.updateData(_data.result);
-	        	}
-	        	return _data;
-        	}
-        };
-
-        try {
-            eventplanner.private.checkParamsRequired(_params || {}, paramsRequired);
-        } catch (e) {
-            (_params.error || paramsSpecifics.error || eventplanner.private.default_params.error)(e);
-            return;
-        }
-
-        var params = $.extend({}, eventplanner.private.default_params, paramsSpecifics, _params || {});
-        var paramsAJAX = eventplanner.private.getParamsAJAX(params);
-        paramsAJAX.url = 'core/ajax/mission.ajax.php';
-        paramsAJAX.data = {
-            action: 'save',
-            mission: json_encode(_params.mission)
-        };
-        return $.ajax(paramsAJAX);
+        return eventplanner.saveDataToServer('mission', _params);
     },
-    
-    updateData: function(_data){
-    	if(is_object(_data)){
-    		// c'est un objet, donc un seul enregistrement à traiter
-    		if(_data.hasOwnProperty('missionId')){
-    			this.container[_data.missionId] = _data;
-    		}    		
-    	}else{
-    		// c'est un array, donc plusieurs enregistrement à traiter
-    		_data.forEach(function(element) {
-                if(element.hasOwnProperty('missionId')){
-	    			eventplanner.mission.container[element.missionId] = element;
-	    		}
-            });
-    	}
+
+    // suppression
+    remove: function(_params) {
+        return eventplanner.removeDataFromServer('mission', _params);
     },
 
     updateState: function(_params) {
-        var paramsRequired = ['listId','state'];
-        var paramsSpecifics =  {
-        	pre_success: function(_data){
-	        	if(_data.state == 'ok'){
-	        		eventplanner.mission.updateData(_data.result);
-	        		//eventplanner.msg.lastMsgDate = _data.date;
-	        	}
-	        	return _data;
-        	}
-        };
-
-        try {
-            eventplanner.private.checkParamsRequired(_params || {}, paramsRequired);
-        } catch (e) {
-            (_params.error || paramsSpecifics.error || eventplanner.private.default_params.error)(e);
-            return;
-        }
-
-        var params = $.extend({}, eventplanner.private.default_params, paramsSpecifics, _params || {});
-        var paramsAJAX = eventplanner.private.getParamsAJAX(params);
-        paramsAJAX.url = 'core/ajax/mission.ajax.php';
-        paramsAJAX.data = {
-            action: 'updateState',
-            listId: json_encode(_params.listId),
-            state: _params.state
-        };
-        return $.ajax(paramsAJAX);
+        return eventplanner.updateStateToServer('mission' ,_params);
     },
 
     // Accés aux données

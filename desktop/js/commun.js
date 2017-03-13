@@ -1,7 +1,13 @@
 $( document ).ready(function() {
 	eventplanner.user.isConnect(
 		{success: function(_data){
+			// Enregistrement de l'utilisateur.
+			eventplanner.ui.currentUser = new eventplanner.user.userItem(_data);
 			$.when(eventplanner.ui.init()).then(function (){
+
+				$('#epOrganisationMenu').html(eventplanner.ui.currentUser.getDiscipline().getOrganisation().organisationName);
+				$('#epUserMenu').html(eventplanner.ui.currentUser.userName);
+				
 				var page = getUrlParameter("p");
 				if(page != false){
 					if(eventplanner.ui.hasOwnProperty(page) && eventplanner.ui[page].hasOwnProperty('init')){
@@ -25,6 +31,30 @@ $( document ).ready(function() {
 	});
 });
 
+$.expr[":"].contains = $.expr.createPseudo(function(arg) {
+    return function( elem ) {
+        return $(elem).text().toUpperCase().indexOf(arg.toUpperCase()) >= 0;
+    };
+});
+
+toastr.options = {
+  "closeButton": true,
+  "debug": false,
+  "newestOnTop": true,
+  "progressBar": false,
+  "positionClass": "toast-bottom-right",
+  "preventDuplicates": false,
+  "onclick": null,
+  "showDuration": "300",
+  "hideDuration": "1000",
+  "timeOut": "5000",
+  "extendedTimeOut": "1000",
+  "showEasing": "swing",
+  "hideEasing": "linear",
+  "showMethod": "fadeIn",
+  "hideMethod": "fadeOut"
+}
+
 $.tablesorter.themes.bootstrap = {
 		    table        : 'table  table-bordered table-striped table-condensed',
 		    caption      : 'caption',
@@ -47,6 +77,9 @@ $.addTemplateFormatter("JSONStringify", function(value, template) {
 });
 
 $.addTemplateFormatter("prepend", function(value, template) {
+	if(value == undefined){
+		value = "";
+	}
     return template.toString() + value.toString();
 });
 
@@ -124,13 +157,40 @@ function formatList(list, template, itemName){
 $.addTemplateFormatter("formatList", function(list, template) {
     return formatList(list, template, '');
 });
+$.addTemplateFormatter("formatMsgContent", function(msgId, templateId) {
+	var msg = eventplanner.msg.byId(msgId);
 
-$.addTemplateFormatter("formatListWithUserName", function(list, template) {
-    return formatList(list, template, 'userName');
+	if(msg.msgContent.hasOwnProperty('type')){
+		return $('<div>').loadTemplate($('.' + templateId + '[msg-content-type=' + msg.msgContent.type + ']'), msg.msgContent).html();
+	}else{
+		return msg.msgContent;
+	}    
 });
+$.addTemplateFormatter("formatMissionUsers", function(missionId, templateId) {
+    return $('<div>').loadTemplate($('#' + templateId), [eventplanner.mission.byId(missionId).getUsers()]).html();
+});
+$.addTemplateFormatter("formatMissionZones", function(missionId, templateId) {
+    return $('<div>').loadTemplate($('#' + templateId), [eventplanner.mission.byId(missionId).getZones()]).html();
+});
+$.addTemplateFormatter("formatContactCoord", function(contactId, templateId) {
+    return $('<div>').loadTemplate($('#' + templateId), eventplanner.contact.byId(contactId).contactCoord).html();
+});
+$.addTemplateFormatter("contactCoord", function(contactId, coordType) {
+    var result = "";
+    var contact = eventplanner.contact.byId(contactId);
 
-$.addTemplateFormatter("formatListWithZoneName", function(list, template) {
-    return formatList(list, template, 'zoneName');
+    if(contact){
+    	contact.contactCoord.forEach(function(coord){
+	    	if(coord.type == coordType){
+	    		result = coord.value;
+	    	}
+	    });
+    }
+    
+    return result;
+});
+$.addTemplateFormatter("formatEqLogicAttributes", function(eqLogicId, templateId) {
+    return $('<div>').loadTemplate($('#' + templateId), eventplanner.eqLogic.byId(eqLogicId).getEqLogicAttributes(true)).html();
 });
 
 function formatDateYmd2Dmy(date){

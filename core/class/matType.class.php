@@ -8,7 +8,8 @@ class matType {
 
 	private $id;
 	private $name;
-	private $options;
+	private $disciplineId;
+	private $parentId;
 
 
 	/*     * ***********************Méthodes statiques*************************** */
@@ -29,6 +30,16 @@ class matType {
 	   	ORDER BY `name`';
 		return DB::Prepare($sql, array(), DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
 	}
+
+	public static function byDisciplineId($_disciplineId) {
+		$values = array(
+			'disciplineId' => $_disciplineId,
+		);
+		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
+        FROM matType
+        WHERE disciplineId=:disciplineId';
+		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
+	}
 	
 	/*     * *********************Méthodes d'instance************************* */
 
@@ -47,7 +58,17 @@ class matType {
 		return $this;
 	}
 
-	public function remove() {
+	public function formatForFront(){
+		$return = utils::addPrefixToArray(utils::o2a($this), get_class($this));
+		$return['attributes'] = matTypeAttribute::listIdByMatTypeId($this->getId());
+		return $return;
+	}
+
+	public function remove($_addMsg = true) {
+		if($_addMsg){
+			msg::add(null, null, null, $_SESSION['user']->getId(), "Suppression du type de matériel."  . $this->getName(), 'matType', 'remove', $this);
+		}
+
 		return DB::remove($this);
 	}
 
@@ -61,10 +82,14 @@ class matType {
 	public function getName() {
 		return $this->name;
 	}
-	public function getOptions() {
-		return $this->options;
-		// ? return json_decode($this->options, true);
-		
+	public function getDisciplineId() {
+		return $this->disciplineId;
+	}
+	public function getParentId() {
+		return $this->parentId;
+	}
+	public function getAttributes() {
+		return matTypeAttribute::byMatTypeId($this->getId());
 	}
 
 	public function setId($id) {
@@ -73,9 +98,15 @@ class matType {
 	public function setName($name) {
 		$this->name = $name;
 	}
-	public function setOptions($options) {
-		$this->options = $options;
-		// ? $this->options = json_encode($options, JSON_UNESCAPED_UNICODE);
+	public function setDisciplineId($disciplineId) {
+		$this->disciplineId = $disciplineId;
+	}
+	public function setParentId($parentId) {
+		$this->parentId = $parentId;
+	}
+	public function addAttributes($name, $option) {
+		
 	}
 }
+
 ?>

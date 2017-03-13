@@ -34,10 +34,4 @@
 			</div>
 		</div>
   </div>
-  <div class="form-group">
-    <div class="col-sm-offset-3 col-sm-9">
-      <input type="text" id="eventId" style="display: none;" data-value="eventId" >
-      <button type="submit" class="btn btn-success">Sauvegarder</button>
-    </div>
-  </div>
 </form>

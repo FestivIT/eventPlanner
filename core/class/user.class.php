@@ -8,10 +8,15 @@ class user {
 	/*     * *************************Attributs****************************** */
 
 	private $id;
+	private $disciplineId;
 	private $login;
 	private $name;
 	private $password;
-	private $options;
+	private $lastConnection;
+	private $eventId;
+	private $eventLevelId;
+	private $actionOnScan;
+	private $slackID;
 	private $rights;
 	private $enable = 1;
 	private $hash;
@@ -38,13 +43,23 @@ class user {
 		$sMdp = (!is_sha1($_mdp)) ? sha1($_mdp) : $_mdp;
 		$user = user::byLoginAndPassword($_login, $sMdp);
 		if (is_object($user)) {
-			$user->setOptions('lastConnection', date('Y-m-d H:i:s'));
+			$user->setLastConnection(date('Y-m-d H:i:s'));
 			$user->save(false);
 			msg::add(null, null, null, $user->getId(), "Connection de l'utilisateur: " . $user->getName(), 'user', 'update', $user);
 			//eventPlanner::event('user_connect');
 			//log::add('event', 'info', __('Connexion de l\'utilisateur ', __FILE__) . $_login);
 		}
 		return $user;
+	}
+
+	public static function byDisciplineId($_disciplineId) {
+		$values = array(
+			'disciplineId' => $_disciplineId,
+		);
+		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
+        FROM user
+        WHERE disciplineId=:disciplineId';
+		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
 	}
 
 	public static function byLogin($_login) {
@@ -144,10 +159,32 @@ class user {
 			}
 		}
 
+		// Si c'est l'utilisateur en cours, on met à jour la session
+		if(is_object($_SESSION['user']) && ($this->getId() == $_SESSION['user']->getId())){
+			@session_start();
+			$_SESSION['user']->refresh();
+			@session_write_close();
+		}		
+
 		return $this;
 	}
 
-	public function remove() {
+	public function formatForFront($_currentUser = false){
+		$return = utils::addPrefixToArray(utils::o2a($this), get_class($this));
+
+		// Si c'est pas l'utilisateur en cours, on supprimer certains champs
+		if(!$_currentUser){
+			$return = utils::unsetElementFromArray($return, array('userPassword', 'userHash', 'userOptions', 'userRights'));
+		}		
+
+		return $return;
+	}
+
+	public function remove($_addMsg = true) {
+		if($_addMsg){
+			msg::add(null, null, null, $_SESSION['user']->getId(), "Suppression de l'utilisateur: " . $this->getName() , 'user', 'remove', $this);
+		}
+
 		return DB::remove($this);
 	}
 
@@ -169,6 +206,14 @@ class user {
 		return $this->id;
 	}
 
+	public function getDisciplineId() {
+		return $this->disciplineId;
+	}
+
+	public function getDiscipline() {
+		return discipline::byId($this->disciplineId);
+	}
+
 	public function getLogin() {
 		return $this->login;
 	}
@@ -181,8 +226,32 @@ class user {
 		return $this->password;
 	}
 
+	public function getLastConnection() {
+		return $this->lastConnection;
+	}
+
+	public function getActionOnScan() {
+		return $this->actionOnScan;
+	}
+
+	public function getSlackID() {
+		return $this->slackID;
+	}
+
+	public function getEventId() {
+		return $this->eventId;
+	}
+
+	public function getEventLevelId() {
+		return $this->eventLevelId;
+	}
+
 	public function setId($id) {
 		$this->id = $id;
+	}
+
+	public function setDisciplineId($disciplineId) {
+		$this->disciplineId = $disciplineId;
 	}
 
 	public function setLogin($login) {
@@ -193,16 +262,28 @@ class user {
 		$this->name = $name;
 	}
 
+	public function setLastConnection($lastConnection) {
+		$this->lastConnection = $lastConnection;
+	}
+
+	public function setActionOnScan($actionOnScan) {
+		$this->actionOnScan = $actionOnScan;
+	}
+
+	public function setSlackID($slackID) {
+		$this->slackID = $slackID;
+	}
+
+	public function setEventId($eventId) {
+		$this->eventId = $eventId;
+	}
+
+	public function setEventLevelId($eventLevelId) {
+		$this->eventLevelId = $eventLevelId;
+	}
+
 	public function setPassword($password) {
 		$this->password = (!is_sha1($password)) ? sha1($password) : $password;
-	}
-
-	public function getOptions($_key = '', $_default = '') {
-		return utils::getJsonAttr($this->options, $_key, $_default);
-	}
-
-	public function setOptions($_key, $_value) {
-		$this->options = utils::setJsonAttr($this->options, $_key, $_value);
 	}
 
 	public function getRights($_key = '', $_default = '') {

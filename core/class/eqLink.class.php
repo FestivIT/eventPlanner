@@ -76,6 +76,12 @@ class eqLink {
 		}
 		return $this;
 	}
+
+	public function formatForFront(){
+		$return = utils::addPrefixToArray(utils::o2a($this), get_class($this));
+		return $return;
+	}
+
 	public function remove($_addMsg = true) {
 		if($_addMsg){
 			msg::add($this->getEventId(), null, null, $_SESSION['user']->getId(), "Suppression du lien.", 'eqLink', 'remove', $this);

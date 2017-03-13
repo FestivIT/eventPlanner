@@ -20,11 +20,4 @@
         <textarea class="form-control" rows="5" id="eqRealComment" data-content="eqRealComment"></textarea>
       </div>
   </div>
-  <div class="form-group">
-    <div class="col-sm-offset-3 col-sm-9">
-      <input type="text" id="eqRealId" style="display: none;" data-value="eqRealId">
-      <input type="text" id="eqRealState" style="display: none;" data-value="eqRealState">
-      <button type="submit" class="btn btn-success">Sauvegarder</button>
-    </div>
-  </div>
 </form>

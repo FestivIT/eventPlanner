@@ -1,75 +1,63 @@
-<div class="well">
-  <form class="form-horizontal msgForm">
-    <div class="input-group">
-      <input type="text" class="form-control msgFormInput" placeholder="Déposer un message...">
-      <span class="input-group-btn">
-        <button type="submit" class="btn btn-default">Poster</button>
-      </span>
-    </div>
-  </form>
-</div>
+<div id="maincourante">
+	<nav class="navbar navbar-default epContextualNavBar">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<a class="navbar-brand">Main courante</a>
+				<div class="pull-right visible-xs">
+					<button type="button" class="btn navbar-btn btn-info btn-sm previous"><span class="glyphicon glyphicon-triangle-left small"></span></button>
+			    	<button type="button" class="btn navbar-btn btn-info btn-sm next"><span class="glyphicon glyphicon-triangle-right small"></span></button>
+			    </div>
+		    </div>
 
-<div class="panel panel-primary" id="maincourante">
-  	<div class="panel-heading">
-  		Main courante
-  	</div>
-	<table class="msgTable" id="msgTable"> <!-- bootstrap classes added by the uitheme widget -->
-	  <thead>
-	    <tr style="display: none;">
-	      <!--
-	      <th style="width: 140px;">Date</th>
-	      <th style="width: 100px;">Zone</th>
-	      <th style="width: 170px;">Equipement</th>
-	      -->
-	      <th>Message</th>
-	    </tr>
-	  </thead>
-	  <tfoot>
-	    <tr>
-	      <th colspan="9" class="ts-pager form-horizontal">
-	        <button type="button" class="btn first"><i class="icon-step-backward glyphicon glyphicon-step-backward"></i></button>
-	        <button type="button" class="btn prev"><i class="icon-arrow-left glyphicon glyphicon-backward"></i></button>
-	        <span class="pagedisplay"></span>
-	        <button type="button" class="btn next"><i class="icon-arrow-right glyphicon glyphicon-forward"></i></button>
-	        <button type="button" class="btn last"><i class="icon-step-forward glyphicon glyphicon-step-forward"></i></button>
-	        <select class="pagesize input-mini" title="Select page size">
-	          <option selected="selected" value="10">10</option>
-	          <option value="20">20</option>
-	          <option value="40">40</option>
-	          <option value="20">60</option>
-	          <option value="20">80</option>
-	        </select>
-	        <select class="pagenum input-mini" title="Select page number"></select>
-	      </th>
-	    </tr>
-	  </tfoot>
-	  <tbody>
-	  </tbody>
-	</table>
+		    <form class="navbar-form navbar-left searchMsgForm">
+				<div class="input-group">
+					<span class="input-group-addon">Filtre: </span>
+					<input type="text" class="form-control input-sm" id="searchMsgInput" placeholder="Logistique, Routeur, UBNT105, Fred...">
+					<span class="input-group-btn">
+				        <button class="btn btn-danger btn-sm" type="button" id="searchMsgClear"><i class="glyphicon glyphicon-remove"></i></button>
+				    </span>
+				</div>
+			</form>
+
+		    <form class="navbar-form navbar-right msgForm">
+				<div class="input-group">
+					<input type="text" class="form-control msgFormInput input-sm" placeholder="Déposer un message...">
+					<span class="input-group-btn">
+						<button type="submit" class="btn btn-default btn-sm">Poster</button>
+					</span>
+				</div>
+			</form>
+
+			<div class="nav navbar-nav navbar-right hidden-xs">
+				<button type="button" class="btn navbar-btn btn-info btn-sm previous"><span class="glyphicon glyphicon-triangle-left small"></span></button>
+		    	<button type="button" class="btn navbar-btn btn-info btn-sm next"><span class="glyphicon glyphicon-triangle-right small"></span></button>
+		    </div>
+		</div>
+	</nav>
+	
+  	<ul class="list-group msgTable" id="msgTable">
+	</ul>
+	
 	<script type="text/html" id="templateMsgTable">
-		<tr>
-			<td>
-	  			<p class="pull-right small">
-	  				<span data-content="msgDate" data-format="formatDateMsg"></span> - <strong><span class="label label-info" data-content="userName"></span></strong>
-	  			</p>
-	  			<p>
-	  				<label class="label label-default" data-content="zoneName"></label>
-	  			</p>
-	  			<p>
-	  				<strong><span data-content="matTypeName"></span> <span data-content="eqRealName"></span></strong>
-	  			</p>
-	  			<p data-content="msgContent"></p>
-	  		</td>
-  		</tr>
+	  	<li class="list-group-item msgItem" data-template-bind='[{"attribute": "data-id", "value": "msgId"}]'>
+  			<p class="pull-right small">
+  				<span data-content="msgDate" data-format="formatDateMsg"></span>
+  				<strong><span class="label label-info" data-content="userName"></span></strong>
+  			</p>
+  			<p>
+  				<label class="label label-default" data-content="zoneName"></label>
+  			</p>
+  			<p>
+  				<strong><span data-content="matTypeName"></span> <span data-content="eqRealName"></span></strong>
+  			</p>
+  			<p data-template-bind='[{"attribute": "content", "value": "msgId", "formatter": "formatMsgContent", "formatOptions": "templateMsgContent"}]'></p>
+		</li>
     </script>
-	<!--
-	<script type="text/html" id="templateMsgTable">
-			<tr>
-				<td data-content="msgDate"></td>
-				<td data-content="zoneName"></td>
-				<td><span data-content="matTypeName"></span> - <span data-content="eqRealName"></span></td>
-				<td>[<span data-content="userName"></span>] <span data-content="msgContent"></span></td>
-			</tr>
-		</script>
-	-->
+
+    <script type="text/html" class="templateMsgContent" msg-content-type="text">
+	  	<p data-content="value"></p>
+	</script>
+	<script type="text/html" class="templateMsgContent" msg-content-type="msgPhoto">
+	  	<img class="img-rounded msgPhoto" data-template-bind='[{"attribute": "src", "value": "fileName", "formatter": "prepend", "formatOptions": "ressources/msgPhoto/"}]'/>
+	</script>
 </div>

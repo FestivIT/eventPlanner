@@ -1,7 +1,14 @@
-<div class="row" id='userinfos'>
-	<div class="col-sm-12">
+<div id="userinfos">
+	<nav class="navbar navbar-default epContextualNavBar">
+		<div class="container-fluid">
+			<div class="navbar-header">
+		    	<a class="navbar-brand">Mon compte</a>
+		    </div>
+		</div>
+	</nav>
+	<div>
 		<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
-		  <div class="panel panel-primary">
+		  <div class="panel panel-default">
 		    <div class="panel-heading" role="tab" id="headingUserInfo">
 		      <h4 class="panel-title">
 		        <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseUserInfo" aria-expanded="true" aria-controls="collapseUserInfo">
@@ -46,7 +53,7 @@
 		    </div>
 		  </div>
 
-		  <div class="panel panel-primary">
+		  <div class="panel panel-default">
 		  	<div class="panel-heading" role="tab" id="headingSlack">
 		      <h4 class="panel-title">
 		        <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseSlack" aria-expanded="true" aria-controls="collapseSlack">
@@ -73,7 +80,7 @@
 		    </div>
 		  </div>
 
-		  <div class="panel panel-primary">
+		  <div class="panel panel-default">
 		    <div class="panel-heading" role="tab" id="headingScan">
 		      <h4 class="panel-title">
 		        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseScan" aria-expanded="false" aria-controls="collapseScan">
@@ -111,7 +118,6 @@
 		      </div>
 		    </div>
 		  </div>
-		</div>
 		</div>
 	</div>
 </div>
