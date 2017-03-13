@@ -140,9 +140,9 @@ class plan {
 	}
 
 	public function convertPdfToJpgLD(){
-		echo 'gs -q -dQUIET -dSAFER -dBATCH -dNOPAUSE -dNOPROMPT -dMaxBitmap=500000000 -dAlignToPixels=0 -dGridFitTT=2 "-sDEVICE=jpeg" -dTextAlphaBits=4 -dGraphicsAlphaBits=4 -dJPEGQ=100 -sOutputFile=' . dirname(__FILE__) . '/../../ressources/eventPlan/' . $this->getId() . '/planLD.jpg -r' . $this->calcDensityLD() .' ' . dirname(__FILE__) . '/../../ressources/eventPlan/' . $this->getId() . '/planLD.pdf';
-		return true;
-		// return exec('gs -q -dQUIET -dSAFER -dBATCH -dNOPAUSE -dNOPROMPT -dMaxBitmap=500000000 -dAlignToPixels=0 -dGridFitTT=2 "-sDEVICE=jpeg" -dTextAlphaBits=4 -dGraphicsAlphaBits=4 -dJPEGQ=100 -sOutputFile=' . dirname(__FILE__) . '/../../ressources/eventPlan/' . $this->getId() . '/planLD.jpg -r' . $this->calcDensityLD() .' ' . dirname(__FILE__) . '/../../ressources/eventPlan/' . $this->getId() . '/planLD.pdf');
+		//echo 'gs -q -dQUIET -dSAFER -dBATCH -dNOPAUSE -dNOPROMPT -dMaxBitmap=500000000 -dAlignToPixels=0 -dGridFitTT=2 "-sDEVICE=jpeg" -dTextAlphaBits=4 -dGraphicsAlphaBits=4 -dJPEGQ=100 -sOutputFile=' . dirname(__FILE__) . '/../../ressources/eventPlan/' . $this->getId() . '/planLD.jpg -r' . $this->calcDensityLD() .' ' . dirname(__FILE__) . '/../../ressources/eventPlan/' . $this->getId() . '/plan.pdf';
+		//return true;
+		return exec('gs -q -dQUIET -dSAFER -dBATCH -dNOPAUSE -dNOPROMPT -dMaxBitmap=500000000 -dAlignToPixels=0 -dGridFitTT=2 "-sDEVICE=jpeg" -dTextAlphaBits=4 -dGraphicsAlphaBits=4 -dJPEGQ=100 -sOutputFile=' . dirname(__FILE__) . '/../../ressources/eventPlan/' . $this->getId() . '/planLD.jpg -r' . $this->calcDensityLD() .' ' . dirname(__FILE__) . '/../../ressources/eventPlan/' . $this->getId() . '/plan.pdf');
 	}
 
 	public function convertJpgToJpgLD(){
