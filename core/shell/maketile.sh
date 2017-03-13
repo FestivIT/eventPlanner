@@ -23,7 +23,7 @@ echo ------------------------------------
 echo  
 echo Création de l image haute résolution
 echo ------------------------------------
-gs -q -dQUIET -dSAFER -dBATCH -dNOPAUSE -dNOPROMPT -dMaxBitmap=500000000 -dAlignToPixels=0 -dGridFitTT=2 -sDEVICE=jpeg -dTextAlphaBits=4 -dGraphicsAlphaBits=4 -dJPEGQ=95 -sOutputFile=$BASEDIR/planHD.jpg -r$10 $BASEDIR/planHD.pdf
+gs -q -dQUIET -dSAFER -dBATCH -dNOPAUSE -dNOPROMPT -dMaxBitmap=500000000 -dAlignToPixels=0 -dGridFitTT=2 -sDEVICE=jpeg -dTextAlphaBits=4 -dGraphicsAlphaBits=4 -dJPEGQ=95 -sOutputFile=$BASEDIR/planHD.jpg -r$10 $BASEDIR/plan.pdf
 echo OK
 echo  
 echo Suppression des anciennes tuiles
@@ -44,13 +44,13 @@ echo
 echo Création des tuiles:
 echo ------------------------------------
 echo  
-python $DIR/gdal2tiles-multiprocess.py -z 12-20 $BASEDIR/tmpWrap.tif $BASEDIR/tiles
+python $DIR/gdal2tiles-multiprocess.py -z 14-21 $BASEDIR/tmpWrap.tif $BASEDIR/tiles
 echo OK
 echo  
 echo Suppression des fichiers temporaires
 echo ------------------------------------
 echo  
-rm -f $BASEDIR/tmp.tif $BASEDIR/tmpWrap.tif
+rm -f $BASEDIR/tmp.tif $BASEDIR/tmpWrap.tif $BASEDIR/planHD.jpg
 echo  
 echo ------------------------------------
 echo  TERMINE
