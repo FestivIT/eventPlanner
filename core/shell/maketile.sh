@@ -17,8 +17,14 @@ BASEDIR=$(dirname $0)/../../ressources/eventPlan/$1
 DIR=$(dirname $0)
 
 clear
+
 echo Création des tuiles pour eventId: $1
 echo ------------------------------------
+echo  
+echo Création de l image haute résolution
+echo ------------------------------------
+gs -q -dQUIET -dSAFER -dBATCH -dNOPAUSE -dNOPROMPT -dMaxBitmap=500000000 -dAlignToPixels=0 -dGridFitTT=2 -sDEVICE=jpeg -dTextAlphaBits=4 -dGraphicsAlphaBits=4 -dJPEGQ=95 -sOutputFile=$BASEDIR/planHD.jpg -r$10 $BASEDIR/planHD.pdf
+echo OK
 echo  
 echo Suppression des anciennes tuiles
 echo ------------------------------------
