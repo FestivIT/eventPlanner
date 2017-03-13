@@ -8,6 +8,7 @@ class event {
 
 	private $id;
 	private $organisationId;
+	private $defaultEventLevelId;
 	private $name;
 	private $ville;
 	private $localisation;
@@ -96,6 +97,9 @@ class event {
 	public function getId() {
 		return $this->id;
 	}
+	public function getDefaultEventLevelId() {
+		return $this->defaultEventLevelId;
+	}
 	public function getOrganisationId() {
 		return $this->organisationId;
 	}
@@ -123,6 +127,9 @@ class event {
 
 	public function setId($id) {
 		$this->id = $id;
+	}
+	public function setDefaultEventLevelId($defaultEventLevelId) {
+		$this->defaultEventLevelId = $defaultEventLevelId;
 	}
 	public function setOrganisationId($organisationId) {
 		$this->organisationId = $organisationId;

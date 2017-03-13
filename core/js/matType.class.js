@@ -234,9 +234,9 @@ eventplanner.matTypeAttribute = {
     },
 
     compareNameAsc: function(a,b) {
-      if (a.matTypeAttributeName < b.matTypeAttributeName)
+      if (a.matTypeAttributeName.toLowerCase() < b.matTypeAttributeName.toLowerCase())
         return -1;
-      if (a.matTypeAttributeName > b.matTypeAttributeName)
+      if (a.matTypeAttributeName.toLowerCase() > b.matTypeAttributeName.toLowerCase())
         return 1;
       return 0;
     }

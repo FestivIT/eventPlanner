@@ -191,9 +191,9 @@ eventplanner.contact = {
     },
 
     compareName: function(a,b) {
-      if (a.contactName < b.contactName)
+      if (a.contactName.toLowerCase() < b.contactName.toLowerCase())
         return -1;
-      if (a.contactName > b.contactName)
+      if (a.contactName.toLowerCase() > b.contactName.toLowerCase())
         return 1;
       return 0;
     }

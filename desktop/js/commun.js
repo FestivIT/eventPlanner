@@ -77,6 +77,9 @@ $.addTemplateFormatter("JSONStringify", function(value, template) {
 });
 
 $.addTemplateFormatter("prepend", function(value, template) {
+	if(value == undefined){
+		value = "";
+	}
     return template.toString() + value.toString();
 });
 
@@ -154,7 +157,15 @@ function formatList(list, template, itemName){
 $.addTemplateFormatter("formatList", function(list, template) {
     return formatList(list, template, '');
 });
+$.addTemplateFormatter("formatMsgContent", function(msgId, templateId) {
+	var msg = eventplanner.msg.byId(msgId);
 
+	if(msg.msgContent.hasOwnProperty('type')){
+		return $('<div>').loadTemplate($('.' + templateId + '[msg-content-type=' + msg.msgContent.type + ']'), msg.msgContent).html();
+	}else{
+		return msg.msgContent;
+	}    
+});
 $.addTemplateFormatter("formatMissionUsers", function(missionId, templateId) {
     return $('<div>').loadTemplate($('#' + templateId), [eventplanner.mission.byId(missionId).getUsers()]).html();
 });

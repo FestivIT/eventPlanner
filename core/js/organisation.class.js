@@ -93,9 +93,9 @@ eventplanner.organisation = {
     },
 
     compareNameAsc: function(a,b) {
-      if (a.organisationName < b.organisationName)
+      if (a.organisationName.toLowerCase() < b.organisationName.toLowerCase())
         return -1;
-      if (a.organisationName > b.organisationName)
+      if (a.organisationName.toLowerCase() > b.organisationName.toLowerCase())
         return 1;
       return 0;
     }

@@ -722,6 +722,11 @@ function isConnect($_right = '') {
 		return false;
 	}
 	if (is_object($_SESSION['user']) && $_SESSION['user']->is_Connected()) {
+		// Actualisation
+		@session_start();
+		$_SESSION['user']->refresh();
+		@session_write_close();
+
 		if ($_right != '') {
 			return ($_SESSION['user']->getRights($_right) == 1) ? true : false;
 		}

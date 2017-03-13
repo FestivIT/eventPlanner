@@ -26,7 +26,7 @@ try {
 	
 	if (($class == 'user') && (init('action') == 'isConnect')) {
 		if (isConnect()) {
-			ajax::success(utils::addPrefixToArray(utils::o2a($_SESSION['user']), 'user'));
+			ajax::success($_SESSION['user']->formatForFront(true));
 		}else{
 			throw new Exception('Utilisateur non identifié.');
 		}
@@ -288,10 +288,115 @@ try {
 		ajax::success($results);
 	}
 
+	if (($class == 'msg') && (init('action') == 'uploadPhoto')) {
+		$extension = strtolower(strrchr($_FILES['file']['name'], '.'));
+		$uploaddir = dirname(__FILE__) . '/../../ressources/msgPhoto/';
+
+		$msg = new msg();
+		$msg->setEventId($_SESSION['user']->getEventId());
+		$msg->setzoneId(init('zoneId', null));
+		$msg->setEqId(init('eqLogicId', null));
+		$msg->setUserId($_SESSION['user']->getId());
+		$msg->setContent('');
+		$msg->save();
+		$msg->refresh();
+		$msg->setContent(array(
+			'type' => 'msgPhoto',
+			'fileName' => $msg->getId() . $extension
+		));
+		$msg->save();
+
+		if (!file_exists($uploaddir)) {
+			mkdir($uploaddir);
+		}
+		if (!file_exists($uploaddir)) {
+			$msg->remove();
+			throw new Exception('Répertoire d\'upload non trouvé : ' . $uploaddir);
+		}
+		if (!isset($_FILES['file'])) {
+			$msg->remove();
+			throw new Exception('Aucun fichier trouvé. Vérifié parametre PHP (post size limit)');
+		}
+		if (!in_array($extension, array('.jpg', '.png'))) {
+			$msg->remove();
+			throw new Exception('Extension du fichier non valide: ' . $extension);
+		}
+		if (filesize($_FILES['file']['tmp_name']) > 30000000) {
+			$msg->remove();
+			throw new Exception('Le fichier est trop gros (maximum 30mo)');
+		}
+		if (!move_uploaded_file($_FILES['file']['tmp_name'], $uploaddir . '/' . $msg->getId() . $extension)) {
+			$msg->remove();
+			throw new Exception('Impossible de déplacer le fichier temporaire');
+		}
+		if (!file_exists($uploaddir . '/' . $msg->getId() . $extension)) {
+			$msg->remove();
+			throw new Exception('Impossible d\'uploader le fichier (limite du serveur web ?)');
+		}
+		ajax::success();
+	}
+
 	// USER
 	if (($class == 'user') && (init('action') == 'get')) {
 		// ajax::success(utils::o2a($_SESSION['user']));
 		ajax::success($_SESSION['user']->formatForFront(true));
+	}
+
+	// PLAN
+	if (($class == 'plan') && (init('action') == 'uploadPlanFile')) {
+		$plan = plan::byId(init('planId'));
+		
+		if(!is_object($plan)){
+			throw new Exception('Plan non trouvé : ' . init('planId'));
+		}
+
+		$extension = strtolower(strrchr($_FILES['file']['name'], '.'));
+		$uploaddir = dirname(__FILE__) . '/../../ressources/eventPlan/' . $plan->getId();
+
+		if (!file_exists($uploaddir)) {
+			mkdir($uploaddir);
+		}
+		if (!file_exists($uploaddir)) {
+			throw new Exception('Répertoire d\'upload non trouvé : ' . $uploaddir);
+		}
+		if (!isset($_FILES['file'])) {
+			throw new Exception('Aucun fichier trouvé. Vérifié parametre PHP (post size limit)');
+		}
+		if (!in_array($extension, array('.jpg', '.pdf'))) {
+			throw new Exception('Extension du fichier non valide: ' . $extension);
+		}
+		if (filesize($_FILES['file']['tmp_name']) > 300000000) {
+			throw new Exception('Le fichier est trop gros (maximum 300mo)');
+		}
+		if (!move_uploaded_file($_FILES['file']['tmp_name'], $uploaddir . '/plan' . $extension)) {
+			throw new Exception('Impossible de déplacer le fichier temporaire');
+		}
+		if (!file_exists($uploaddir . '/plan' . $extension)) {
+			throw new Exception('Impossible d\'uploader le fichier (limite du serveur web ?)');
+		}
+
+		if($extension == '.pdf'){
+			if($plan->convertPdfToJpgLD()){
+				throw new Exception('Probléme lors de la conversion du plan PDF');
+			}
+		}
+
+		if($extension == '.jpg'){
+			if($plan->convertJpgToJpgLD()){
+				throw new Exception('Probléme lors de la conversion du plan JPG');
+			}
+		}
+
+		ajax::success();
+	}
+
+	if  (($class == 'plan') && (init('action') == 'generateTiles')) {
+		$plan = $class::byId(init('id'));
+		if (isset($plan) && is_object($plan)) {
+			ajax::success($plan->makeTiles());
+		}
+		
+		throw new Exception('Plan inconnu - Id:' . init('id'));
 	}
 
 	throw new Exception('Aucune methode correspondante à : ' . init('action'));

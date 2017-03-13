@@ -11,6 +11,9 @@ eventplanner.event = {
         if(!this.hasOwnProperty('eventId')){
             this.eventId = ''; // Nouveau event
         }
+        if(!this.hasOwnProperty('eventDefaultEventLevelId')){
+            this.eventDefaultEventLevelId = "";
+        }
         if(!this.hasOwnProperty('eventName')){
             this.eventName = "";
         }

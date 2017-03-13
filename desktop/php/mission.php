@@ -43,7 +43,7 @@
 			</div>
 			<div class="row hidden-sm hidden-md hidden-lg">
 				<div class="col-xs-6" data-template-bind='[{"attribute": "content", "value": "missionId", "formatter": "formatMissionZones", "formatOptions": "templateMissionZoneName"}]'></div>
-				<div class="col-xs-6" data-template-bind='[{"attribute": "content", "value": "missionId", "formatter": "formatMissionUsers", "formatOptions": "templateMissionUserName"}]'></div>
+				<div class="col-xs-6" style="text-align: right;" data-template-bind='[{"attribute": "content", "value": "missionId", "formatter": "formatMissionUsers", "formatOptions": "templateMissionUserName"}]'></div>
   			</div>
 		</li>
 	</script>

@@ -52,8 +52,8 @@
 			<script type="text/html" id="templateZoneContact">
 				<div class="row">
 					<div class="col-sm-6">	
-						<strong><span data-content="contactName">Test Name</span></strong><br>
-						<small><span data-content="contactFct">Test fct</span></small>
+						<strong><span data-content="contactName"></span></strong><br>
+						<small><span data-content="contactFct"></span></small>
 					</div>
 					<div class="col-sm-6" data-template-bind='[{"attribute": "content", "value": "contactId", "formatter": "formatContactCoord", "formatOptions": "templateZoneContactCoord"}]'>
 					</div>
@@ -79,23 +79,34 @@
 					  <input type="text" class="form-control msgFormInput" placeholder="Déposer un message...">
 					  <span class="input-group-btn">
 						<button type="submit" class="btn btn-default">Poster</button>
+						<button class="btn btn-success btn-file fileinput-button" id="uploadZonePhoto"><i class="glyphicon glyphicon-camera"></i><input id="uploadZonePhotoFile" type="file" name="file"></button>
 					  </span>
 					</div>
+					<div id="progressZonePhotoUpload" class="progress">
+		              <div class="progress-bar progress-bar-success progress-bar-striped"></div>
+		            </div>
 				  </form>
 				</div>
 			  	<ul class="list-group msgTable" id="zoneMsgTable">
 				</ul>
 
 			  <script type="text/html" id="templateZoneMsgTable">
-			  <li class="list-group-item msgItem" data-template-bind='[{"attribute": "data-id", "value": "msgId"}]'>
-	  			<p class="pull-right small">
-	  				<span data-content="msgDate" data-format="formatDateMsg"></span> - <strong><span class="label label-info" data-content="userName"></span></strong>
-	  			</p>
-	  			<p>
-	  				<strong><span data-content="matTypeName"></span> <span data-content="eqRealName"></span></strong>
-	  			</p>
-	  			<p data-content="msgContent"></p>
-			</li>
+			  	<li class="list-group-item msgItem" data-template-bind='[{"attribute": "data-id", "value": "msgId"}]'>
+		  			<p class="pull-right small">
+		  				<span data-content="msgDate" data-format="formatDateMsg"></span> - <strong><span class="label label-info" data-content="userName"></span></strong>
+		  			</p>
+		  			<p>
+		  				<strong><span data-content="matTypeName"></span> <span data-content="eqRealName"></span></strong>
+		  			</p>
+		  			<p data-template-bind='[{"attribute": "content", "value": "msgId", "formatter": "formatMsgContent", "formatOptions": "templateZoneMsgContent"}]'></p>
+				</li>
+			  </script>
+
+			  <script type="text/html" class="templateZoneMsgContent" msg-content-type="text">
+			  	<p data-content="value"></p>
+			  </script>
+			  <script type="text/html" class="templateZoneMsgContent" msg-content-type="msgPhoto">
+			  	<img class="img-rounded msgPhoto" data-template-bind='[{"attribute": "src", "value": "fileName", "formatter": "prepend", "formatOptions": "ressources/msgPhoto/"}]'/>
 			  </script>
 			</div>
 		</div>
@@ -164,9 +175,14 @@
 									      <input type="text" class="form-control msgFormInput" placeholder="Déposer un message...">
 									      <span class="input-group-btn">
 									        <button type="submit" class="btn btn-default">Poster</button>
+									        <button class="btn btn-success btn-file fileinput-button"><i class="glyphicon glyphicon-camera"></i><input class="uploadEqLogicPhoto" type="file" name="file"></button>
 									      </span>
 									    </div>
+									    <div class="progress progressEqLogicPhotoUpload">
+							              <div class="progress-bar progress-bar-success progress-bar-striped"></div>
+							            </div>
 								    </form>
+
 								</div>
 							</div>
 			    		</div>

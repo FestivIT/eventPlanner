@@ -120,9 +120,9 @@ eventplanner.discipline = {
     },
 
     compareName: function(a,b) {
-      if (a.disciplineName < b.disciplineName)
+      if (a.disciplineName.toLowerCase() < b.disciplineName.toLowerCase())
         return -1;
-      if (a.disciplineName > b.disciplineName)
+      if (a.disciplineName.toLowerCase() > b.disciplineName.toLowerCase())
         return 1;
       return 0;
     }

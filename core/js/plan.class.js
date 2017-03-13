@@ -27,6 +27,15 @@ eventplanner.plan = {
             return eventplanner.organisation.byId(this.planOrganisationId, _fullData);
         }
 
+        this.getLBounds = function(){
+            return L.latLngBounds([
+                L.latLng(this.planBounds[0].lat, this.planBounds[0].lng),
+                L.latLng(this.planBounds[1].lat, this.planBounds[1].lng),
+                L.latLng(this.planBounds[2].lat, this.planBounds[2].lng)
+                ]
+            );
+        }
+
         this.remove = function(_params = {}){
             return eventplanner.plan.remove($.extend(_params, {id: this.planId}));
         }
@@ -45,6 +54,40 @@ eventplanner.plan = {
     // suppression
     remove: function(_params) {
         return eventplanner.removeDataFromServer('plan', _params);
+    },
+
+    generateTiles: function(_params) {
+        console.log(_params);
+        this.save({
+            plan:{
+                id: _params.plan.id,
+                bounds: _params.plan.bounds
+            },
+            success: function(){
+                return function(_data){
+                    console.log(_params);
+                    var paramsRequired = [];
+                    var paramsSpecifics =  {};
+
+                    try {
+                        eventplanner.private.checkParamsRequired(_params || {}, paramsRequired);
+                    } catch (e) {
+                        (_params.error || paramsSpecifics.error || eventplanner.private.default_params.error)(e);
+                        return;
+                    }
+
+                    var params = $.extend({}, eventplanner.private.default_params, paramsSpecifics, _params || {});
+                    var paramsAJAX = eventplanner.private.getParamsAJAX(params);
+                    paramsAJAX.url = 'core/ajax/ajax.php';
+                    paramsAJAX.data = {
+                        type: 'plan',
+                        action: 'generateTiles',
+                        id: _data.planId
+                    };
+                    return $.ajax(paramsAJAX);
+                }
+            }(_params)
+        });
     },
 
     // Accés aux données
@@ -105,9 +148,9 @@ eventplanner.plan = {
     },
 
     compareNameAsc: function(a,b) {
-      if (a.planName < b.planName)
+      if (a.planName.toLowerCase() < b.planName.toLowerCase())
         return -1;
-      if (a.planName > b.planName)
+      if (a.planName.toLowerCase() > b.planName.toLowerCase())
         return 1;
       return 0;
     }

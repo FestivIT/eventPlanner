@@ -50,7 +50,14 @@
   			<p>
   				<strong><span data-content="matTypeName"></span> <span data-content="eqRealName"></span></strong>
   			</p>
-  			<p data-content="msgContent"></p>
+  			<p data-template-bind='[{"attribute": "content", "value": "msgId", "formatter": "formatMsgContent", "formatOptions": "templateMsgContent"}]'></p>
 		</li>
     </script>
+
+    <script type="text/html" class="templateMsgContent" msg-content-type="text">
+	  	<p data-content="value"></p>
+	</script>
+	<script type="text/html" class="templateMsgContent" msg-content-type="msgPhoto">
+	  	<img class="img-rounded msgPhoto" data-template-bind='[{"attribute": "src", "value": "fileName", "formatter": "prepend", "formatOptions": "ressources/msgPhoto/"}]'/>
+	</script>
 </div>

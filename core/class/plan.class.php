@@ -82,11 +82,6 @@ class plan {
 	public function getName() {
 		return $this->name;
 	}
-	/*
-	public function getDiscipline() {
-		return matType::byId($this->matTypeId);
-	}
-	*/
 	public function getOrganisationId() {
 		return $this->organisationId;
 	}
@@ -107,6 +102,66 @@ class plan {
 		$this->bounds = json_encode($bounds, JSON_UNESCAPED_UNICODE);
 	}
 
-}
+	public function getPdfSize(){
+		$pdfSize = explode(' x ', exec('pdfinfo ' . dirname(__FILE__) . '/../../ressources/eventPlan/' . $this->getId() . '/plan.pdf | grep "Page size:" | grep -o "[0-9]* x [0-9]*"'));
+		return $pdfSize;
+	}
 
+	public function getJpgLDSize(){
+		$jpgSize = explode('x', exec('file ' . dirname(__FILE__) . '/../../ressources/eventPlan/' . $this->getId() . '/planLD.jpg | grep -o ", [0-9]*x[0-9]*" | grep -o "[0-9]*x[0-9]*"'));
+		return $jpgSize;
+	}
+
+	public function getJpgHDSize(){
+		$jpgSize = explode('x', exec('file ' . dirname(__FILE__) . '/../../ressources/eventPlan/' . $this->getId() . '/planHD.jpg | grep -o ", [0-9]*x[0-9]*" | grep -o "[0-9]*x[0-9]*"'));
+		return $jpgSize;
+	}
+
+	public function getMaxDistance(){
+		return 250; // test sur 250m
+	}
+
+	public function calcDensityLD(){
+		$pdfSize = $this->getPdfSize();
+		$nbrMaxPixel = 2000;
+
+		$density = round($nbrMaxPixel / (max(intval($pdfSize[0]), intval($pdfSize[1])) / 72 ));
+
+		return $density;
+	}
+
+	public function calcDensityHD(){
+		$pdfSize = $this->getPdfSize();
+		$nbrMaxPixel = round($this->getMaxDistance()/(0.0074*2)); // *2: car trop gros sinon
+
+		$density = round($nbrMaxPixel / (max(intval($pdfSize[0]), intval($pdfSize[1])) / 72 ));
+
+		return $density;
+	}
+
+	public function convertPdfToJpgLD(){
+		echo 'gs -q -dQUIET -dSAFER -dBATCH -dNOPAUSE -dNOPROMPT -dMaxBitmap=500000000 -dAlignToPixels=0 -dGridFitTT=2 "-sDEVICE=jpeg" -dTextAlphaBits=4 -dGraphicsAlphaBits=4 -dJPEGQ=100 -sOutputFile=' . dirname(__FILE__) . '/../../ressources/eventPlan/' . $this->getId() . '/planLD.jpg -r' . $this->calcDensityLD() .' ' . dirname(__FILE__) . '/../../ressources/eventPlan/' . $this->getId() . '/planLD.pdf';
+		return true;
+		// return exec('gs -q -dQUIET -dSAFER -dBATCH -dNOPAUSE -dNOPROMPT -dMaxBitmap=500000000 -dAlignToPixels=0 -dGridFitTT=2 "-sDEVICE=jpeg" -dTextAlphaBits=4 -dGraphicsAlphaBits=4 -dJPEGQ=100 -sOutputFile=' . dirname(__FILE__) . '/../../ressources/eventPlan/' . $this->getId() . '/planLD.jpg -r' . $this->calcDensityLD() .' ' . dirname(__FILE__) . '/../../ressources/eventPlan/' . $this->getId() . '/planLD.pdf');
+	}
+
+	public function convertJpgToJpgLD(){
+		// return exec('gs -q -dQUIET -dSAFER -dBATCH -dNOPAUSE -dNOPROMPT -dMaxBitmap=500000000 -dAlignToPixels=0 -dGridFitTT=2 "-sDEVICE=jpeg" -dTextAlphaBits=4 -dGraphicsAlphaBits=4 -dJPEGQ=100 -sOutputFile=' . dirname(__FILE__) . '/../../ressources/eventPlan/' . $this->getId() . '/planLD.jpg -r' . $this->calcDensityLD() .' ' . dirname(__FILE__) . '/../../ressources/eventPlan/' . $this->getId() . '/planLD.pdf');
+	}
+
+	public function convertPdfToJpgHD(){
+		echo 'gs -q -dQUIET -dSAFER -dBATCH -dNOPAUSE -dNOPROMPT -dMaxBitmap=500000000 -dAlignToPixels=0 -dGridFitTT=2 "-sDEVICE=jpeg" -dTextAlphaBits=4 -dGraphicsAlphaBits=4 -dJPEGQ=100 -sOutputFile=' . dirname(__FILE__) . '/../../ressources/eventPlan/' . $this->getId() . '/planHD.jpg -r' . $this->calcDensityHD() .' ' . dirname(__FILE__) . '/../../ressources/eventPlan/' . $this->getId() . '/planLD.pdf';
+		return true;
+		// return exec('gs -q -dQUIET -dSAFER -dBATCH -dNOPAUSE -dNOPROMPT -dMaxBitmap=500000000 -dAlignToPixels=0 -dGridFitTT=2 "-sDEVICE=jpeg" -dTextAlphaBits=4 -dGraphicsAlphaBits=4 -dJPEGQ=100 -sOutputFile=' . dirname(__FILE__) . '/../../ressources/eventPlan/' . $this->getId() . '/planHD.jpg -r' . $this->calcDensityHD() .' ' . dirname(__FILE__) . '/../../ressources/eventPlan/' . $this->getId() . '/planLD.pdf');
+	}
+
+	public function makeTiles(){
+		$planBounds = $this->getBounds();
+		echo "sh " . dirname(__FILE__) . "/../shell/maketile.sh " . $this->getId() . " 16542 11694 '" . round($planBounds[0]['lng'], 6) . "' '" . round($planBounds[0]['lat'], 6) . "' '" . round($planBounds[1]['lng'], 6) . "' '" . round($planBounds[1]['lat'], 6) . "' '" . round($planBounds[2]['lng'], 6) . "' '" . round($planBounds[2]['lat'], 6) . "' > " . dirname(__FILE__) . "/../../ressources/eventPlan/" . $this->getId() . "/log.txt 2>&1 &";
+		return true;
+		// return exec("sh " . dirname(__FILE__) . "/../shell/maketile.sh " . $this->getId() . " 16542 11694 '" . round($planBounds[0]['lng'], 6) . "' '" . round($planBounds[0]['lat'], 6) . "' '" . round($planBounds[1]['lng'], 6) . "' '" . round($planBounds[1]['lat'], 6) . "' '" . round($planBounds[2]['lng'], 6) . "' '" . round($planBounds[2]['lat'], 6) . "' > " . dirname(__FILE__) . "/../../ressources/eventPlan/" . $this->getId() . "/log.txt 2>&1 &");
+	}
+
+}
 ?>
+

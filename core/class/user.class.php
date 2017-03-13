@@ -14,6 +14,7 @@ class user {
 	private $password;
 	private $lastConnection;
 	private $eventId;
+	private $eventLevelId;
 	private $actionOnScan;
 	private $slackID;
 	private $rights;
@@ -241,6 +242,10 @@ class user {
 		return $this->eventId;
 	}
 
+	public function getEventLevelId() {
+		return $this->eventLevelId;
+	}
+
 	public function setId($id) {
 		$this->id = $id;
 	}
@@ -271,6 +276,10 @@ class user {
 
 	public function setEventId($eventId) {
 		$this->eventId = $eventId;
+	}
+
+	public function setEventLevelId($eventLevelId) {
+		$this->eventLevelId = $eventLevelId;
 	}
 
 	public function setPassword($password) {

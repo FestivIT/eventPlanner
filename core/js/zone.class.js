@@ -129,9 +129,9 @@ eventplanner.zone = {
     },
 
     compareNameAsc: function(a,b) {
-      if (a.zoneName < b.zoneName)
+      if (a.zoneName.toLowerCase() < b.zoneName.toLowerCase())
         return -1;
-      if (a.zoneName > b.zoneName)
+      if (a.zoneName.toLowerCase() > b.zoneName.toLowerCase())
         return 1;
       return 0;
     }

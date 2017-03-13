@@ -170,10 +170,12 @@ eventplanner.eqReal = {
     },
 
     compareNameAsc: function(a,b) {
-      if (a.matTypeName < b.matTypeName)
-        return -1;
-      if (a.matTypeName > b.matTypeName)
-        return 1;
+      if(a.hasOwnProperty('matTypeName')){
+	      if (a.matTypeName.toLowerCase() < b.matTypeName.toLowerCase())
+	        return -1;
+	      if (a.matTypeName.toLowerCase() > b.matTypeName.toLowerCase())
+	        return 1;
+      }
       return 0;
     }
 }

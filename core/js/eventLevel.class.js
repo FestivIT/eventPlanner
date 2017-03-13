@@ -98,9 +98,9 @@ eventplanner.eventLevel = {
     },
 
     compareNameAsc: function(a,b) {
-      if (a.eventLevelName < b.eventLevelName)
+      if (a.eventLevelName.toLowerCase() < b.eventLevelName.toLowerCase())
         return -1;
-      if (a.eventLevelName > b.eventLevelName)
+      if (a.eventLevelName.toLowerCase() > b.eventLevelName.toLowerCase())
         return 1;
       return 0;
     }

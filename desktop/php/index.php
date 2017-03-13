@@ -98,6 +98,10 @@ include_file('3rdparty', 'jquery.tree/jstree.min', 'js');
 include_file('3rdparty', 'jquery.fileupload/jquery.ui.widget', 'js');
 include_file('3rdparty', 'jquery.fileupload/jquery.iframe-transport', 'js');
 include_file('3rdparty', 'jquery.fileupload/jquery.fileupload', 'js');
+include_file('3rdparty', 'jquery.fileupload/load-image.all.min', 'js');
+include_file('3rdparty', 'jquery.fileupload/canvas-to-blob.min', 'js');
+include_file('3rdparty', 'jquery.fileupload/jquery.fileupload-process', 'js');
+include_file('3rdparty', 'jquery.fileupload/jquery.fileupload-image', 'js');
 include_file('3rdparty', 'jquery.tablesorter/jquery.tablesorter.min', 'js');
 include_file('3rdparty', 'jquery.tablesorter/jquery.tablesorter.widgets.min', 'js');
 include_file('3rdparty', 'jquery.tablesorter/jquery.tablesorter.pager', 'js');
@@ -114,6 +118,7 @@ include_file('3rdparty', 'leaflet/Leaflet.tilelayer.fallback', 'js');
 include_file('3rdparty', 'leaflet/Leaflet.singleclick', 'js');
 include_file('3rdparty', 'leaflet/leaflet.easy-button', 'js');
 include_file('3rdparty', 'leaflet/leaflet.contextmenu.min', 'js');
+include_file('3rdparty', 'leaflet/leaflet.locate.min', 'js');
 include_file('3rdparty', 'snap.svg/snap.svg-min', 'js');
 
 include_file('core', 'core', 'js');
@@ -122,6 +127,8 @@ include_file('core', 'js.inc', 'php');
 include_file('desktop', 'commun', 'js');
 include_file('desktop', 'eventplanner.ui.class', 'js');
 
+
+include_file('3rdparty', 'font-awesome/css/font-awesome.min', 'css');
 include_file('3rdparty', 'jquery.sew/jquery.sew', 'css');
 include_file('3rdparty', 'jquery.tree/themes/default/style.min', 'css');
 include_file('3rdparty', 'jquery.tablesorter/theme.bootstrap', 'css');
@@ -137,6 +144,7 @@ include_file('3rdparty', 'leaflet/leaflet', 'css');
 include_file('3rdparty', 'leaflet/leaflet.awesome-markers', 'css');
 include_file('3rdparty', 'leaflet/leaflet.easy-button', 'css');
 include_file('3rdparty', 'leaflet/leaflet.contextmenu.min', 'css');
+include_file('3rdparty', 'leaflet/leaflet.locate.min', 'css');
 
 include_file('desktop', 'commun', 'css');
 
@@ -154,10 +162,11 @@ include_file('desktop', 'commun', 'css');
 	          <div class="navbar-icon-container">
 	          	<a href="#" class="navbar-icon pull-right visible-xs" id="nav-btn"><i class="fa fa-bars fa-lg"></i></a>
 	          	<a href="#" class="navbar-icon pull-right visible-xs navBarBtn" data-link="eventinfos"><i class="glyphicon glyphicon-info-sign"></i></a>
-	          	<a href="#" class="navbar-icon pull-right visible-xs navBarBtn" data-link="mission"><i class="glyphicon glyphicon-list-alt"></i></a>
+	          	<a href="#" class="navbar-icon pull-right visible-xs navBarBtn" data-link="contact"><i class="fa fa-address-book-o"></i></a>
+	          	<a href="#" class="navbar-icon pull-right visible-xs navBarBtn" data-link="mission"><i class="fa fa-tasks"></i></a>
 	          	<a href="#" class="navbar-icon pull-right visible-xs navBarBtn" data-link="maincourante"><i class="glyphicon glyphicon-pencil"></i></a>
 	          	<a href="#" class="navbar-icon pull-right visible-xs navBarBtn" data-link="planning"><i class="glyphicon glyphicon-calendar"></i></a>
-	          	<a href="#" class="navbar-icon pull-right visible-xs navBarBtn" data-link="map"><i class="fa fa-globe"></i></a>
+	          	<a href="#" class="navbar-icon pull-right visible-xs navBarBtn" data-link="map"><i class="fa fa-map-o"></i></a>
 	          	<a href="#" class="navbar-icon pull-right visible-xs navBarBtn" data-link="dashboard"><i class="glyphicon glyphicon-th"></i></a>
 	          </div>
 	          <a class="navbar-brand" href="<?php echo $homeLink; ?>"><span><img alt="Brand" src="desktop/img/logo25.png"></span> <span class="hidden-xs">eventPlanner</span></a>
@@ -192,13 +201,17 @@ include_file('desktop', 'commun', 'css');
 	              <a id="generalDrop" href="#" role="button" class="dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-book"></i>&nbsp;&nbsp; <span id="epOrganisationMenu"></span><b class="caret"></b></a>
 	              <ul class="dropdown-menu">
 	                <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="inventaire"><i class="glyphicon glyphicon-th-list"></i>&nbsp;&nbsp;Inventaire Matériel</a></li>
-	                <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="utilitaires"><i class="glyphicon glyphicon-wrench"></i>&nbsp;&nbsp;Utilitaires</a></li>
+	                <!--
+	                	<li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="utilitaires"><i class="glyphicon glyphicon-wrench"></i>&nbsp;&nbsp;Utilitaires</a></li>
+	            	-->
 	                <li class="divider hidden-xs"></li>
-	                <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="configuration"><i class="glyphicon glyphicon-cog"></i>&nbsp;&nbsp;Configuration de l'organisation</a></li>
-					<li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="users"><i class="glyphicon glyphicon-cog"></i>&nbsp;&nbsp;Utilisateurs</a></li>
-					<li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="events"><i class="glyphicon glyphicon-cog"></i>&nbsp;&nbsp;Evenements</a></li>
-					<li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="plans"><i class="glyphicon glyphicon-cog"></i>&nbsp;&nbsp;Plans</a></li>
-					<li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="mattype"><i class="glyphicon glyphicon-cog"></i>&nbsp;&nbsp;Types de matériels</a></li>
+					<li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="disciplines"><i class="fa fa-graduation-cap"></i>&nbsp;&nbsp;Disciplines</a></li>
+					<li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="users"><i class="fa fa-users"></i>&nbsp;&nbsp;Utilisateurs</a></li>
+					<li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="events"><i class="glyphicon glyphicon-cd"></i>&nbsp;&nbsp;Evenements</a></li>
+					<li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="plans"><i class="fa fa-map-o"></i>&nbsp;&nbsp;Plans</a></li>
+					<li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="mattype"><i class="fa fa-object-ungroup"></i>&nbsp;&nbsp;Types de matériels</a></li>
+	            	<li class="divider hidden-xs"></li>
+	                <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="configuration"><i class="fa fa-cogs"></i>&nbsp;&nbsp;Configuration de l'organisation</a></li>
 	              </ul>
 	            </li>
             	<li class="dropdown epNavBtn">
@@ -207,7 +220,7 @@ include_file('desktop', 'commun', 'css');
 	                <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="equipements"><i class="glyphicon glyphicon-hdd"></i>&nbsp;&nbsp;Equipements</a></li>
 	                <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="zones"><i class="glyphicon glyphicon-map-marker"></i>&nbsp;&nbsp;Zones</a></li>
 	              	<li class="divider hidden-xs"></li>
-	                <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="configevent"><i class="glyphicon glyphicon-cog"></i>&nbsp;&nbsp;Configuration de l'événement</a></li>
+	                <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="configevent"><i class="fa fa-cogs"></i>&nbsp;&nbsp;Configuration de l'événement</a></li>
 	              </ul>
 	            </li>
 	          </ul>
@@ -231,16 +244,20 @@ include_file('desktop', 'commun', 'css');
 	    <div id="sidebar-wrapper">
             <ul class="sidebar-nav">
             	<li class="epNavBtn"><a href="#" class="navBarBtn" data-link="dashboard" title="Dashboard"><i class="glyphicon glyphicon-th"></i><span class="epNavTitle" style="display: none;">&nbsp;&nbsp;Dashboard</a></span></li>
-                <li class="epNavBtn"><a href="#" class="navBarBtn" data-link="map" title="Carte"><i class="fa fa-globe"></i><span class="epNavTitle" style="display: none;">&nbsp;&nbsp;Carte</span></a></li>
+                <li class="epNavBtn"><a href="#" class="navBarBtn" data-link="map" title="Carte"><i class="fa fa-map-o"></i><span class="epNavTitle" style="display: none;">&nbsp;&nbsp;Carte</span></a></li>
 	            <li class="epNavBtn"><a href="#" class="navBarBtn" data-link="planning" title="Planning"><i class="glyphicon glyphicon-calendar"></i><span class="epNavTitle" style="display: none;">&nbsp;&nbsp;Planning</span></a></li>
                 <li class="epNavBtn"><a href="#" class="navBarBtn" data-link="maincourante" title="Main courante"><i class="glyphicon glyphicon-pencil"></i><span class="epNavTitle" style="display: none;">&nbsp;&nbsp;Main courante</span></a></li>
-                <li class="epNavBtn"><a href="#" class="navBarBtn" data-link="mission" title="Missions"><i class="glyphicon glyphicon-list-alt"></i><span class="epNavTitle" style="display: none;">&nbsp;&nbsp;Missions</span></a></li>
-                <li class="epNavBtn"><a href="#" class="navBarBtn" data-link="contact" title="Contacts"><i class="glyphicon glyphicon-user"></i><span class="epNavTitle" style="display: none;">&nbsp;&nbsp;Contacts</span></a></li>
+                <li class="epNavBtn"><a href="#" class="navBarBtn" data-link="mission" title="Missions"><i class="fa fa-tasks"></i><span class="epNavTitle" style="display: none;">&nbsp;&nbsp;Missions</span></a></li>
+                <li class="epNavBtn"><a href="#" class="navBarBtn" data-link="contact" title="Contacts"><i class="fa fa-address-book-o"></i><span class="epNavTitle" style="display: none;">&nbsp;&nbsp;Contacts</span></a></li>
             	<li class="epNavBtn"><a href="#" class="navBarBtn" data-link="eventinfos" title="Infos Evenement"><i class="glyphicon glyphicon-info-sign"></i><span class="epNavTitle" style="display: none;">&nbsp;&nbsp;Infos Evenement</span></a></li>
             </ul>
         </div>
         
 	    <div id="pageContainer"></div>
+	    
+	    <div id="loadingContainer">
+	    	<img src="desktop/img/loading.gif"/>
+	    </div>
 	    
 		<div id="modalContainer"></div>
 		<script type="text/html" id="templateModal">

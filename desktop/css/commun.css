@@ -13,6 +13,17 @@ body {
 #pageContainer {
 }
 
+#loadingContainer {
+	position: absolute;
+	top: 30%;
+	left:50%;
+	transform: translate(-50%,-50%);
+	margin-top: 50px;
+}
+#loadingContainer img {
+	width: 150px;
+}
+
 .ui-autocomplete {
     z-index: 2000;
 }
@@ -26,6 +37,29 @@ body {
 
 #planningTable > tbody > tr:hover > td, #planningTable > tbody > tr:hover > td > a {
  color: #999;
+}
+/*
+#planningTable .row {
+	margin-right: 0px;
+}
+
+#planningTable div:has(>input[type=checkbox]){
+	padding-right: 0px;
+}
+*/
+
+.cbBtn span.glyphicon {    			
+	opacity: 0;				
+}
+
+.cbBtn.active span.glyphicon {				
+	opacity: 1;				
+}
+
+.vcenter {
+    display: inline-block!important;
+    vertical-align: middle;
+    float: none;
 }
 
 #planningTable .zoneRow td {
@@ -56,6 +90,15 @@ body {
   -o-transform: scale(1.5); /* Opera */
 }
 
+#progressZonePhotoUpload {
+  margin-bottom: 0px;
+}
+
+.msgPhoto {
+  max-height: 180px;
+  margin: 10px;
+}
+
 #zoneEqTable > .panel {
     margin-bottom: 0;
     margin-top: 5px;
@@ -73,7 +116,31 @@ body {
   margin: 10px;
 }
 
+.fileinput-button {
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+}
+.fileinput-button input {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 0;
+  opacity: 0;
+  -ms-filter: 'alpha(opacity=0)';
+  font-size: 200px !important;
+  direction: ltr;
+  cursor: pointer;
+}
 
+/* Fixes for IE < 8 */
+@media screen\9 {
+  .fileinput-button input {
+    filter: alpha(opacity=0);
+    font-size: 100%;
+    height: 100%;
+  }
+}
 
 .navbar-form {
 	border-top: 0px;
@@ -84,6 +151,18 @@ body {
     padding-right: 15px;
     padding-left: 15px;
     margin-bottom: 5px;
+}
+
+#epNavBar .navbar-brand {
+	padding-right: 0px;
+}
+
+#epNavBar.navbar-inverse .navbar-icon-container a {
+	color: #9d9d9d;
+}
+#epNavBar.navbar-inverse .navbar-icon-container a:hover,
+#epNavBar.navbar-inverse .navbar-icon-container a:focus{
+	color: #ffffff;
 }
 
 /* https://work.smarchal.com/twbscolor/css/337ab72b5f8bffffffffffff0 */
@@ -221,7 +300,7 @@ body {
 .sidebar-nav li a:hover {
     text-decoration: none;
     color: #fff;
-    background: rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.4);
 }
 
 .sidebar-nav li a:active,
@@ -246,7 +325,7 @@ body {
 
 .sidebar-nav .epNavBtn.active a{
 	color: #fff;
-	background: rgba(255,255,255,0.2);
+	background: rgba(255,255,255,0.4);
 }
 
 @media(min-width:768px) {
@@ -284,7 +363,8 @@ body {
   font-weight: normal;
   margin-bottom: 0px;
 }
-.leaflet-control-layers-list input[type="radio"], input[type="checkbox"] {
+.leaflet-control-layers-list input[type="radio"], 
+.leaflet-control-layers-list input[type="checkbox"] {
   margin: 2px;
 }
 

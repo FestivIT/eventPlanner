@@ -26,6 +26,9 @@ eventplanner.user = {
         if(!this.hasOwnProperty('userEventId')){
             this.userEventId = null;
         } 
+        if(!this.hasOwnProperty('userEventLevelId')){
+            this.userEventLevelId = null;
+        } 
         if(!this.hasOwnProperty('userActionOnScan')){
             this.userActionOnScan = 'zone';
         } 
@@ -112,9 +115,10 @@ eventplanner.user = {
 	        }
 	        var params = $.extend({}, eventplanner.private.default_params, paramsSpecifics, _params || {});
 	        var paramsAJAX = eventplanner.private.getParamsAJAX(params);
-	        paramsAJAX.url = 'core/ajax/user.ajax.php';
+	        paramsAJAX.url = 'core/ajax/ajax.php';
 	        paramsAJAX.global = false;
 	        paramsAJAX.data = {
+                type: 'user',
 	            action: 'isConnect',
 	        };
 	        return $.ajax(paramsAJAX);
@@ -237,9 +241,9 @@ eventplanner.user = {
     },
 
     compareNameAsc: function(a,b) {
-      if (a.userName < b.userName)
+      if (a.userName.toLowerCase() < b.userName.toLowerCase())
         return -1;
-      if (a.userName > b.userName)
+      if (a.userName.toLowerCase() > b.userName.toLowerCase())
         return 1;
       return 0;
     }
