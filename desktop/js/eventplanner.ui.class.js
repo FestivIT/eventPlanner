@@ -1106,7 +1106,7 @@ eventplanner.ui.map = {
 	initialiseMap: function (mapContainer, locationCenter, zoom){
 		zoom = typeof zoom !== 'undefined' ? zoom : 18;
 
-		baseLayer = L.tileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+		baseLayer = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 		  maxZoom: 19,
 		  attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://cartodb.com/attributions">CartoDB</a>'
 		});
