@@ -294,7 +294,14 @@ eventplanner.ui = {
 			$('#loadingContainer').hide();
 		});
 
-		history.pushState(null, _page + ' - eventPlanner', "index.php?p=" + _page);
+		if(_page != 'dashboard'){
+			history.pushState(null, _page + ' - eventPlanner', "index.php?p=" + _page);
+		}else{
+			history.pushState(null, _page + ' - eventPlanner', "index.php");
+		}
+		
+		localStorage.setItem('lastPage', _page);
+		
 		document.title = eventplanner.ui[_page].title + ' - eventPlanner';
 
 		if(_page == 'map'){

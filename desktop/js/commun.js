@@ -9,6 +9,8 @@ $( document ).ready(function() {
 				$('#epUserMenu').html(eventplanner.ui.currentUser.userName);
 				
 				var page = getUrlParameter("p");
+				var lastPage = localStorage.getItem('lastPage');
+				
 				if(page != false){
 					if(eventplanner.ui.hasOwnProperty(page) && eventplanner.ui[page].hasOwnProperty('init')){
 						if(page == 'scan'){
@@ -18,10 +20,18 @@ $( document ).ready(function() {
 						}
 						eventplanner.ui.loadPage(page, option);
 					}else{
-						eventplanner.ui.loadPage("dashboard");
+						if(lastPage != null){
+							eventplanner.ui.loadPage(lastPage);
+						}else{
+							eventplanner.ui.loadPage("dashboard");
+						}
 					}
 				}else{
-					eventplanner.ui.loadPage("dashboard");
+					if(lastPage != null){
+						eventplanner.ui.loadPage(lastPage);
+					}else{
+						eventplanner.ui.loadPage("dashboard");
+					}
 				}
 			});
 		},
