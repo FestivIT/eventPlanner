@@ -3709,7 +3709,7 @@ eventplanner.ui.modal.EpModalPlanConfiguration = function(_plan){
 
 			this.modal.find('.modalValidBtn').click(this, function(event){
 				event.data.modal.find('#planForm').submit();
-			});
+			});		
 
 			this.modal.find('#generateTiles').click(this, function(event){
 				var planParam = {
@@ -3752,6 +3752,7 @@ eventplanner.ui.modal.EpModalPlanConfiguration = function(_plan){
 	this.postShow = function(){
 		this.initMap();
 		this.addPlanLayer();
+		this.reloadLog();	
 
 		this.modal.find('#planForm').submit(this, function(event) {
 			    var planParam = {
@@ -3864,6 +3865,19 @@ eventplanner.ui.modal.EpModalPlanConfiguration = function(_plan){
 	    }
 
 		return false;
+	}
+
+	this.reloadLog = function(){
+		this.modal.find('#planLogContainer').load('ressources/eventPlan/' + this.data.planId + '/log.txt');
+
+		setTimeout(function(thisModal){
+				return function(){
+					if(thisModal.modal.hasClass('in')){
+						thisModal.reloadLog();
+					}
+				}
+		}(this), 5000);
+		
 	}
 	
 	this.repositionImageFct = function(thisModal) {
