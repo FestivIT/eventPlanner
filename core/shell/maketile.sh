@@ -25,6 +25,8 @@ echo Création de l image haute résolution
 echo ------------------------------------
 gs -q -dQUIET -dSAFER -dBATCH -dNOPAUSE -dNOPROMPT -dMaxBitmap=500000000 -dAlignToPixels=0 -dGridFitTT=2 -sDEVICE=jpeg -dTextAlphaBits=4 -dGraphicsAlphaBits=4 -dJPEGQ=95 -sOutputFile=$BASEDIR/planHD.jpg -r$10 $BASEDIR/plan.pdf
 echo OK
+HDSIZE=$(file $BASEDIR/planHD.jpg | grep -o ", [0-9]*x[0-9]*" | grep -o "[0-9]*x[0-9]*")
+arrSIZE=(${IN//x/ })
 echo  
 echo Suppression des anciennes tuiles
 echo ------------------------------------
@@ -32,7 +34,7 @@ rm -rf $BASEDIR/tiles
 echo OK
 echo  
 echo Géolocalisation de l image:
-gdal_translate -of GTiff -a_srs EPSG:4326 -gcp 0 0 $4 $5 -gcp $2 0 $6 $7 -gcp $2 $3 $8 $9 $BASEDIR/planHD.jpg $BASEDIR/tmp.tif
+gdal_translate -of GTiff -a_srs EPSG:4326 -gcp 0 0 $4 $5 -gcp ${arrIN[0]} 0 $6 $7 -gcp 0 ${arrIN[1]} $8 $9 $BASEDIR/planHD.jpg $BASEDIR/tmp.tif
 echo OK
 echo  
 echo Transformation géographique de l image:
