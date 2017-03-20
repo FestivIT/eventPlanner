@@ -42,23 +42,38 @@ class plan {
 		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
 	}
 
+	public static function getDistanceM($lat1, $lng1, $lat2, $lng2) {
+		  $earth_radius = 6378137;   // Terre = sphère de 6378km de rayon
+		  $rlo1 = deg2rad($lng1);
+		  $rla1 = deg2rad($lat1);
+		  $rlo2 = deg2rad($lng2);
+		  $rla2 = deg2rad($lat2);
+		  $dlo = ($rlo2 - $rlo1) / 2;
+		  $dla = ($rla2 - $rla1) / 2;
+		  $a = (sin($dla) * sin($dla)) + cos($rla1) * cos($rla2) * (sin($dlo) * sin($dlo
+		));
+		  $d = 2 * atan2(sqrt($a), sqrt(1 - $a));
+		  return ($earth_radius * $d);
+	}
+
+	/*     * *********************Méthodes d'instance************************* */
+
+
 	public function formatForFront(){
 		$return = utils::addPrefixToArray(utils::o2a($this), get_class($this));
 		return $return;
 	}
 
-	/*     * *********************Méthodes d'instance************************* */
-
 	public function save($_addMsg = true) {
 		if($this->getId() == null){
 			DB::save($this);
 			if($_addMsg){
-				msg::add(null, null, null, $_SESSION['user']->getId(), "Création du plan " . $this->getName(), 'plan', 'add', $this);
+				msg::add($this->getOrganisationId(), null, null, null, null, $_SESSION['user']->getId(), "Création du plan " . $this->getName(), 'plan', 'add', $this);
 			}
 		}else{
 			DB::save($this);
 			if($_addMsg){
-				msg::add(null, null, null, $_SESSION['user']->getId(), "Mise à jour du plan " . $this->getName(), 'plan', 'update', $this);
+				msg::add($this->getOrganisationId(), null, null, null, null, $_SESSION['user']->getId(), "Mise à jour du plan " . $this->getName(), 'plan', 'update', $this);
 			}
 		}
 		return $this;
@@ -66,7 +81,7 @@ class plan {
 
 	public function remove($_addMsg = true) {
 		if($_addMsg){
-			msg::add(null, null, null, $_SESSION['user']->getId(), "Suppression du plan " . $this->getName(), 'plan', 'remove', $this);
+			msg::add($this->getOrganisationId(), null, null, null, null, $_SESSION['user']->getId(), "Suppression du plan " . $this->getName(), 'plan', 'remove', $this);
 		}
 
 		return DB::remove($this);
@@ -118,7 +133,8 @@ class plan {
 	}
 
 	public function getMaxDistance(){
-		return 250; // test sur 250m
+		$planBounds = $this->getBounds();
+		return max(plan::getDistanceM($planBounds[0]['lat'], $planBounds[0]['lng'], $planBounds[1]['lat'], $planBounds[1]['lng']), plan::getDistanceM($planBounds[1]['lat'], $planBounds[1]['lng'], $planBounds[2]['lat'], $planBounds[2]['lng']), plan::getDistanceM($planBounds[0]['lat'], $planBounds[0]['lng'], $planBounds[2]['lat'], $planBounds[2]['lng']));
 	}
 
 	public function calcDensityLD(){
@@ -141,19 +157,11 @@ class plan {
 	}
 
 	public function convertPdfToJpgLD(){
-		//echo 'gs -q -dQUIET -dSAFER -dBATCH -dNOPAUSE -dNOPROMPT -dMaxBitmap=500000000 -dAlignToPixels=0 -dGridFitTT=2 "-sDEVICE=jpeg" -dTextAlphaBits=4 -dGraphicsAlphaBits=4 -dJPEGQ=100 -sOutputFile=' . dirname(__FILE__) . '/../../ressources/eventPlan/' . $this->getId() . '/planLD.jpg -r' . $this->calcDensityLD() .' ' . dirname(__FILE__) . '/../../ressources/eventPlan/' . $this->getId() . '/plan.pdf';
-		//return true;
 		return exec('gs -q -dQUIET -dSAFER -dBATCH -dNOPAUSE -dNOPROMPT -dMaxBitmap=500000000 -dAlignToPixels=0 -dGridFitTT=2 "-sDEVICE=jpeg" -dTextAlphaBits=4 -dGraphicsAlphaBits=4 -dJPEGQ=100 -sOutputFile=' . dirname(__FILE__) . '/../../ressources/eventPlan/' . $this->getId() . '/planLD.jpg -r' . $this->calcDensityLD() .' ' . dirname(__FILE__) . '/../../ressources/eventPlan/' . $this->getId() . '/plan.pdf');
 	}
 
 	public function convertJpgToJpgLD(){
 		// return exec('gs -q -dQUIET -dSAFER -dBATCH -dNOPAUSE -dNOPROMPT -dMaxBitmap=500000000 -dAlignToPixels=0 -dGridFitTT=2 "-sDEVICE=jpeg" -dTextAlphaBits=4 -dGraphicsAlphaBits=4 -dJPEGQ=100 -sOutputFile=' . dirname(__FILE__) . '/../../ressources/eventPlan/' . $this->getId() . '/planLD.jpg -r' . $this->calcDensityLD() .' ' . dirname(__FILE__) . '/../../ressources/eventPlan/' . $this->getId() . '/planLD.pdf');
-	}
-
-	public function convertPdfToJpgHD(){
-		// echo 'gs -q -dQUIET -dSAFER -dBATCH -dNOPAUSE -dNOPROMPT -dMaxBitmap=500000000 -dAlignToPixels=0 -dGridFitTT=2 "-sDEVICE=jpeg" -dTextAlphaBits=4 -dGraphicsAlphaBits=4 -dJPEGQ=100 -sOutputFile=' . dirname(__FILE__) . '/../../ressources/eventPlan/' . $this->getId() . '/planHD.jpg -r' . $this->calcDensityHD() .' ' . dirname(__FILE__) . '/../../ressources/eventPlan/' . $this->getId() . '/planLD.pdf';
-		// return true;
-		// return exec('gs -q -dQUIET -dSAFER -dBATCH -dNOPAUSE -dNOPROMPT -dMaxBitmap=500000000 -dAlignToPixels=0 -dGridFitTT=2 "-sDEVICE=jpeg" -dTextAlphaBits=4 -dGraphicsAlphaBits=4 -dJPEGQ=100 -sOutputFile=' . dirname(__FILE__) . '/../../ressources/eventPlan/' . $this->getId() . '/planHD.jpg -r' . $this->calcDensityHD() .' ' . dirname(__FILE__) . '/../../ressources/eventPlan/' . $this->getId() . '/planLD.pdf');
 	}
 
 	public function makeTiles(){

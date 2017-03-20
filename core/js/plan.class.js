@@ -12,7 +12,7 @@ eventplanner.plan = {
             this.planId = ''; // Nouveau plan
         }
         if(!this.hasOwnProperty('planOrganisationId')){
-            //throw "planOrganisationId manquant!";
+            //throw new Error("planOrganisationId manquant!");
             this.planOrganisationId = 1; // TEMPORAIRE
             console.log('planOrganisationId temporaire: 1');
         }

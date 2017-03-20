@@ -40,17 +40,20 @@ try {
 
 	if (init('action') == 'all') {
 		switch($class){
+			case "msg":
+				$results = $class::forUserId($_SESSION['user']->getId());
+				//$results = $class::byEventId($_SESSION['user']->getEventId());
+				break;
 			case "eqLink":
 			case "eqLogic":
 			case "eqLogicAttribute":
 			case "mission":
-			case "msg":
 			case "zone":
 			case "contact":
 			case "eventLevel":
 				// Event Only
 				$results = $class::byEventId($_SESSION['user']->getEventId());
-			break;
+				break;
 
 			case "matType":
 			case "matTypeAttribute":
@@ -58,23 +61,22 @@ try {
 			case "user":
 				// Discipline Only
 				$results = $class::byDisciplineId($_SESSION['user']->getDisciplineId());
-			break;
-
+				break;
 
 			case "event":
 			case "discipline":
 			case "plan":
 				// Organisation only
 				$results = $class::byOrganisationId($_SESSION['user']->getDiscipline()->getOrganisationId());
-			break;
+				break;
 
 			case "organisation":
 				$results = array($class::byId($_SESSION['user']->getDiscipline()->getOrganisationId()));
-			break;
+				break;
 
 			default:
 				throw new Exception('Classe non gérée: ' . $class);
-			break;
+				break;
 		}
 
 		foreach ($results as &$result) {
@@ -281,7 +283,8 @@ try {
 
 	// MSG
 	if  (($class == 'msg') && (init('action') == 'sinceId')) {
-		$results = msg::byEventIdSinceId(init('id'), $_SESSION['user']->getEventId());
+		$results = msg::forUserIdSinceId(init('id'), $_SESSION['user']->getId());
+		//$results = msg::byEventIdSinceId(init('id'), $_SESSION['user']->getEventId());
 		foreach ($results as &$result) {
 			$result = $result->formatForFront();
 		}
