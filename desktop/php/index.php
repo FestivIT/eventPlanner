@@ -156,7 +156,7 @@ include_file('desktop', 'commun', 'css');
 	          	<a href="#" class="navbar-icon pull-right visible-xs navBarBtn" data-link="map"><i class="fa fa-map-o"></i></a>
 	          	<a href="#" class="navbar-icon pull-right visible-xs navBarBtn" data-link="dashboard"><i class="glyphicon glyphicon-th"></i></a>
 	          </div>
-	          <a class="navbar-brand" href="<?php echo $homeLink; ?>"><span><img alt="Brand" src="desktop/img/logo25.png"></span> <span class="hidden-xs">eventPlanner</span></a>
+	          <a class="navbar-brand" href="index.php"><span><img alt="Brand" src="desktop/img/logo25.png"></span> <span class="hidden-xs">eventPlanner</span></a>
 	        </div>
 
 	        <div class="navbar-collapse collapse">
