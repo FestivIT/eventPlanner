@@ -65,13 +65,26 @@ class event {
 	public function save($_addMsg = true) {
 		if($this->getId() == null){
 			DB::save($this);
+			$this->refresh();
+
+			// Création d'un niveau
+			$eventLevel = new eventLevel();
+			$eventLevel->setEventId($this->getId());
+			$eventLevel->setName($this->getName() . ' - Site');
+			$eventLevel->save();
+			$eventLevel->refresh();
+
+			// Enregistrement de ce niveau en niveau par défaut
+			$this->setDefaultEventLevelId($eventLevel->getId());
+			DB::save($this);
+
 			if($_addMsg){
-				msg::add($this->getId(), null, null, $_SESSION['user']->getId(), "Création de l'événement: " . $this->getName(), 'event', 'add', $this);
+				msg::add($this->getOrganisationId(),  null, null, null, null, $_SESSION['user']->getId(), "Création de l'événement: " . $this->getName(), 'event', 'add', $this);
 			}
 		}else{
 			DB::save($this);
 			if($_addMsg){
-				msg::add($this->getId(), null, null, $_SESSION['user']->getId(), "Mise à jour de l'événement: " . $this->getName(), 'event', 'update', $this);
+				msg::add($this->getOrganisationId(), null, null, null, null, $_SESSION['user']->getId(), "Mise à jour de l'événement: " . $this->getName(), 'event', 'update', $this);
 			}
 		}
 		return $this;
@@ -84,7 +97,7 @@ class event {
 
 	public function remove($_addMsg = true) {
 		if($_addMsg){
-			msg::add($this->getId(), null, null, $_SESSION['user']->getId(), "Suppression de l'événement." , 'event', 'remove', $this);
+			msg::add($this->getOrganisationId(), null, null, null, null, $_SESSION['user']->getId(), "Suppression de l'événement." , 'event', 'remove', $this);
 		}
 
 		return DB::remove($this);

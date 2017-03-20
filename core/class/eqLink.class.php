@@ -66,12 +66,12 @@ class eqLink {
 		if($this->getId() == null){
 			DB::save($this);
 			if($_addMsg){
-				msg::add($this->getEventId(), null, null, $_SESSION['user']->getId(), "Création du lien", 'eqLink', 'add', $this);
+				msg::add($this->getEvent()->getOrganisationId(), $_SESSION['user']->getDisciplineId(), $this->getEventId(), null, null, $_SESSION['user']->getId(), "Création du lien", 'eqLink', 'add', $this);
 			}
 		}else{
 			DB::save($this);
 			if($_addMsg){
-				msg::add($this->getEventId(), null, null, $_SESSION['user']->getId(), "Mise à jour du lien.", 'eqLink', 'update', $this);
+				msg::add($this->getEvent()->getOrganisationId(), $_SESSION['user']->getDisciplineId(), $this->getEventId(), null, null, $_SESSION['user']->getId(), "Mise à jour du lien.", 'eqLink', 'update', $this);
 			}
 		}
 		return $this;
@@ -84,7 +84,7 @@ class eqLink {
 
 	public function remove($_addMsg = true) {
 		if($_addMsg){
-			msg::add($this->getEventId(), null, null, $_SESSION['user']->getId(), "Suppression du lien.", 'eqLink', 'remove', $this);
+			msg::add($this->getEvent()->getOrganisationId(), $_SESSION['user']->getDisciplineId(), $this->getEventId(), null, null, $_SESSION['user']->getId(), "Suppression du lien.", 'eqLink', 'remove', $this);
 		}
 
 		return DB::remove($this);
@@ -99,6 +99,9 @@ class eqLink {
 	}
 	public function getEventId() {
 		return $this->eventId;
+	}
+	public function getEvent() {
+		return event::byId($this->getEventId());	
 	}
 	public function getEqLogicId1() {
 		return $this->eqLogicId1;

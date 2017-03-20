@@ -70,7 +70,7 @@ class eqReal {
 	        		$eqReal->setState($_state);
 	        		$eqReal->save(false);
 
-	        		msg::add(null, null, null, $_SESSION['user']->getId(), "Matériel [" . $eqReal->getName() . "]: Changement d'état de '" . getStateText($oldState) . "' à '" . getStateText($_state) . "'", 'eqReal', 'update', $eqReal);
+	        		msg::add($_SESSION['user']->getDiscipline()->getOrganisationId(), $_SESSION['user']->getDisciplineId(), null, null, null, $_SESSION['user']->getId(), "Matériel [" . $eqReal->getName() . "]: Changement d'état de '" . getStateText($oldState) . "' à '" . getStateText($_state) . "'", 'eqReal', 'update', $eqReal);
 
 	        		$sqlIdList .= $separator . $id;
 		    		$separator = ', ';
@@ -98,12 +98,12 @@ class eqReal {
 		if($this->getId() == null){
 			DB::save($this);
 			if($_addMsg){
-				msg::add(null, null, null, $_SESSION['user']->getId(), "Création du matériel: " . $this->getName(), 'eqReal', 'add', $this);
+				msg::add($_SESSION['user']->getDiscipline()->getOrganisationId(), $this->getDisciplineId(), null, null, null, $_SESSION['user']->getId(), "Création du matériel: " . $this->getName(), 'eqReal', 'add', $this);
 			}
 		}else{
 			DB::save($this);
 			if($_addMsg){
-				msg::add(null, null, null, $_SESSION['user']->getId(), "Mise à jour du matériel: " . $this->getName(), 'eqReal', 'update', $this);
+				msg::add($_SESSION['user']->getDiscipline()->getOrganisationId(), $this->getDisciplineId(), null, null, null, $_SESSION['user']->getId(), "Mise à jour du matériel: " . $this->getName(), 'eqReal', 'update', $this);
 			}
 		}
 		return $this;
@@ -116,7 +116,7 @@ class eqReal {
 
 	public function remove($_addMsg = true) {
 		if($_addMsg){
-			msg::add(null, null, null, $_SESSION['user']->getId(), "Suppression du matériel." , 'eqReal', 'remove', $this);
+			msg::add($_SESSION['user']->getDiscipline()->getOrganisationId(), $this->getDisciplineId(), null, null, null, $_SESSION['user']->getId(), "Suppression du matériel." , 'eqReal', 'remove', $this);
 		}
 
 		return DB::remove($this);
@@ -134,6 +134,9 @@ class eqReal {
 	}
 	public function getDisciplineId() {
 		return $this->disciplineId;
+	}
+	public function getDiscipline() {
+		return discipline::byId($this->getDisciplineId());
 	}
 	public function getMatTypeId() {
 		return $this->matTypeId;

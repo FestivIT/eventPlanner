@@ -11,6 +11,9 @@ eventplanner.event = {
         if(!this.hasOwnProperty('eventId')){
             this.eventId = ''; // Nouveau event
         }
+        if(!this.hasOwnProperty('eventOrganisationId')){
+            throw new Error("eventOrganisationId manquant!");
+        }
         if(!this.hasOwnProperty('eventDefaultEventLevelId')){
             this.eventDefaultEventLevelId = "";
         }
@@ -38,6 +41,58 @@ eventplanner.event = {
 
         this.remove = function(_params = {}){
             return eventplanner.event.remove($.extend(_params, {id: this.eventId}));
+        }
+        
+        this.checkValues = function(){
+        	if(this.eventOrganisationId == ""){
+				throw new Error("Il n'y a pas d'organisation rattaché à l'événement.");
+			}
+			
+			if(this.eventName == ""){
+				throw new Error("Le nom de l'événement ne peut pas être vide.");
+			}
+			
+		    if(this.eventVille == ""){
+				throw new Error("La ville de l'événement ne peut pas être vide.");
+			}
+			
+		    if(typeof this.eventLocalisation != 'object'){
+				throw new Error("La localisation n'a pas le bon format.");
+			}
+			
+		    if(this.eventStartDate == ""){
+				throw new Error("La date de début n'a pas le bon format");
+			}
+			
+		    if(this.eventEndDate == ""){
+				throw new Error("La date de fin n'a pas le bon format");
+			}
+			
+			return true;
+        }
+        
+        this.getValues = function(){
+        	var values = {};
+        	
+        	for (keys in this){
+        		if(typeof this[keys] != 'function'){
+        			if(keys.substring(0, "event".length) == "event"){
+        				values[firstToLowerCase(keys.substring("event".length))] = this[keys];
+        			}
+        		}
+        	}
+        	
+        	return values;
+        };
+        
+        this.clone = function(){
+            return new eventplanner.event.eventItem(this);
+        }
+        
+        this.save = function(_params = {}){
+        	this.checkValues();
+
+			return eventplanner.event.save($.extend({event: this.getValues()}, _params));
         }
     },
 

@@ -7,6 +7,8 @@ class msg {
 	/*     * *************************Attributs****************************** */
 
 	private $id;
+	private $organisationId;
+	private $disciplineId;
 	private $eventId;
 	private $zoneId;
 	private $eqId;
@@ -56,7 +58,49 @@ class msg {
         WHERE (eventId=:eventId OR eventId IS NULL) AND id > \'' . $_id . '\' ';
 		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
 	}
+	
+	public static function forUserIdSinceId($_id, $_userId) {
+		$user = user::byId($_userId);
+		
+		if(!is_object($user)){
+			throw new Exception('User [' . $_userId . '] inconnu.');
+		}
+		
+		$values = array(
+			'eventId' => $user->getEventId(),
+			'disciplineId' => $user->getDisciplineId(),
+			'organisationId' => $user->getDiscipline()->getOrganisationId()
+		);
 
+		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
+        FROM msg
+        WHERE ((eventId=:eventId AND (disciplineId IS NULL OR disciplineId=:disciplineId)) 
+        OR (eventId IS NULL AND disciplineId=:disciplineId) 
+        OR (eventId IS NULL AND (disciplineId IS NULL OR disciplineId=:disciplineId) AND organisationId=:organisationId)) AND id > \'' . $_id . '\' ';
+		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
+	}
+	
+	public static function forUserId($_userId) {
+		$user = user::byId($_userId);
+		
+		if(!is_object($user)){
+			throw new Exception('User [' . $_userId . '] inconnu.');
+		}
+		
+		$values = array(
+			'eventId' => $user->getEventId(),
+			'disciplineId' => $user->getDisciplineId(),
+			'organisationId' => $user->getDiscipline()->getOrganisationId()
+		);
+
+		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
+        FROM msg
+        WHERE (eventId=:eventId AND (disciplineId IS NULL OR disciplineId=:disciplineId)) 
+        OR (eventId IS NULL AND disciplineId=:disciplineId) 
+        OR (eventId IS NULL AND (disciplineId IS NULL OR disciplineId=:disciplineId) AND organisationId=:organisationId)';
+		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
+	}
+	
 	public static function byZoneId($_zoneId) {
 		$values = array(
 			'zoneId' => $_zoneId,
@@ -90,7 +134,7 @@ class msg {
 		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
 	}
 
-	public static function add($_eventId, $_zoneId, $_eqId, $_userId, $_content, $_type, $_op, $_data) {
+	public static function add($_organisationId, $_disciplineId, $_eventId, $_zoneId, $_eqId, $_userId, $_content, $_type, $_op, $_data) {
 		switch ($_op) {
 		    case 'add':
 		    case 'update':
@@ -122,6 +166,8 @@ class msg {
 
 
 		$message = new msg();
+		$message->setOrganisationId($_organisationId);
+		$message->setDisciplineId($_disciplineId);
 		$message->setEventId($_eventId);
 		$message->setzoneId($_zoneId);
 		$message->setEqId($_eqId);
@@ -171,6 +217,12 @@ class msg {
 	public function getId() {
 		return $this->id;
 	}
+	public function getOrganisationId() {
+		return $this->organisationId;
+	}
+	public function getDisciplineId() {
+		return $this->disciplineId;
+	}
 	public function getEventId() {
 		return $this->eventId;
 	}
@@ -195,6 +247,12 @@ class msg {
 
 	public function setId($id) {
 		$this->id = $id;
+	}
+	public function setOrganisationId($organisationId) {
+		$this->organisationId = $organisationId;
+	}
+	public function setDisciplineId($disciplineId) {
+		$this->disciplineId = $disciplineId;
 	}
 	public function setEventId($eventId) {
 		$this->eventId = $eventId;

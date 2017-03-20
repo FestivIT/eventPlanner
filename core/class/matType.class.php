@@ -47,12 +47,12 @@ class matType {
 		if($this->getId() == null){
 			DB::save($this);
 			if($_addMsg){
-				msg::add(null, null, null, $_SESSION['user']->getId(), "Création du type de matériel: " . $this->getName(), 'matType', 'add', $this);
+				msg::add($this->getDiscipline()->getOrganisationId(),$this->getDisciplineId(),null, null, null, $_SESSION['user']->getId(), "Création du type de matériel: " . $this->getName(), 'matType', 'add', $this);
 			}
 		}else{
 			DB::save($this);
 			if($_addMsg){
-				msg::add(null, null, null, $_SESSION['user']->getId(), "Mise à jour du type de matériel: " . $this->getName(), 'matType', 'update', $this);
+				msg::add($this->getDiscipline()->getOrganisationId(),$this->getDisciplineId(),null, null, null, $_SESSION['user']->getId(), "Mise à jour du type de matériel: " . $this->getName(), 'matType', 'update', $this);
 			}
 		}
 		return $this;
@@ -66,7 +66,7 @@ class matType {
 
 	public function remove($_addMsg = true) {
 		if($_addMsg){
-			msg::add(null, null, null, $_SESSION['user']->getId(), "Suppression du type de matériel."  . $this->getName(), 'matType', 'remove', $this);
+			msg::add($this->getDiscipline()->getOrganisationId(),$this->getDisciplineId(),null, null, null, $_SESSION['user']->getId(), "Suppression du type de matériel."  . $this->getName(), 'matType', 'remove', $this);
 		}
 
 		return DB::remove($this);
@@ -84,6 +84,9 @@ class matType {
 	}
 	public function getDisciplineId() {
 		return $this->disciplineId;
+	}
+	public function getDiscipline() {
+		return discipline::byId($this->getDisciplineId());
 	}
 	public function getParentId() {
 		return $this->parentId;

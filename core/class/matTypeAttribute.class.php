@@ -74,12 +74,12 @@ class matTypeAttribute {
 		if($this->getId() == null){
 			DB::save($this);
 			if($_addMsg){
-				msg::add(null, null, null, $_SESSION['user']->getId(), "Création de l'attribut " . $this->getName() . " du type de matériel: " . $this->getMatType()->getName(), 'matTypeAttribute', 'add', $this);
+				msg::add($this->getMatType()->getDiscipline()->getOrganisationId(),$this->getMatType()->getDisciplineId(),null, null, null, $_SESSION['user']->getId(), "Création de l'attribut " . $this->getName() . " du type de matériel: " . $this->getMatType()->getName(), 'matTypeAttribute', 'add', $this);
 			}
 		}else{
 			DB::save($this);
 			if($_addMsg){
-				msg::add(null, null, null, $_SESSION['user']->getId(), "Mise à jour de l'attribut " . $this->getName() . " du type de matériel: " . $this->getMatType()->getName(), 'matTypeAttribute', 'update', $this);
+				msg::add($this->getMatType()->getDiscipline()->getOrganisationId(),$this->getMatType()->getDisciplineId(),null, null, null, $_SESSION['user']->getId(), "Mise à jour de l'attribut " . $this->getName() . " du type de matériel: " . $this->getMatType()->getName(), 'matTypeAttribute', 'update', $this);
 			}
 		}
 		return $this;
@@ -87,7 +87,7 @@ class matTypeAttribute {
 
 	public function remove($_addMsg = true) {
 		if($_addMsg){
-			msg::add(null, null, null, $_SESSION['user']->getId(), "Suppression de l'attribut " . $this->getName() . " du type de matériel: " . $this->getMatType()->getName() , 'matTypeAttribute', 'remove', $this);
+			msg::add($this->getMatType()->getDiscipline()->getOrganisationId(),$this->getMatType()->getDisciplineId(),null, null, null, $_SESSION['user']->getId(), "Suppression de l'attribut " . $this->getName() . " du type de matériel: " . $this->getMatType()->getName() , 'matTypeAttribute', 'remove', $this);
 		}
 
 		return DB::remove($this);

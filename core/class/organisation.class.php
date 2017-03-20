@@ -40,12 +40,12 @@ class organisation {
 		if($this->getId() == null){
 			DB::save($this);
 			if($_addMsg){
-				msg::add(null, null, null, $_SESSION['user']->getId(), "Création de l'organisation " . $this->getName(), 'organisation', 'add', $this);
+				msg::add($this->getId(), null, null, null, null, $_SESSION['user']->getId(), "Création de l'organisation " . $this->getName(), 'organisation', 'add', $this);
 			}
 		}else{
 			DB::save($this);
 			if($_addMsg){
-				msg::add(null, null, null, $_SESSION['user']->getId(), "Mise à jour du l'organisation " . $this->getName(), 'organisation', 'update', $this);
+				msg::add($this->getId(), null, null, null, null, $_SESSION['user']->getId(), "Mise à jour du l'organisation " . $this->getName(), 'organisation', 'update', $this);
 			}
 		}
 		return $this;
@@ -53,7 +53,7 @@ class organisation {
 
 	public function remove($_addMsg = true) {
 		if($_addMsg){
-			msg::add(null, null, null, $_SESSION['user']->getId(), "Suppression du l'organisation " . $this->getName(), 'organisation', 'remove', $this);
+			msg::add($this->getId(), null, null, null, null, $_SESSION['user']->getId(), "Suppression du l'organisation " . $this->getName(), 'organisation', 'remove', $this);
 		}
 
 		return DB::remove($this);

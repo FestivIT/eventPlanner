@@ -96,7 +96,7 @@ class mission {
 	        		$mission->setState($_state);
 	        		$mission->save(false);
 
-	        		msg::add($mission->getEventId(), null, null, $_SESSION['user']->getId(), "Mission [" . $mission->getName() . "]: Changement d'état de '" . getStateText($oldState) . "' à '" . getStateText($_state) . "'", 'mission', 'update', $mission);
+	        		msg::add($mission->getEvent()->getOrganisationId(), $mission->getDisciplineId(), $mission->getEventId(), null, null, $_SESSION['user']->getId(), "Mission [" . $mission->getName() . "]: Changement d'état de '" . getStateText($oldState) . "' à '" . getStateText($_state) . "'", 'mission', 'update', $mission);
 
 	        		$sqlIdList .= $separator . $id;
 		    		$separator = ', ';
@@ -125,12 +125,12 @@ class mission {
 		if($this->getId() == null){
 			DB::save($this);
 			if($_addMsg){
-				msg::add($this->getEventId(), null, null, $_SESSION['user']->getId(), "Création de la mission.", 'mission', 'add', $this);
+				msg::add($this->getEvent()->getOrganisationId(), $this->getDisciplineId(), null, $this->getEventId(), null, null, $_SESSION['user']->getId(), "Création de la mission.", 'mission', 'add', $this);
 			}
 		}else{
 			DB::save($this);
 			if($_addMsg){
-				msg::add($this->getEventId(), null, null, $_SESSION['user']->getId(), "Mise à jour de la mission.", 'mission', 'update', $this);
+				msg::add($this->getEvent()->getOrganisationId(), $this->getDisciplineId(), $this->getEventId(), null, null, $_SESSION['user']->getId(), "Mise à jour de la mission.", 'mission', 'update', $this);
 			}
 		}
 		return $this;
@@ -145,7 +145,7 @@ class mission {
 
 	public function remove($_addMsg = true) {
 		if($_addMsg){
-			msg::add($this->getEventId(), null, null, $_SESSION['user']->getId(), "Suppression de la mission." , 'mission', 'remove', $this);
+			msg::add($this->getEvent()->getOrganisationId(), $this->getDisciplineId(), $this->getEventId(), null, null, $_SESSION['user']->getId(), "Suppression de la mission." , 'mission', 'remove', $this);
 		}
 
 		return DB::remove($this);
@@ -160,6 +160,9 @@ class mission {
 	}
 	public function getEventId() {
 		return $this->eventId;
+	}
+	public function getEvent() {
+		return event::byId($this->getEventId());
 	}
 	public function getDisciplineId() {
 		return $this->disciplineId;

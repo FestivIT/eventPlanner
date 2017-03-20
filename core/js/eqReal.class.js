@@ -12,7 +12,7 @@ eventplanner.eqReal = {
             this.eqRealId = ''; // Nouveau matériel
         }
         if(!this.hasOwnProperty('eqRealDisciplineId')){
-            //throw "eqRealDisciplineId manquant!";
+            //throw new Error("eqRealDisciplineId manquant!");
             this.eqRealDisciplineId = 1; // TEMPORAIRE
             console.log('eqRealDisciplineId temporaire: 1');
         }

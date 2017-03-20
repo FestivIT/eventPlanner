@@ -6,6 +6,16 @@
     	</div>
   </div>
   <div class="form-group">
+      <label for="zoneEventLevelId" class="col-sm-3 control-label" >Niveau</label>
+      <div class="col-sm-9">
+        <select class="form-control" id="zoneEventLevelId"></select>
+        <script type="text/html" id="templateZoneEventLevel">
+        
+          <option data-template-bind='[{"attribute": "value", "value": "eventLevelId"}]' data-content="eventLevelName"></option>
+        </script>
+      </div>
+  </div>
+  <div class="form-group">
       <label for="zoneComment" class="col-sm-3 control-label" >Commentaire</label>
       <div class="col-sm-9">
         <textarea class="form-control" rows="5" id="zoneComment" data-content="zoneComment"></textarea>

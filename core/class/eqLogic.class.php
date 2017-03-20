@@ -73,7 +73,7 @@ class eqLogic {
         			$eqLogic->setState($_state);
         			$eqLogic->save(false);
         			
-	        		msg::add($eqLogic->getEventId(), $eqLogic->getZoneId(), $eqLogic->getId(), $_SESSION['user']->getId(), "Changement d'état de '" . getStateText($oldState) . "' à '" . getStateText($eqLogic->getState()) . "'", 'eqLogic', 'update', $eqLogic);
+	        		msg::add($eqLogic->getEvent()->getOrganisationId(), $eqLogic->getDisciplineId(), $eqLogic->getEventId(), $eqLogic->getZoneId(), $eqLogic->getId(), $_SESSION['user']->getId(), "Changement d'état de '" . getStateText($oldState) . "' à '" . getStateText($eqLogic->getState()) . "'", 'eqLogic', 'update', $eqLogic);
 
 	        		$sqlIdList .= $separator . $id;
 		    		$separator = ', ';
@@ -99,12 +99,12 @@ class eqLogic {
 		if($this->getId() == null){
 			DB::save($this);
 			if($_addMsg){
-				msg::add($this->getEventId(), $this->getZoneId(), $this->getId(), $_SESSION['user']->getId(), "Création de l'équipement.", 'eqLogic', 'add', $this);
+				msg::add($this->getEvent()->getOrganisationId(), $this->getDisciplineId(), $this->getEventId(), $this->getZoneId(), $this->getId(), $_SESSION['user']->getId(), "Création de l'équipement.", 'eqLogic', 'add', $this);
 			}
 		}else{
 			DB::save($this);
 			if($_addMsg){
-				msg::add($this->getEventId(), $this->getZoneId(), $this->getId(), $_SESSION['user']->getId(), "Mise à jour de l'équipement.", 'eqLogic', 'update', $this);
+				msg::add($this->getEvent()->getOrganisationId(), $this->getDisciplineId(), $this->getEventId(), $this->getZoneId(), $this->getId(), $_SESSION['user']->getId(), "Mise à jour de l'équipement.", 'eqLogic', 'update', $this);
 			}
 		}
 		return $this;
@@ -117,7 +117,7 @@ class eqLogic {
 
 	public function remove($_addMsg = true) {
 		if($_addMsg){
-			msg::add($this->getEventId(), $this->getZoneId(), $this->getId(), $_SESSION['user']->getId(), "Suppression de l'équipement." , 'eqLogic', 'remove', $this);
+			msg::add($this->getEvent()->getOrganisationId(), $this->getDisciplineId(), $this->getEventId(), $this->getZoneId(), $this->getId(), $_SESSION['user']->getId(), "Suppression de l'équipement." , 'eqLogic', 'remove', $this);
 		}
 
 		return DB::remove($this);
@@ -132,6 +132,9 @@ class eqLogic {
 	}
 	public function getEventId() {
 		return $this->eventId;
+	}
+	public function getEvent() {
+		return event::byId($this->getEventId());
 	}
 	public function getDisciplineId() {
 		return $this->disciplineId;

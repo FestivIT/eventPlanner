@@ -11,7 +11,7 @@ eventplanner.discipline = {
             this.disciplineId = ''; // Nouvelle discipline
         }
         if(!this.hasOwnProperty('disciplineOrganisationId')){
-            //throw "disciplineOrganisationId manquant!";
+            //throw new Error("disciplineOrganisationId manquant!");
             this.disciplineOrganisationId = 1; // TEMPORAIRE
             console.log('disciplineOrganisationId temporaire: 1');
         }

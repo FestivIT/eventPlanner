@@ -11,15 +11,20 @@ eventplanner.eqLogic = {
             this.eqLogicId = ''; // Nouveau équipement
         }
         if(!this.hasOwnProperty('eqLogicEventId')){
-            throw "eqLogicEventId manquant!";
+            throw new Error("eqLogicEventId manquant!");
         }
         if(!this.hasOwnProperty('eqLogicDisciplineId')){
-            //throw "eqLogicDisciplineId manquant!";
+            //throw new Error("eqLogicDisciplineId manquant!");
             this.eqLogicDisciplineId = 1; // TEMPORAIRE
             console.log('eqLogicDisciplineId temporaire: 1');
         }
         if(!this.hasOwnProperty('eqLogicZoneId')){
-            this.eqLogicZoneId = eventplanner.zone.all()[0].zoneId; // Sélection par défaut d'une zone...
+            if(eventplanner.zone.all().length != 0){
+                this.eqLogicZoneId = eventplanner.zone.all()[0].zoneId; // Sélection par défaut d'une zone...
+            }else{
+                throw new Error("Créer d'abord une zone pour pouvoir créer un équipement!");
+            }
+            
         }
         if(!this.hasOwnProperty('eqLogicMatTypeId')){
             this.eqLogicMatTypeId = eventplanner.matType.all()[0].matTypeId; // Sélection par défaut d'un type...

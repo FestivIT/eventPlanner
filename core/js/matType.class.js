@@ -12,7 +12,7 @@ eventplanner.matType = {
             this.matTypeId = ''; // Nouveau matType
         }
         if(!this.hasOwnProperty('matTypeDisciplineId')){
-            //throw "matTypeDisciplineId manquant!";
+            //throw new Error("matTypeDisciplineId manquant!");
             this.matTypeDisciplineId = 1; // TEMPORAIRE
             console.log('matTypeDisciplineId temporaire: 1');
         }

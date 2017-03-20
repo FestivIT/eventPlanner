@@ -12,21 +12,21 @@ eventplanner.zone = {
             this.zoneId = ''; // Nouvelle zone
         }
         if(!this.hasOwnProperty('zoneEventId')){
-            throw "zoneEventId manquant!";
+            throw new Error("zoneEventId manquant!");
         }
         if(!this.hasOwnProperty('zoneEventLevelId')){
-            //throw "zoneEventLevelId manquant!";
+            //throw new Error("zoneEventLevelId manquant!");
             this.zoneEventLevelId = 1; // TEMPORAIRE
             console.log('zoneEventLevelId temporaire: 1');
         }
         if(!this.hasOwnProperty('zoneLocalisation')){
-            throw "zoneLocalisation manquant!";
+            throw new Error("zoneLocalisation manquant!");
         }
         if(!this.hasOwnProperty('zoneInstallDate')){
-            throw "zoneInstallDate manquant!";
+            throw new Error("zoneInstallDate manquant!");
         }
         if(!this.hasOwnProperty('zoneUninstallDate')){
-            throw "zoneUninstallDate manquant!";
+            throw new Error("zoneUninstallDate manquant!");
         }
         if(!this.hasOwnProperty('zoneState')){
             this.zoneState = 200;

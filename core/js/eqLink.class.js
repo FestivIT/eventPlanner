@@ -17,7 +17,7 @@ eventplanner.eqLink = {
             this.eqLinkId = ''; // Nouveau lien
         }
         if(!this.hasOwnProperty('eqLinkEventId')){
-            throw "eqLinkEventId manquant!";
+            throw new Error("eqLinkEventId manquant!");
         }
         if(!this.hasOwnProperty('eqLinkEqLogicId1')){
             this.eqLinkEqLogicId1 = '';

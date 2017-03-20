@@ -11,7 +11,7 @@ eventplanner.contact = {
             this.contactId = ''; // Nouveau contact
         }
         if(!this.hasOwnProperty('contactEventId')){
-            throw "contactEventId manquant!";
+            throw new Error("contactEventId manquant!");
         }
         if(!this.hasOwnProperty('contactName')){
             this.contactName = '';
@@ -32,6 +32,50 @@ eventplanner.contact = {
 
         this.remove = function(_params = {}){
             return eventplanner.contact.remove($.extend(_params, {id: this.contactId}));
+        }
+        
+        this.checkValues = function(){
+            if(this.contactEventId == ""){
+                throw new Error("Il n'y a pas d'événement rattaché au contact.");
+            }
+            
+            if(this.contactName == ""){
+                throw new Error("Le nom du contact ne peut pas être vide.");
+            }
+            
+            if(this.contactZoneId == ""){
+                this.contactZoneId = null;
+            }
+            
+            if(typeof this.contactCoord != 'array'){
+                throw new Error("Le format des coordonnées n'est pas correct.");
+            }
+            
+            return true;
+        }
+        
+        this.getValues = function(){
+            var values = {};
+            
+            for (keys in this){
+                if(typeof this[keys] != 'function'){
+                    if(keys.substring(0, "contact".length) == "contact"){
+                        values[firstToLowerCase(keys.substring("contact".length))] = this[keys];
+                    }
+                }
+            }
+            
+            return values;
+        };
+        
+        this.clone = function(){
+            return new eventplanner.contact.eventItem(this);
+        }
+        
+        this.save = function(_params = {}){
+            this.checkValues();
+
+            return eventplanner.contact.save($.extend({contact: this.getValues()}, _params));
         }
     },
     

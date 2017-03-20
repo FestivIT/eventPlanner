@@ -12,10 +12,10 @@ eventplanner.mission = {
             this.zoneId = ''; // Nouvelle mission
         }
         if(!this.hasOwnProperty('missionEventId')){
-            throw "missionEventId manquant!";
+            throw new Error("missionEventId manquant!");
         }
         if(!this.hasOwnProperty('missionDisciplineId')){
-            //throw "missionDisciplineId manquant!";
+            //throw new Error("missionDisciplineId manquant!");
             this.missionDisciplineId = 1; // TEMPORAIRE
             console.log('missionDisciplineId temporaire: 1');
         }
@@ -29,7 +29,7 @@ eventplanner.mission = {
             this.missionState = 400;
         }
         if(!this.hasOwnProperty('missionDate')){
-            this.missionDate = '0000-00-00 00:00:00';
+            this.missionDate = '2000-01-01 00:00:01';
         }
         if(!this.hasOwnProperty('missionZones')){
             this.missionZones = [];

@@ -62,12 +62,12 @@ class contact {
 		if($this->getId() == null){
 			DB::save($this);
 			if($_addMsg){
-				msg::add($this->getEventId(), $this->getZoneId(), null, $_SESSION['user']->getId(), "Création du contact", 'contact', 'add', $this);
+				msg::add($this->getEvent()->getOrganisationId(), null , $this->getEventId(), $this->getZoneId(), null, $_SESSION['user']->getId(), "Création du contact", 'contact', 'add', $this);
 			}
 		}else{
 			DB::save($this);
 			if($_addMsg){
-				msg::add($this->getEventId(), $this->getZoneId(), null, $_SESSION['user']->getId(), "Mise à jour du contact.", 'contact', 'update', $this);
+				msg::add($this->getEvent()->getOrganisationId(), null , $this->getEventId(), $this->getZoneId(), null, $_SESSION['user']->getId(), "Mise à jour du contact.", 'contact', 'update', $this);
 			}
 		}
 		return $this;
@@ -80,7 +80,7 @@ class contact {
 
 	public function remove($_addMsg = true) {
 		if($_addMsg){
-			msg::add($this->getEventId(), $this->getZoneId(), null, $_SESSION['user']->getId(), "Suppression du contact.", 'contact', 'remove', $this);
+			msg::add($this->getEvent()->getOrganisationId(), $_SESSION['user']->getDisciplineId(), $this->getEventId(), $this->getZoneId(), null, $_SESSION['user']->getId(), "Suppression du contact.", 'contact', 'remove', $this);
 		}
 
 		return DB::remove($this);
@@ -95,6 +95,9 @@ class contact {
 	}
 	public function getEventId() {
 		return $this->eventId;
+	}
+	public function getEvent() {
+		return event::byId($this->getEventId());
 	}
 	public function getName() {
 		return $this->name;

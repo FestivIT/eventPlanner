@@ -74,12 +74,12 @@ class eqLogicAttribute {
 		if($this->getId() == null){
 			DB::save($this);
 			if($_addMsg){
-				msg::add($this->getEqLogic()->getEventId(), $this->getEqLogic()->getZoneId(), $this->getEqLogicId(), $_SESSION['user']->getId(), "Création de l'attribut " . $this->getMatTypeAttribute()->getName() . " de l'équipement: " . $this->getEqLogic()->getZone()->getName() ." " . $this->getEqLogic()->getMatType()->getName(), 'eqLogicAttribute', 'add', $this);
+				msg::add($this->getEqLogic()->getEvent()->getOrganisationId(), $_SESSION['user']->getDisciplineId(), $this->getEqLogic()->getEventId(), $this->getEqLogic()->getZoneId(), $this->getEqLogicId(), $_SESSION['user']->getId(), "Création de l'attribut " . $this->getMatTypeAttribute()->getName() . " de l'équipement: " . $this->getEqLogic()->getZone()->getName() ." " . $this->getEqLogic()->getMatType()->getName(), 'eqLogicAttribute', 'add', $this);
 			}
 		}else{
 			DB::save($this);
 			if($_addMsg){
-				msg::add($this->getEqLogic()->getEventId(), $this->getEqLogic()->getZoneId(), $this->getEqLogicId(), $_SESSION['user']->getId(), "Mise à jour de l'attribut " . $this->getMatTypeAttribute()->getName() . " de l'équipement: " . $this->getEqLogic()->getZone()->getName() . " " . $this->getEqLogic()->getMatType()->getName(), 'eqLogicAttribute', 'update', $this);
+				msg::add($this->getEqLogic()->getEvent()->getOrganisationId(), $_SESSION['user']->getDisciplineId(), $this->getEqLogic()->getEventId(), $this->getEqLogic()->getZoneId(), $this->getEqLogicId(), $_SESSION['user']->getId(), "Mise à jour de l'attribut " . $this->getMatTypeAttribute()->getName() . " de l'équipement: " . $this->getEqLogic()->getZone()->getName() . " " . $this->getEqLogic()->getMatType()->getName(), 'eqLogicAttribute', 'update', $this);
 			}
 		}
 		return $this;
@@ -87,7 +87,7 @@ class eqLogicAttribute {
 
 	public function remove($_addMsg = true) {
 		if($_addMsg){
-			msg::add($this->getEqLogic()->getEventId(), $this->getEqLogic()->getZoneId(), $this->getEqLogicId(), $_SESSION['user']->getId(), "Suppression de l'attribut " . $this->getMatTypeAttribute()->getName() . " de l'équipement: " . $this->getEqLogic()->getZone()->getName() . " " . $this->getEqLogic()->getMatType()->getName(), 'eqLogicAttribute', 'remove', $this);
+			msg::add($this->getEqLogic()->getEvent()->getOrganisationId(), $_SESSION['user']->getDisciplineId(), $this->getEqLogic()->getEventId(), $this->getEqLogic()->getZoneId(), $this->getEqLogicId(), $_SESSION['user']->getId(), "Suppression de l'attribut " . $this->getMatTypeAttribute()->getName() . " de l'équipement: " . $this->getEqLogic()->getZone()->getName() . " " . $this->getEqLogic()->getMatType()->getName(), 'eqLogicAttribute', 'remove', $this);
 		}
 
 		return DB::remove($this);

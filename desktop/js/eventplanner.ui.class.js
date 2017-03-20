@@ -11,6 +11,7 @@ eventplanner.ui = {
   			eventplanner.ui.notification('error', _data.message);
   		}
   		// chargement des data, puis initialisation de l'interface
+  		try{
   		$.when(this.initData()).done(function(){
 	  		$.when(
 	  			eventplanner.ui.initselectors(),
@@ -25,6 +26,9 @@ eventplanner.ui = {
 					}
 				);
   		});
+  		}catch (e){
+  			eventplanner.ui.notification('error', "Impossible d'initialiser l'interface.<br>" + e.message);
+  		}
   		
   		// Gestion du multimodal: afficher le fond noir entre la dernière modal et l'avant dernière
   		$(document).on('show.bs.modal', '.modal', function () {
@@ -138,6 +142,8 @@ eventplanner.ui = {
 
 			var msgParam = {
 				id: '',
+				organisationId: eventplanner.ui.currentUser.getDiscipline().disciplineOrganisationId,
+				disciplineId: eventplanner.ui.currentUser.userDisciplineId,
 				eventId: eventplanner.ui.currentUser.userEventId,
 				userId: eventplanner.ui.currentUser.userId,
 				content: $(this).find('.msgFormInput').val(),
@@ -524,10 +530,17 @@ eventplanner.ui.inventaire ={
 		$('#inventaire').delegate('.editEqRealBtn', 'click', function () {
 			var eqRealId = $(this).attr('data-eqReal-id');
 			
-			if(eqRealId == 'new'){			
-				var eqRealItem = new eventplanner.eqReal.eqRealItem();
-				var eqRealModal = new eventplanner.ui.modal.EpModalEqRealConfiguration(eqRealItem);
-				eqRealModal.open();
+			if(eqRealId == 'new'){
+				try{
+					var eqRealItem = new eventplanner.eqReal.eqRealItem();
+				}catch (e) {
+					eventplanner.ui.notification('error', "Impossible de créer le matériel.<br>" + e.message);
+				}
+				
+				if(eqRealItem != undefined){
+					var eqRealModal = new eventplanner.ui.modal.EpModalEqRealConfiguration(eqRealItem);
+					eqRealModal.open();
+				}
 			}else{
 				var eqRealModal = new eventplanner.ui.modal.EpModalEqRealConfiguration(eventplanner.eqReal.byId(eqRealId));
 				eqRealModal.open();
@@ -654,9 +667,17 @@ eventplanner.ui.mattype = {
 			var matTypeId = $(this).attr('data-matType-id');
 			
 			if(matTypeId == 'new'){
-				var matTypeItem = new eventplanner.matType.matTypeItem();
-				var matTypeModal = new eventplanner.ui.modal.EpModalMatTypeConfiguration(matTypeItem);
-				matTypeModal.open();
+				try {
+				   	var matTypeItem = new eventplanner.matType.matTypeItem();
+				}
+				catch (e) {
+				   eventplanner.ui.notification('error', "Impossible de créer le type de matériel.<br>" + e.message);
+				}
+				
+				if(matTypeItem != undefined){
+					var matTypeModal = new eventplanner.ui.modal.EpModalMatTypeConfiguration(matTypeItem);
+					matTypeModal.open();
+				}
 			}else{
 				var matTypeModal = new eventplanner.ui.modal.EpModalMatTypeConfiguration(eventplanner.matType.byId(matTypeId));
 				matTypeModal.open();
@@ -799,9 +820,17 @@ eventplanner.ui.users = {
 			var userId = $(this).attr('data-user-id');
 			
 			if(userId == 'new'){
-				var userItem = new eventplanner.user.userItem();
-				var userModal = new eventplanner.ui.modal.EpModalUserConfiguration(userItem);
-				userModal.open();
+				try {
+				   	var userItem = new eventplanner.user.userItem();
+				}
+				catch (e) {
+				   eventplanner.ui.notification('error', "Impossible de créer l'utilisateur.<br>" + e.message);
+				}
+				
+				if(userItem != undefined){
+					var userModal = new eventplanner.ui.modal.EpModalUserConfiguration(userItem);
+					userModal.open();
+				}
 			}else{
 				var userModal = new eventplanner.ui.modal.EpModalUserConfiguration(eventplanner.user.byId(userId));	
 				userModal.open();
@@ -811,6 +840,7 @@ eventplanner.ui.users = {
 
 	constructUserTable: function(){
 		$("#userTable > tbody").loadTemplate($("#templateUserTable"), eventplanner.user.all());
+		$('#userTable').trigger('update');
 	}
 }
 
@@ -865,7 +895,7 @@ eventplanner.ui.events = {
 			return false;
 		});
 
-		$("#eventTable").bind("addItem", function(event, _userId){
+		$("#eventTable").bind("addItem", function(event, _eventId){
 			var newItem = $('<div>').loadTemplate($("#templateEventTable"), eventplanner.event.byId(_eventId, true));
 			$(this).find('tbody').append($(newItem).contents());
 
@@ -873,8 +903,9 @@ eventplanner.ui.events = {
 		});
 
 		$("#eventTable").delegate(".eventItem", "updateItem", function(){
+			console.log('TEST');
 			var eventId = $(this).attr('data-id');
-			var newItem = $('<div>').loadTemplate($("#templateEventTable"), eventplanner.event.byId(userId, true));
+			var newItem = $('<div>').loadTemplate($("#templateEventTable"), eventplanner.event.byId(eventId, true));
 			$(this).replaceWith($(newItem).contents());
 
 			$('#eventTable').trigger('update');
@@ -907,9 +938,19 @@ eventplanner.ui.events = {
 			var eventId = $(this).attr('data-event-id');
 			
 			if(eventId == 'new'){
-				var eventItem = new eventplanner.event.eventItem();
-				var eventModal = new eventplanner.ui.modal.EpModalEventConfiguration(eventItem);
-				eventModal.open();
+				try {
+				   	var eventItem = new eventplanner.event.eventItem({
+				   		eventOrganisationId: eventplanner.ui.currentUser.getDiscipline().getOrganisation().organisationId,
+				   	});
+				}
+				catch (e) {
+				   eventplanner.ui.notification('error', "Impossible de créer l'événement.<br>" + e.message);
+				}
+				
+				if(eventItem != undefined){
+					var eventModal = new eventplanner.ui.modal.EpModalEventConfiguration(eventItem);
+					eventModal.open();
+				}
 			}else{
 				var eventModal = new eventplanner.ui.modal.EpModalEventConfiguration(eventplanner.event.byId(eventId));
 				eventModal.open();	
@@ -919,6 +960,7 @@ eventplanner.ui.events = {
 
 	constructEventTable: function(){
 		$("#eventTable > tbody").loadTemplate($("#templateEventTable"), eventplanner.event.all());
+		$('#eventTable').trigger('update');
 	}
 }
 
@@ -949,9 +991,17 @@ eventplanner.ui.plans = {
 			var planId = $(this).attr('data-plan-id');
 			
 			if(planId == 'new'){
-				var planItem = new eventplanner.plan.planItem();
-				var planModal = new eventplanner.ui.modal.EpModalPlanConfiguration(planItem);
-				planModal.open();
+				try {
+				   	var planItem = new eventplanner.plan.planItem();
+				}
+				catch (e) {
+				   eventplanner.ui.notification('error', "Impossible de créer le plan.<br>" + e.message);
+				}
+				
+				if(planItem != undefined){
+					var planModal = new eventplanner.ui.modal.EpModalPlanConfiguration(planItem);
+					planModal.open();
+				}
 			}else{
 				var planModal = new eventplanner.ui.modal.EpModalPlanConfiguration(eventplanner.plan.byId(planId));
 				planModal.open();
@@ -963,6 +1013,7 @@ eventplanner.ui.plans = {
 
 	constructPlanTable: function(){
 		$("#planTable > tbody").loadTemplate($("#templatePlanTable"), eventplanner.plan.all());
+		$('#planTable').trigger('update');
 	}
 }
 
@@ -994,6 +1045,7 @@ eventplanner.ui.disciplines = {
 
 	constructDisciplineTable: function(){
 		$("#disciplineTable > tbody").loadTemplate($("#templateDisciplineTable"), eventplanner.discipline.all());
+		$('#disciplineTable').trigger('update');
 	}
 }
 
@@ -1014,16 +1066,23 @@ eventplanner.ui.map = {
 	        text: 'Ajouter une zone',
 	        callback: function(e) {
 		      	var currentEvent = eventplanner.event.byId(eventplanner.ui.currentUser.userEventId);
-
-		      	var zoneItem = new eventplanner.zone.zoneItem({
-					zoneEventId: currentEvent.eventId,
-					zoneLocalisation: e.latlng,
-					zoneInstallDate: currentEvent.eventStartDate,
-					zoneUninstallDate: currentEvent.eventEndDate,
-				});
 				
-				var zoneConfModal = new eventplanner.ui.modal.EpModalZoneConfiguration(zoneItem);
-				zoneConfModal.open();
+				try {
+				   	var zoneItem = new eventplanner.zone.zoneItem({
+						zoneEventId: currentEvent.eventId,
+						zoneLocalisation: e.latlng,
+						zoneInstallDate: currentEvent.eventStartDate,
+						zoneUninstallDate: currentEvent.eventEndDate,
+					});
+				}
+				catch (e) {
+				   eventplanner.ui.notification('error', "Impossible de créer la zone.<br>" + e.message);
+				}
+				
+				if(zoneItem != undefined){
+					var zoneConfModal = new eventplanner.ui.modal.EpModalZoneConfiguration(zoneItem);
+					zoneConfModal.open();
+				}
 		    }
 	    });
 	    
@@ -1233,13 +1292,20 @@ eventplanner.ui.map = {
 						    },{
 						        text: 'Créer une mission',
 						        callback: function(e) {
-									var missionItem = new eventplanner.mission.missionItem({
-										missionEventId: eventplanner.ui.currentUser.userEventId,
-										missionZones: [e.relatedTarget.zoneId.toString()],
-									});
+						        	try {
+										var missionItem = new eventplanner.mission.missionItem({
+											missionEventId: eventplanner.ui.currentUser.userEventId,
+											missionZones: [e.relatedTarget.zoneId.toString()],
+										});
+									}
+									catch (e) {
+									   eventplanner.ui.notification('error', "Impossible de créer la mission.<br>" + e.message);
+									}
 									
-									var missionConfModal = new eventplanner.ui.modal.EpModalMissionConfiguration(missionItem);							      
-									missionConfModal.open();
+									if(missionItem != undefined){
+										var missionConfModal = new eventplanner.ui.modal.EpModalMissionConfiguration(missionItem);							      
+										missionConfModal.open();
+									}
 							    }
 						    },  {
 						        text: 'Configurer',
@@ -1420,15 +1486,22 @@ eventplanner.ui.planning = {
 			
 			if(zoneId == 'new'){
 				var currentEvent = eventplanner.event.byId(eventplanner.ui.currentUser.userEventId);
-				var zoneItem = new eventplanner.zone.zoneItem({
-					zoneEventId: currentEvent.eventId,
-					zoneLocalisation: currentEvent.eventLocalisation,
-					zoneInstallDate: currentEvent.eventStartDate,
-					zoneUninstallDate: currentEvent.eventEndDate,
-				});
+				try {
+				   	var zoneItem = new eventplanner.zone.zoneItem({
+						zoneEventId: currentEvent.eventId,
+						zoneLocalisation: currentEvent.eventLocalisation,
+						zoneInstallDate: currentEvent.eventStartDate,
+						zoneUninstallDate: currentEvent.eventEndDate,
+					});
+				}
+				catch (e) {
+				   eventplanner.ui.notification('error', "Impossible de créer la zone.<br>" + e.message);
+				}
 				
-				var zoneConfModal = new eventplanner.ui.modal.EpModalZoneConfiguration(zoneItem);
-				zoneConfModal.open();
+				if(zoneItem != undefined){
+					var zoneConfModal = new eventplanner.ui.modal.EpModalZoneConfiguration(zoneItem);
+					zoneConfModal.open();
+				}
 			}else{
 				var zoneConfModal = new eventplanner.ui.modal.EpModalZoneConfiguration(eventplanner.zone.byId(zoneId));
 					zoneConfModal.open();
@@ -1476,14 +1549,21 @@ eventplanner.ui.planning = {
 			  zoneList.push($(zoneCb).data('zoneId'));
 			});
 
-			var missionItem = new eventplanner.mission.missionItem({
-				missionEventId: eventplanner.ui.currentUser.userEventId,
-				missionZones: zoneList,
-			});
+			try {
+			   	var missionItem = new eventplanner.mission.missionItem({
+					missionEventId: eventplanner.ui.currentUser.userEventId,
+					missionZones: zoneList,
+				});
+			}
+			catch (e) {
+			   eventplanner.ui.notification('error', "Impossible de créer la mission.<br>" + e.message);
+			}
 			
-			var missionConfModal = new eventplanner.ui.modal.EpModalMissionConfiguration(missionItem);
-			missionConfModal.open();
-
+			if(missionItem != undefined){
+				var missionConfModal = new eventplanner.ui.modal.EpModalMissionConfiguration(missionItem);
+				missionConfModal.open();
+			}
+			
 			return false;
 		});
 
@@ -1686,11 +1766,19 @@ eventplanner.ui.equipements = {
 			var eqId = $(this).attr('data-eq-id');
 			
 			if(eqId == 'new'){
-				var eqLogicItem = new eventplanner.eqLogic.eqLogicItem({
-					eqLogicEventId: eventplanner.ui.currentUser.userEventId
-				});
-				var eqModal = new eventplanner.ui.modal.EpModalEqConfiguration(eqLogicItem);
-				eqModal.open();
+				try {
+				   	var eqLogicItem = new eventplanner.eqLogic.eqLogicItem({
+						eqLogicEventId: eventplanner.ui.currentUser.userEventId
+					});
+				}
+				catch (e) {
+				   eventplanner.ui.notification('error', "Impossible de créer l'équipement.<br>" + e.message);
+				}
+				
+				if(eqLogicItem != undefined){
+					var eqModal = new eventplanner.ui.modal.EpModalEqConfiguration(eqLogicItem);
+					eqModal.open();
+				}
 			}else{
 				var eqModal = new eventplanner.ui.modal.EpModalEqConfiguration(eventplanner.eqLogic.byId(eqId));
 				eqModal.open();
@@ -1795,15 +1883,22 @@ eventplanner.ui.zones ={
 			
 			if(zoneId == 'new'){
 				var currentEvent = eventplanner.event.byId(eventplanner.ui.currentUser.userEventId);
-				var zoneItem = new eventplanner.zone.zoneItem({
-					zoneEventId: currentEvent.eventId,
-					zoneLocalisation: currentEvent.eventLocalisation,
-					zoneInstallDate: currentEvent.eventStartDate,
-					zoneUninstallDate: currentEvent.eventEndDate,
-				});
+				try {
+				   	var zoneItem = new eventplanner.zone.zoneItem({
+						zoneEventId: currentEvent.eventId,
+						zoneLocalisation: currentEvent.eventLocalisation,
+						zoneInstallDate: currentEvent.eventStartDate,
+						zoneUninstallDate: currentEvent.eventEndDate,
+					});
+				}
+				catch (e) {
+				   eventplanner.ui.notification('error', "Impossible de créer la zone.<br>" + e.message);
+				}
 				
-				var zoneConfModal = new eventplanner.ui.modal.EpModalZoneConfiguration(zoneItem);
-				zoneConfModal.open();
+				if(zoneItem != undefined){
+					var zoneConfModal = new eventplanner.ui.modal.EpModalZoneConfiguration(zoneItem);
+					zoneConfModal.open();
+				}
 			}else{
 				var zoneConfModal = new eventplanner.ui.modal.EpModalZoneConfiguration(eventplanner.zone.byId(zoneId));
 					zoneConfModal.open();
@@ -1891,12 +1986,19 @@ eventplanner.ui.mission ={
 			var missionId = $(this).attr('data-mission-id');
 			
 			if(missionId == 'new'){
-				var missionItem = new eventplanner.mission.missionItem({
-					missionEventId: eventplanner.ui.currentUser.userEventId
-				});
+				try {
+				   	var missionItem = new eventplanner.mission.missionItem({
+						missionEventId: eventplanner.ui.currentUser.userEventId
+					});
+				}
+				catch (e) {
+				   eventplanner.ui.notification('error', "Impossible de créer la mission.<br>" + e.message);
+				}
 				
-				var missionConfModal = new eventplanner.ui.modal.EpModalMissionConfiguration(missionItem);
-				missionConfModal.open();
+				if(missionItem != undefined){
+					var missionConfModal = new eventplanner.ui.modal.EpModalMissionConfiguration(missionItem);
+					missionConfModal.open();
+				}
 			}else{
 				var missionConfModal = new eventplanner.ui.modal.EpModalMissionConfiguration(eventplanner.mission.byId(missionId));
 				missionConfModal.open();
@@ -2166,11 +2268,19 @@ eventplanner.ui.contact = {
 			var contactId = $(this).attr('data-contact-id');
 			
 			if(contactId == 'new'){
-				var contactItem = new eventplanner.contact.contactItem({
-					contactEventId : eventplanner.ui.currentUser.userEventId
-				});
-				var contactModal = new eventplanner.ui.modal.EpModalContactConfiguration(contactItem);
-				contactModal.open();
+				try {
+				   	var contactItem = new eventplanner.contact.contactItem({
+						contactEventId : eventplanner.ui.currentUser.userEventId
+					});
+				}
+				catch (e) {
+				   eventplanner.ui.notification('error', "Impossible de créer le contact.<br>" + e.message);
+				}
+				
+				if(contactItem != undefined){
+					var contactModal = new eventplanner.ui.modal.EpModalContactConfiguration(contactItem);
+					contactModal.open();	
+				}
 			}else{
 				var contactModal = new eventplanner.ui.modal.EpModalContactConfiguration(eventplanner.contact.byId(contactId));	
 				contactModal.open();
@@ -3085,6 +3195,12 @@ eventplanner.ui.modal.EpModalZoneConfiguration = function(_zone){
 			}
 			
 			this.constructEqTable();
+
+			this.modal.find("#zoneEventLevelId").loadTemplate($("#templateZoneEventLevel"), eventplanner.eventLevel.all(true), {success: function(thisModal){
+				return function() {
+					thisModal.modal.find('#zoneEventLevelId option[value="' + thisModal.data.zoneEventLevelId + '"]').prop('selected', true);
+				}
+			}(this)});
 			
 			this.modal.find('.modalValidBtn').click(this, function(event){
 				event.data.modal.find('#zoneForm').submit();
@@ -3094,12 +3210,20 @@ eventplanner.ui.modal.EpModalZoneConfiguration = function(_zone){
 				var eqId = $(this).attr('data-eq-id');
 				
 				if(eqId == 'new'){
-					var eqLogicItem = new eventplanner.eqLogic.eqLogicItem({
-						eqLogicZoneId: event.data.data.zoneId,
-						eqLogicEventId: eventplanner.ui.currentUser.userEventId
-					});
-					var eqModal = new eventplanner.ui.modal.EpModalEqConfiguration(eqLogicItem);
-					eqModal.open();
+					try {
+					   	var eqLogicItem = new eventplanner.eqLogic.eqLogicItem({
+							eqLogicZoneId: event.data.data.zoneId,
+							eqLogicEventId: eventplanner.ui.currentUser.userEventId
+						});
+					}
+					catch (e) {
+					   eventplanner.ui.notification('error', "Impossible de créer l'équipement.<br>" + e.message);
+					}
+					
+					if(eqLogicItem != undefined){
+						var eqModal = new eventplanner.ui.modal.EpModalEqConfiguration(eqLogicItem);
+						eqModal.open();
+					}
 				}else{
 					var eqModal = new eventplanner.ui.modal.EpModalEqConfiguration(eventplanner.eqLogic.byId(eqId));
 					eqModal.open();
@@ -3125,6 +3249,7 @@ eventplanner.ui.modal.EpModalZoneConfiguration = function(_zone){
 			    var zoneParam = {
 			        id: event.data.data.zoneId,
 			        eventId: event.data.data.zoneEventId,
+			        eventLevelId: $(this).find("#zoneEventLevelId").val(),
 			        name: $(this).find("#zoneName").val(),
 			        localisation: event.data.zoneMarker.getLatLng(),
 			        installDate: formatDateDmy2Ymd($(this).find("#zoneInstallDate").val()),
@@ -3190,13 +3315,42 @@ eventplanner.ui.modal.EpModalEventConfiguration = function(_event){
 			});
 			
 			this.modal.find('#eventForm').submit(this, function(event) {
+				var newEvent = event.data.data.clone();
+				
+				newEvent.eventName = $(this).find("#eventName").val();
+			    newEvent.eventVille = $(this).find("#eventVille").val();				
+			    newEvent.eventLocalisation = event.data.eventMarker.getLatLng();
+			    newEvent.eventStartDate = formatDateDmy2Ymd($(this).find("#eventStartDate").val());
+			    newEvent.eventEndDate = formatDateDmy2Ymd($(this).find("#eventEndDate").val());
+				
+				try{
+					newEvent.save({
+					      success: function(thisModal){
+										return function(_data) {
+											eventplanner.ui.checkNewMsg();
+									        thisModal.close();
+											eventplanner.ui.notification('success', "Evenement enregistrée.");	
+										}
+									}(event.data),
+						  error: function(_data){
+					        eventplanner.ui.notification('error', "Impossible d'enregistrer l'événement.<br>" + _data.message);
+					      }			  
+					    });
+				}catch(e){
+					eventplanner.ui.notification('error', "Probléme lors de l'enregistrement.<br>" + e.message);
+				}
+				
+				
+				/*
 			    var eventParam = {
 			        id: event.data.data.eventId,
+			        organisationId: eventplanner.ui.currentUser.getDiscipline().getOrganisation().organisationId,
 			        name: $(this).find("#eventName").val(),
 			        ville: $(this).find("#eventVille").val(),
 			        localisation: event.data.eventMarker.getLatLng(),
 			        startDate: formatDateDmy2Ymd($(this).find("#eventStartDate").val()),
 			        endDate: formatDateDmy2Ymd($(this).find("#eventEndDate").val()),
+			        generalInfo: "",
 			        configuration: {}
 			    };
 
@@ -3213,6 +3367,7 @@ eventplanner.ui.modal.EpModalEventConfiguration = function(_event){
 			        eventplanner.ui.notification('error', "Impossible d'enregistrer l'événement.<br>" + _data.message);
 			      }			  
 			    });
+			    */
 			    return false;
 			});
 		}

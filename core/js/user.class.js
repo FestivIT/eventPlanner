@@ -13,7 +13,7 @@ eventplanner.user = {
             this.userId = ''; // Nouvel utilisateur
         }
         if(!this.hasOwnProperty('userDisciplineId')){
-            //throw "userDisciplineId manquant!";
+            //throw new Error("userDisciplineId manquant!");
             this.userDisciplineId = 1; // TEMPORAIRE
             console.log('userDisciplineId temporaire: 1');
         } 
@@ -39,7 +39,7 @@ eventplanner.user = {
             this.userEnable = '1';
         }
         if(!this.hasOwnProperty('userLastConnection')){
-            this.userLastConnection = '0000-00-00 00:00:00';
+            this.userLastConnection = '2000-01-01 00:00:01';
         }
         if(!this.hasOwnProperty('userRights')){
             this.userRights = {};

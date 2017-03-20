@@ -62,7 +62,7 @@ class zone {
         			$zone->setState($_state);
         			$zone->save(false);
         			
-	        		msg::add($zone->getEventId(), $zone->getId(), null, $_SESSION['user']->getId(), "Changement d'état de '" . getStateText($oldState) . "' à '" . getStateText($zone->getState()) . "'", 'zone', 'update', $zone);
+	        		msg::add($zone->getEvent()->getOrganisationId(), null, $zone->getEventId(), $zone->getId(), null, $_SESSION['user']->getId(), "Changement d'état de '" . getStateText($oldState) . "' à '" . getStateText($zone->getState()) . "'", 'zone', 'update', $zone);
 	     
 	        		$sqlIdList .= $separator . $id;
 		    		$separator = ', ';
@@ -94,12 +94,12 @@ class zone {
 		if($this->getId() == null){
 			DB::save($this);
 			if($_addMsg){
-				msg::add($this->getEventId(), $this->getId(), null, $_SESSION['user']->getId(), "Création de la zone.", 'zone', 'add', $this);
+				msg::add($this->getEvent()->getOrganisationId(), null, $this->getEventId(), $this->getId(), null, $_SESSION['user']->getId(), "Création de la zone.", 'zone', 'add', $this);
 			}
 		}else{
 			DB::save($this);
 			if($_addMsg){
-				msg::add($this->getEventId(), $this->getId(), null, $_SESSION['user']->getId(), "Mise à jour de la zone.", 'zone', 'update', $this);
+				msg::add($this->getEvent()->getOrganisationId(), null, $this->getEventId(), $this->getId(), null, $_SESSION['user']->getId(), "Mise à jour de la zone.", 'zone', 'update', $this);
 			}
 		}
 		return $this;
@@ -123,7 +123,7 @@ class zone {
 
 	public function remove($_addMsg = true) {
 		if($_addMsg){
-			msg::add($this->getEventId(), $this->getId(), null, $_SESSION['user']->getId(), "Suppression de la zone." , 'zone', 'remove', $this);
+			msg::add($this->getEvent()->getOrganisationId(), null, $this->getEventId(), $this->getId(), null, $_SESSION['user']->getId(), "Suppression de la zone." , 'zone', 'remove', $this);
 		}
 
 		return DB::remove($this);
@@ -138,6 +138,9 @@ class zone {
 	}
 	public function getEventId() {
 		return $this->eventId;
+	}
+	public function getEvent() {
+		return event::byId($this->getEventId());
 	}
 	public function getEventLevelId() {
 		return $this->eventLevelId;

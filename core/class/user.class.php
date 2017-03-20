@@ -150,12 +150,12 @@ class user {
 		if($this->getId() == null){
 			DB::save($this);
 			if($_addMsg){
-				msg::add(null, null, null, $_SESSION['user']->getId(), "Création de l'utilisateur: " . $this->getName(), 'user', 'add', $this);
+				msg::add($this->getDiscipline()->getOrganisationId(), $this->getDisciplineId(), null, null, null, $_SESSION['user']->getId(), "Création de l'utilisateur: " . $this->getName(), 'user', 'add', $this);
 			}
 		}else{
 			DB::save($this);
 			if($_addMsg){
-				msg::add(null, null, null, $_SESSION['user']->getId(), "Mise à jour de l'utilisateur: " . $this->getName(), 'user', 'update', $this);
+				msg::add($this->getDiscipline()->getOrganisationId(), $this->getDisciplineId(), null, null, null, $_SESSION['user']->getId(), "Mise à jour de l'utilisateur: " . $this->getName(), 'user', 'update', $this);
 			}
 		}
 
@@ -182,7 +182,7 @@ class user {
 
 	public function remove($_addMsg = true) {
 		if($_addMsg){
-			msg::add(null, null, null, $_SESSION['user']->getId(), "Suppression de l'utilisateur: " . $this->getName() , 'user', 'remove', $this);
+			msg::add($this->getDiscipline()->getOrganisationId(), $this->getDisciplineId(), null, null, null, $_SESSION['user']->getId(), "Suppression de l'utilisateur: " . $this->getName() , 'user', 'remove', $this);
 		}
 
 		return DB::remove($this);

@@ -8,6 +8,18 @@ eventplanner.msg = {
                 this[prop] = _data[prop];
             }
         }
+
+        this.getTextContent = function(){
+            switch(this.msgContent.type){
+                case "text":
+                    return this.msgContent.value.toLowerCase();
+                break;
+
+                default:
+                    return "";
+                break;
+            }
+        }
     },
 
     // Chargement initial des données depuis le serveur
@@ -36,15 +48,18 @@ eventplanner.msg = {
             pre_success: function(initialLoad){
                 return function(_data){
                     if(_data.state == 'ok'){
+                        eventplanner.updateDataFromServer('msg', _data.result);
+
                         var elementToUpdate = {
                             msg: {
                                 add:[]
                             }
                         };
 
-                        // Mise à jour de la liste des message
+                        // Traitement des datas du Msg
                         _data.result.forEach(function(element) {
-                            eventplanner.msg.container[element.msgId] = element;
+                            //eventplanner.msg.container[element.msgId] = element;
+
                             eventplanner.msg.lastMsgId = Math.max(eventplanner.msg.lastMsgId,element.msgId);
 
                             elementToUpdate['msg']['add'].push(element.msgId);
@@ -231,7 +246,7 @@ eventplanner.msg = {
             var dataSelection = Array();
 
             listAll.forEach(function(msg){
-                if(msg.msgContent.toLowerCase().indexOf(_searchVal.toLowerCase()) !== -1){
+                if(msg.msgContentText.indexOf(_searchVal.toLowerCase()) !== -1){
                     dataSelection.push(msg);
                 } else if(msg.hasOwnProperty('userName') && msg.userName.toLowerCase().indexOf(_searchVal.toLowerCase()) !== -1){
                     dataSelection.push(msg);
@@ -294,7 +309,7 @@ eventplanner.msg = {
             }
            
             // Concaténation
-            return $.extend(true, {}, _msgData, user, zone, eqLogic);
+            return $.extend(true, {msgContentText: _msgData.getTextContent()}, _msgData, user, zone, eqLogic);
         }
        
         if(is_object(_data)){

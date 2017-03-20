@@ -47,12 +47,12 @@ class discipline {
 		if($this->getId() == null){
 			DB::save($this);
 			if($_addMsg){
-				msg::add(null, null, null, $_SESSION['user']->getId(), "Création de la discipline", 'discipline', 'add', $this);
+				msg::add($this->getOrganisationId(), $this->getId(), null, null, null, $_SESSION['user']->getId(), "Création de la discipline", 'discipline', 'add', $this);
 			}
 		}else{
 			DB::save($this);
 			if($_addMsg){
-				msg::add(null, null, null, $_SESSION['user']->getId(), "Mise à jour de la discipline", 'discipline', 'update', $this);
+				msg::add($this->getOrganisationId(), $this->getId(), null, null, null, $_SESSION['user']->getId(), "Mise à jour de la discipline", 'discipline', 'update', $this);
 			}
 		}
 		return $this;
