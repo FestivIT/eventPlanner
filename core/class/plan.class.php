@@ -166,7 +166,7 @@ class plan {
 
 	public function makeTiles(){
 		$planBounds = $this->getBounds();
-		return exec("sh " . dirname(__FILE__) . "/../shell/maketile.sh " . $this->getId() . " 16542 11694 '" . round($planBounds[0]['lng'], 6) . "' '" . round($planBounds[0]['lat'], 6) . "' '" . round($planBounds[1]['lng'], 6) . "' '" . round($planBounds[1]['lat'], 6) . "' '" . round($planBounds[2]['lng'], 6) . "' '" . round($planBounds[2]['lat'], 6) . "' " . $this->calcDensityHD() . " > " . dirname(__FILE__) . "/../../ressources/eventPlan/" . $this->getId() . "/log.txt 2>&1 &");
+		return exec("sh " . dirname(__FILE__) . "/../shell/maketile.sh " . $this->getId() . " '" . round($planBounds[0]['lng'], 6) . "' '" . round($planBounds[0]['lat'], 6) . "' '" . round($planBounds[1]['lng'], 6) . "' '" . round($planBounds[1]['lat'], 6) . "' '" . round($planBounds[2]['lng'], 6) . "' '" . round($planBounds[2]['lat'], 6) . "' " . $this->calcDensityHD() . " > " . dirname(__FILE__) . "/../../ressources/eventPlan/" . $this->getId() . "/log.txt 2>&1 &");
 	}
 
 }
