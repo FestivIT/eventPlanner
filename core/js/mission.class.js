@@ -77,11 +77,11 @@ eventplanner.mission = {
 				throw new Error("Le format de la date n'est pas valide.");
 			}
 			
-		    if(typeof this.missionZones != "array"){
+		    if(!is_array(this.missionZones)){
 				throw new Error("La liste des zones de cette mission doit être un tableau.");
 			}
 			
-		    if(typeof this.missionUsers != "array"){
+		    if(!is_array(this.missionUsers)){
 				throw new Error("La liste des utilisateurs sur cette mission doit être un tableau.");
 			}
 			
