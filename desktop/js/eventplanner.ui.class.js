@@ -3924,13 +3924,19 @@ eventplanner.ui.modal.EpModalPlanConfiguration = function(_plan){
 				var newPlan = event.data.data.clone();
 				
 				newPlan.planName = $(this).find("#planName").val();
+				newPlan.planBounds = event.data.bounds;
 				
 				try{
 					newPlan.save({
 						  success: function(thisModal){
 										return function(_data) {
 											eventplanner.ui.checkNewMsg();
-											thisModal.close();
+											if(thisModal.data.planId==""){
+												thisModal.data.planId = _data.planId;
+												thisModal.initUpload();
+											}else{
+												thisModal.close();
+											}
 											eventplanner.ui.notification('success', "Plan enregistré.");	
 										}
 									}(event.data),
