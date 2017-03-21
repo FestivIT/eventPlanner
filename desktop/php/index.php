@@ -176,7 +176,7 @@ include_file('desktop', 'commun', 'css');
 		                <ul class="dropdown-menu">
 		                  	<li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="userinfos"><i class="glyphicon glyphicon-briefcase"></i>&nbsp;&nbsp;Mes infos</a></li>
 		                	<li class="divider hidden-xs"></li>
-		                	<li><a href="<?php echo $homeLink; ?>&logout=1" data-toggle="collapse" data-target=".navbar-collapse.in"><i class="glyphicon glyphicon-off"></i>&nbsp;&nbsp;Se déconnecter</a></li>
+		                	<li><a href="index.php?logout=1" data-toggle="collapse" data-target=".navbar-collapse.in"><i class="glyphicon glyphicon-off"></i>&nbsp;&nbsp;Se déconnecter</a></li>
 		                </ul>
 		            </li>
 		        </ul>
