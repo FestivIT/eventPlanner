@@ -47,7 +47,7 @@ eventplanner.plan = {
                 throw new Error("Le plan doit être rattaché à une organisation.");
             }
 			
-            if(!is_array(this.planBounds){
+            if(!is_array(this.planBounds)){
                 throw new Error("Les points géographiques du plan doivent etre un tableau.");
             }
             
