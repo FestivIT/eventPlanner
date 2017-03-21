@@ -78,7 +78,7 @@ eventplanner.eqLink = {
                 throw new Error("Le type du lien ne peut pas être vide.");
             }
 			
-            if(typeof this.eqLinkConfiguration != "array"){
+            if(!is_array(this.eqLinkConfiguration)){
                 throw new Error("La configuration du lien doit être un tableau.");
             }
             

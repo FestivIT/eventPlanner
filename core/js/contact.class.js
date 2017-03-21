@@ -47,7 +47,7 @@ eventplanner.contact = {
                 this.contactZoneId = null;
             }
             
-            if(typeof this.contactCoord != 'array'){
+            if(!is_array(this.contactCoord)){
                 throw new Error("Le format des coordonnées n'est pas correct.");
             }
             
