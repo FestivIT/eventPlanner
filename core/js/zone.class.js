@@ -15,9 +15,7 @@ eventplanner.zone = {
             throw new Error("zoneEventId manquant!");
         }
         if(!this.hasOwnProperty('zoneEventLevelId')){
-            //throw new Error("zoneEventLevelId manquant!");
-            this.zoneEventLevelId = 1; // TEMPORAIRE
-            console.log('zoneEventLevelId temporaire: 1');
+            throw new Error("zoneEventLevelId manquant!");
         }
         if(!this.hasOwnProperty('zoneLocalisation')){
             throw new Error("zoneLocalisation manquant!");
@@ -49,6 +47,54 @@ eventplanner.zone = {
 
         this.remove = function(_params = {}){
             return eventplanner.zone.remove($.extend(_params, {id: this.zoneId}));
+        }
+		
+        this.checkValues = function(){		
+            if(this.zoneEventId == ""){
+                throw new Error("La zone doit être rattaché à un événement.");
+            }
+			
+            if(this.zoneEventLevelId == ""){
+                throw new Error("La zone doit être rattachée à un niveau.");
+            }
+			
+            if(this.zoneInstallDate == ""){
+                throw new Error("Le format de la date d'installation de la zone n'est pas valide.");
+            }
+			
+            if(this.zoneUninstallDate == ""){
+                throw new Error("Le format de la date de désinstallation de la zone n'est pas valide.");
+            }
+			
+            if(this.zoneState <= 0){
+                throw new Error("L'état de la zone n'est pas valide.");
+            }
+			            
+            return true;
+        }
+        
+        this.getValues = function(){
+            var values = {};
+            
+            for (keys in this){
+                if(typeof this[keys] != 'function'){
+                    if(keys.substring(0, "zone".length) == "zone"){
+                        values[firstToLowerCase(keys.substring("zone".length))] = this[keys];
+                    }
+                }
+            }
+            
+            return values;
+        };
+        
+        this.clone = function(){
+            return new eventplanner.zone.zoneItem(this);
+        }
+        
+        this.save = function(_params = {}){
+            this.checkValues();
+
+            return eventplanner.zone.save($.extend({zone: this.getValues()}, _params));
         }
     },
     

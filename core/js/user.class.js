@@ -13,9 +13,7 @@ eventplanner.user = {
             this.userId = ''; // Nouvel utilisateur
         }
         if(!this.hasOwnProperty('userDisciplineId')){
-            //throw new Error("userDisciplineId manquant!");
-            this.userDisciplineId = 1; // TEMPORAIRE
-            console.log('userDisciplineId temporaire: 1');
+            throw new Error("userDisciplineId manquant!");
         } 
         if(!this.hasOwnProperty('userLogin')){
             this.userLogin = '';
@@ -55,6 +53,74 @@ eventplanner.user = {
 
         this.remove = function(_params = {}){
             return eventplanner.user.remove($.extend(_params, {id: this.userId}));
+        }
+		
+        this.checkValues = function(){            
+            if(this.userDisciplineId == ""){
+                throw new Error("L'utilisateur doit être rattaché à une discipline.");
+            }
+			
+            if(this.userLogin == ""){
+                throw new Error("Le login de l'utilisateur ne peut pas être vide.");
+            }
+			
+            if(this.userName == ""){
+                throw new Error("Le nom de l'utilisateur ne peut pas être vide.");
+            }
+			
+            if(this.userEventId == ""){
+                this.userEventId = null;
+            }
+			
+            if(this.userEventLevelId == ""){
+                this.userEventLevelId = null;
+            }
+			
+            if(this.userActionOnScan == ""){
+                this.userActionOnScan = "zone";
+            }
+			
+            if(this.userSlackID == ""){
+            
+			}
+			
+            if(this.userEnable != "0" && this.userEnable != "1"){
+                throw new Error("Le format de l'activation de l'utilisateur n'est pas correct (0 ou 1).");
+            }
+			
+            if(this.userLastConnection == ""){
+                throw new Error("La date de dernière connection de l'utilisateur n'est pas correct.");
+            }
+			
+            if(typeof this.userRights != "object"){
+                throw new Error("Les droits d'utilisateurs doivent être un objet.");
+            }
+            
+            return true;
+        }
+        
+        this.getValues = function(){
+            var values = {};
+            
+            for (keys in this){
+                if(typeof this[keys] != 'function'){
+                    if(keys.substring(0, "user".length) == "user"){
+                        values[firstToLowerCase(keys.substring("user".length))] = this[keys];
+                    }
+                }
+            }
+            
+            return values;
+        };
+        
+        this.clone = function(){
+            return new eventplanner.user.userItem(this);
+        }
+        
+        this.save = function(_params = {}){
+            this.checkValues();
+
+            return eventplanner.user.save($.extend({user: this.getValues()}, _params));
         }
     },
     

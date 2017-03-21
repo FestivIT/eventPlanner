@@ -12,9 +12,7 @@ eventplanner.plan = {
             this.planId = ''; // Nouveau plan
         }
         if(!this.hasOwnProperty('planOrganisationId')){
-            //throw new Error("planOrganisationId manquant!");
-            this.planOrganisationId = 1; // TEMPORAIRE
-            console.log('planOrganisationId temporaire: 1');
+            throw new Error("planOrganisationId manquant!");
         }
         if(!this.hasOwnProperty('planName')){
             this.planName = "";
@@ -38,6 +36,46 @@ eventplanner.plan = {
 
         this.remove = function(_params = {}){
             return eventplanner.plan.remove($.extend(_params, {id: this.planId}));
+        }
+		
+        this.checkValues = function(){            
+            if(this.planName == ""){
+                throw new Error("Le nom du plan ne peut pas être vide.");
+            }
+			
+            if(this.planOrganisationId == ""){
+                throw new Error("Le plan doit être rattaché à une organisation.");
+            }
+			
+            if(typeof this.planBounds != "array"){
+                throw new Error("Les points géographiques du plan doivent etre un tableau.");
+            }
+            
+            return true;
+        }
+        
+        this.getValues = function(){
+            var values = {};
+            
+            for (keys in this){
+                if(typeof this[keys] != 'function'){
+                    if(keys.substring(0, "plan".length) == "plan"){
+                        values[firstToLowerCase(keys.substring("plan".length))] = this[keys];
+                    }
+                }
+            }
+            
+            return values;
+        };
+        
+        this.clone = function(){
+            return new eventplanner.plan.planItem(this);
+        }
+        
+        this.save = function(_params = {}){
+            this.checkValues();
+
+            return eventplanner.plan.save($.extend({plan: this.getValues()}, _params));
         }
     },
     

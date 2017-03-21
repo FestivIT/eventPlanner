@@ -15,9 +15,7 @@ eventplanner.mission = {
             throw new Error("missionEventId manquant!");
         }
         if(!this.hasOwnProperty('missionDisciplineId')){
-            //throw new Error("missionDisciplineId manquant!");
-            this.missionDisciplineId = 1; // TEMPORAIRE
-            console.log('missionDisciplineId temporaire: 1');
+            throw new Error("missionDisciplineId manquant!");
         }
         if(!this.hasOwnProperty('missionName')){
             this.missionName = "";
@@ -56,6 +54,62 @@ eventplanner.mission = {
 
         this.remove = function(_params = {}){
             return eventplanner.mission.remove($.extend(_params, {id: this.missionId}));
+        }
+		
+        this.checkValues = function(){
+        	if(this.missionEventId == ""){
+				throw new Error("La mission doit être rattaché à un événement.");
+			}
+			
+        	if(this.missionDisciplineId == ""){
+				throw new Error("La mission doit être rattaché à une discipline.");
+			}
+			
+			if(this.missionName == ""){
+				throw new Error("Le nom de la mission ne peut pas être vide.");
+			}
+			
+		    if(this.missionState <= 0){
+				throw new Error("L'état de la mission n'est pas valide.");
+			}
+			
+		    if(this.missionDate == ""){
+				throw new Error("Le format de la date n'est pas valide.");
+			}
+			
+		    if(typeof this.missionZones != "array"){
+				throw new Error("La liste des zones de cette mission doit être un tableau.");
+			}
+			
+		    if(typeof this.missionUsers != "array"){
+				throw new Error("La liste des utilisateurs sur cette mission doit être un tableau.");
+			}
+			
+			return true;
+        }
+        
+        this.getValues = function(){
+        	var values = {};
+        	
+        	for (keys in this){
+        		if(typeof this[keys] != 'function'){
+        			if(keys.substring(0, "mission".length) == "mission"){
+        				values[firstToLowerCase(keys.substring("mission".length))] = this[keys];
+        			}
+        		}
+        	}
+        	
+        	return values;
+        };
+        
+        this.clone = function(){
+            return new eventplanner.mission.missionItem(this);
+        }
+        
+        this.save = function(_params = {}){
+        	this.checkValues();
+
+			return eventplanner.mission.save($.extend({mission: this.getValues()}, _params));
         }
     },
 

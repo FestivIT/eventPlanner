@@ -69,7 +69,7 @@ eventplanner.contact = {
         };
         
         this.clone = function(){
-            return new eventplanner.contact.eventItem(this);
+            return new eventplanner.contact.contactItem(this);
         }
         
         this.save = function(_params = {}){

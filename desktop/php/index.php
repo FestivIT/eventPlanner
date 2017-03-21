@@ -4,7 +4,6 @@ include_file('core', 'authentification', 'php');
 global $EVENTPLANNER_INTERNAL_CONFIG;
 
 ?>
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -156,7 +155,7 @@ include_file('desktop', 'commun', 'css');
 	          	<a href="#" class="navbar-icon pull-right visible-xs navBarBtn" data-link="map"><i class="fa fa-map-o"></i></a>
 	          	<a href="#" class="navbar-icon pull-right visible-xs navBarBtn" data-link="dashboard"><i class="glyphicon glyphicon-th"></i></a>
 	          </div>
-	          <a class="navbar-brand" href="index.php"><span><img alt="Brand" src="desktop/img/logo25.png"></span> <span class="hidden-xs">eventPlanner</span></a>
+	          <a class="navbar-brand" href="index.php"><span><img alt="eventPlanner" src="desktop/img/logo25.png"></span> <span class="hidden-xs">eventPlanner</span></a>
 	        </div>
 
 	        <div class="navbar-collapse collapse">
@@ -212,7 +211,7 @@ include_file('desktop', 'commun', 'css');
 	            </li>
 	          </ul>
 
-	          <div class="nav navbar-nav mapModeMenu btn-group" style="display: none;">
+	          <div class="nav navbar-nav mapModeMenu btn-group hidden-xs" style="display: none;">
 				  <button type="button" class="btn navbar-btn btn-default mapModeMenuLabel">Mode: Démontage</button>
 				  <button type="button" class="btn navbar-btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 				    <span class="caret"></span>

@@ -60,6 +60,54 @@ eventplanner.eqLink = {
         this.remove = function(_params = {}){
             return eventplanner.eqLink.remove($.extend(_params, {id: this.eqLinkId}));
         }
+        
+        this.checkValues = function(){            
+            if(this.eqLinkEventId == ""){
+                throw new Error("Le lien doit être rattaché à un événement.");
+            }
+            
+            if(this.eqLinkEqLogicId1 == ""){
+                throw new Error("Le tenant du lien doit être rattaché à un équipement.");
+            }
+			
+            if(this.eqLinkEqLogicId2 == ""){
+                throw new Error("L'aboutissant du lien doit être rattaché à un équipement.");
+            }
+			
+            if(this.eqLinkType == ""){
+                throw new Error("Le type du lien ne peut pas être vide.");
+            }
+			
+            if(typeof this.eqLinkConfiguration != "array"){
+                throw new Error("La configuration du lien doit être un tableau.");
+            }
+            
+            return true;
+        }
+        
+        this.getValues = function(){
+            var values = {};
+            
+            for (keys in this){
+                if(typeof this[keys] != 'function'){
+                    if(keys.substring(0, "eqLink".length) == "eqLink"){
+                        values[firstToLowerCase(keys.substring("eqLink".length))] = this[keys];
+                    }
+                }
+            }
+            
+            return values;
+        };
+        
+        this.clone = function(){
+            return new eventplanner.eqLink.eqLinkItem(this);
+        }
+        
+        this.save = function(_params = {}){
+            this.checkValues();
+
+            return eventplanner.eqLink.save($.extend({eqLink: this.getValues()}, _params));
+        }
     },
     
 

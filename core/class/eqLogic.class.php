@@ -12,7 +12,6 @@ class eqLogic {
 	private $zoneId;
 	private $matTypeId;
 	private $eqRealId;
-	private $ip;
 	private $comment;
 	private $state;
 	private $localisation;
@@ -161,9 +160,6 @@ class eqLogic {
 			return false;
 		}
 	}
-	public function getIp() {
-		return $this->ip;
-	}
 	public function getComment() {
 		return $this->comment;
 	}
@@ -194,9 +190,6 @@ class eqLogic {
 	}
 	public function setEqRealId($eqRealId) {
 		$this->eqRealId = $eqRealId;
-	}
-	public function setIp($ip) {
-		$this->ip = $ip;
 	}
 	public function setComment($comment) {
 		$this->comment = $comment;

@@ -18,6 +18,38 @@ eventplanner.organisation = {
         this.remove = function(_params = {}){
             return eventplanner.organisation.remove($.extend(_params, {id: this.organisationId}));
         }
+		
+        this.checkValues = function(){            
+            if(this.organisationName == ""){
+                throw new Error("Le nom de l'organisation ne peut pas être vide.");
+            }
+            
+            return true;
+        }
+        
+        this.getValues = function(){
+            var values = {};
+            
+            for (keys in this){
+                if(typeof this[keys] != 'function'){
+                    if(keys.substring(0, "organisation".length) == "organisation"){
+                        values[firstToLowerCase(keys.substring("organisation".length))] = this[keys];
+                    }
+                }
+            }
+            
+            return values;
+        };
+        
+        this.clone = function(){
+            return new eventplanner.organisation.organisationItem(this);
+        }
+        
+        this.save = function(_params = {}){
+            this.checkValues();
+
+            return eventplanner.organisation.save($.extend({organisation: this.getValues()}, _params));
+        }
     },
     
     // Chargement initial des données depuis le serveur

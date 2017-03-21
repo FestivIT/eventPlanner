@@ -20,6 +20,42 @@ eventplanner.msg = {
                 break;
             }
         }
+		
+        this.checkValues = function(){
+        	if(this.msgDate == ""){
+				throw new Error("Le format de la date n'est pas valide.");
+			}
+			
+			if(this.msgUserId == ""){
+				throw new Error("Le message doit être rattaché à un utilisateur.");
+			}
+			
+			return true;
+        }
+        
+        this.getValues = function(){
+        	var values = {};
+        	
+        	for (keys in this){
+        		if(typeof this[keys] != 'function'){
+        			if(keys.substring(0, "msg".length) == "msg"){
+        				values[firstToLowerCase(keys.substring("msg".length))] = this[keys];
+        			}
+        		}
+        	}
+        	
+        	return values;
+        };
+        
+        this.clone = function(){
+            return new eventplanner.msg.msgItem(this);
+        }
+        
+        this.save = function(_params = {}){
+        	this.checkValues();
+
+			return eventplanner.msg.save($.extend({msg: this.getValues()}, _params));
+        }
     },
 
     // Chargement initial des données depuis le serveur

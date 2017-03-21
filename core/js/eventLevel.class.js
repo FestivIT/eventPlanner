@@ -31,6 +31,46 @@ eventplanner.eventLevel = {
         this.remove = function(_params = {}){
             return eventplanner.eventLevel.remove($.extend(_params, {id: this.eventLevelId}));
         }
+        
+        this.checkValues = function(){
+        	if(this.eventLevelEventId == ""){
+				throw new Error("Le niveau doit être rattaché à un événement.");
+			}
+			
+			if(this.eventLevelName == ""){
+				throw new Error("Le nom du niveau ne peut pas être vide.");
+			}
+			
+		    if(this.eventLevelPlanId == ""){
+				this.eventLevelPlanId = null;
+			}
+			
+			return true;
+        }
+        
+        this.getValues = function(){
+        	var values = {};
+        	
+        	for (keys in this){
+        		if(typeof this[keys] != 'function'){
+        			if(keys.substring(0, "eventLevel".length) == "eventLevel"){
+        				values[firstToLowerCase(keys.substring("eventLevel".length))] = this[keys];
+        			}
+        		}
+        	}
+        	
+        	return values;
+        };
+        
+        this.clone = function(){
+            return new eventplanner.eventLevel.eventLevelItem(this);
+        }
+        
+        this.save = function(_params = {}){
+        	this.checkValues();
+
+			return eventplanner.eventLevel.save($.extend({eventLevel: this.getValues()}, _params));
+        }
     },
 
     // Chargement initial des données depuis le serveur

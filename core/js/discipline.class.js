@@ -11,9 +11,7 @@ eventplanner.discipline = {
             this.disciplineId = ''; // Nouvelle discipline
         }
         if(!this.hasOwnProperty('disciplineOrganisationId')){
-            //throw new Error("disciplineOrganisationId manquant!");
-            this.disciplineOrganisationId = 1; // TEMPORAIRE
-            console.log('disciplineOrganisationId temporaire: 1');
+            throw new Error("disciplineOrganisationId manquant!");
         }
         if(!this.hasOwnProperty('disciplineName')){
             this.disciplineName = ''; 
@@ -25,6 +23,42 @@ eventplanner.discipline = {
 
         this.remove = function(_params = {}){
             return eventplanner.discipline.remove($.extend(_params, {id: this.disciplineId}));
+        }
+        
+        this.checkValues = function(){            
+            if(this.disciplineOrganisationId == ""){
+                throw new Error("La discipline doit être rattachée à une organisation.");
+            }
+            
+            if(this.disciplineName == ""){
+                throw new Error("Le nom de la discipline ne peut pas être vide.");
+            }
+            
+            return true;
+        }
+        
+        this.getValues = function(){
+            var values = {};
+            
+            for (keys in this){
+                if(typeof this[keys] != 'function'){
+                    if(keys.substring(0, "discipline".length) == "discipline"){
+                        values[firstToLowerCase(keys.substring("discipline".length))] = this[keys];
+                    }
+                }
+            }
+            
+            return values;
+        };
+        
+        this.clone = function(){
+            return new eventplanner.discipline.disciplineItem(this);
+        }
+        
+        this.save = function(_params = {}){
+            this.checkValues();
+
+            return eventplanner.discipline.save($.extend({discipline: this.getValues()}, _params));
         }
     },
     

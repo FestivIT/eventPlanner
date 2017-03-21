@@ -12,12 +12,14 @@ eventplanner.eqReal = {
             this.eqRealId = ''; // Nouveau matériel
         }
         if(!this.hasOwnProperty('eqRealDisciplineId')){
-            //throw new Error("eqRealDisciplineId manquant!");
-            this.eqRealDisciplineId = 1; // TEMPORAIRE
-            console.log('eqRealDisciplineId temporaire: 1');
+            throw new Error("eqRealDisciplineId manquant!");
         }
         if(!this.hasOwnProperty('eqRealMatTypeId')){
-            this.eqRealMatTypeId = eventplanner.matType.all()[0].matTypeId; // Sélection par défaut d'un type...
+            if(eventplanner.matType.all().length != 0){
+                this.eqRealMatTypeId = eventplanner.matType.all()[0].matTypeId;
+            }else{
+                throw new Error("Créer d'abord un type de matériel pour pouvoir créer un équipement!");
+            }
         }
         if(!this.hasOwnProperty('eqRealName')){
             this.eqRealName = ""; 
@@ -42,6 +44,50 @@ eventplanner.eqReal = {
 
         this.remove = function(_params = {}){
             return eventplanner.eqReal.remove($.extend(_params, {id: this.eqRealId}));
+        }
+        
+        this.checkValues = function(){            
+            if(this.eqRealDisciplineId == ""){
+                throw new Error("Le matériel doit être rattaché à une discipline.");
+            }
+            
+            if(this.eqRealMatTypeId == ""){
+                throw new Error("Un type de matériel doit être défini.");
+            }         
+			
+            if(this.eqRealName == ""){
+                throw new Error("Le nom du matériel ne peut pas être vide.");
+            } 
+			
+            if(this.eqRealState <= 0){
+                throw new Error("L'état du matériel n'est pas valide.");
+            }
+                        
+            return true;
+        }
+        
+        this.getValues = function(){
+            var values = {};
+            
+            for (keys in this){
+                if(typeof this[keys] != 'function'){
+                    if(keys.substring(0, "eqReal".length) == "eqReal"){
+                        values[firstToLowerCase(keys.substring("eqReal".length))] = this[keys];
+                    }
+                }
+            }
+            
+            return values;
+        };
+        
+        this.clone = function(){
+            return new eventplanner.eqReal.eqRealItem(this);
+        }
+        
+        this.save = function(_params = {}){
+            this.checkValues();
+
+            return eventplanner.eqReal.save($.extend({eqReal: this.getValues()}, _params));
         }
     },
 

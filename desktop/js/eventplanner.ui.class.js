@@ -254,7 +254,7 @@ eventplanner.ui = {
 
 	configEventMenu: function() {
 		if(eventplanner.ui.currentUser.userEventId != null){
-			var currentEvent = eventplanner.event.byId(eventplanner.ui.currentUser.userEventId);
+			var currentEvent = eventplanner.ui.currentUser.getEvent();
 
 			eventplanner.ui.eventMenu.empty();
 			eventplanner.ui.eventMenu.append($('<i />', {
@@ -389,7 +389,6 @@ eventplanner.ui.search = {
 		    },
 		    callback: {
 		    	onClickBefore: function (node, a, item, event) {
-		    		console.log(item.id);
 		    		if(item.type="Zone"){
 						var zone = eventplanner.zone.byId(item.id);
 					}
@@ -428,20 +427,28 @@ eventplanner.ui.dashboard = {
 		$('#dashboard').delegate('.selectEventBtn', 'click', function (event) {
 			if($(this).attr('data-event-id') != eventplanner.ui.currentUser.userEventId){
 				var eventSelected = eventplanner.event.byId($(this).attr('data-event-id'));
-
-				eventplanner.user.save({
-					user: {
-						id: eventplanner.ui.currentUser.userId,
-						eventId: eventSelected.eventId,
-						eventLevelId: eventSelected.eventDefaultEventLevelId,
-					} ,success: function(_data) {
-						eventplanner.ui.currentUser = _data;
-						eventplanner.ui.notification('success', "Changement enregistré.");	
-						$.when(eventplanner.ui.init()).then(function(){
-							eventplanner.ui.loadPage('map');
+				
+				var newUser = eventplanner.ui.currentUser.clone();
+				
+				newUser.userEventId = eventSelected.eventId;
+				newUser.userEventLevelId = eventSelected.eventDefaultEventLevelId;
+			    				
+				try{
+					newUser.save({
+						success: function(_data) {
+								eventplanner.ui.currentUser = new eventplanner.user.userItem(_data);
+								eventplanner.ui.notification('success', "Changement enregistré.");
+								$.when(eventplanner.ui.init()).then(function(){
+									eventplanner.ui.loadPage('map');
+								});
+							},
+						error: function(_data){
+							eventplanner.ui.notification('error', "Impossible d'enregistrer la modification.<br>" + _data.message);
+						  }	
 						});
-					}
-				});
+				}catch(e){
+					eventplanner.ui.notification('error', "Probléme lors de l'enregistrement.<br>" + e.message);
+				}
 			}else{
 				eventplanner.ui.loadPage('map');
 			}
@@ -532,7 +539,9 @@ eventplanner.ui.inventaire ={
 			
 			if(eqRealId == 'new'){
 				try{
-					var eqRealItem = new eventplanner.eqReal.eqRealItem();
+					var eqRealItem = new eventplanner.eqReal.eqRealItem({
+				   		eqRealDisciplineId: eventplanner.ui.currentUser.userDisciplineId
+					});
 				}catch (e) {
 					eventplanner.ui.notification('error', "Impossible de créer le matériel.<br>" + e.message);
 				}
@@ -668,7 +677,9 @@ eventplanner.ui.mattype = {
 			
 			if(matTypeId == 'new'){
 				try {
-				   	var matTypeItem = new eventplanner.matType.matTypeItem();
+				   	var matTypeItem = new eventplanner.matType.matTypeItem({
+				   		matTypeDisciplineId: eventplanner.ui.currentUser.userDisciplineId
+				   	});
 				}
 				catch (e) {
 				   eventplanner.ui.notification('error', "Impossible de créer le type de matériel.<br>" + e.message);
@@ -821,7 +832,9 @@ eventplanner.ui.users = {
 			
 			if(userId == 'new'){
 				try {
-				   	var userItem = new eventplanner.user.userItem();
+				   	var userItem = new eventplanner.user.userItem({
+				   		userDisciplineId: eventplanner.ui.currentUser.userDisciplineId
+				   	});
 				}
 				catch (e) {
 				   eventplanner.ui.notification('error', "Impossible de créer l'utilisateur.<br>" + e.message);
@@ -903,7 +916,6 @@ eventplanner.ui.events = {
 		});
 
 		$("#eventTable").delegate(".eventItem", "updateItem", function(){
-			console.log('TEST');
 			var eventId = $(this).attr('data-id');
 			var newItem = $('<div>').loadTemplate($("#templateEventTable"), eventplanner.event.byId(eventId, true));
 			$(this).replaceWith($(newItem).contents());
@@ -919,18 +931,27 @@ eventplanner.ui.events = {
 		$('#events').delegate('.selectEventBtn', 'click', function () {
 			if($(this).attr('data-event-id') != eventplanner.ui.currentUser.userEventId){
 				var eventSelected = eventplanner.event.byId($(this).attr('data-event-id'));
-
-				eventplanner.user.save({
-					user: {
-						id: eventplanner.ui.currentUser.userId,
-						eventId: eventSelected.eventId,
-						eventLevelId: eventSelected.eventDefaultEventLevelId,
-					} ,success: function(_data) {
-						eventplanner.ui.currentUser = _data;
-						eventplanner.ui.notification('success', "Changement enregistré.");	
-						$.when(eventplanner.ui.init()).then(function(){});
-					}
-				});
+				var newUser = eventplanner.ui.currentUser.clone();
+				
+				newUser.userEventId = eventSelected.eventId;
+				newUser.userEventLevelId = eventSelected.eventDefaultEventLevelId;
+			    				
+				try{
+					newUser.save({
+						success: function(_data) {
+								eventplanner.ui.currentUser = new eventplanner.user.userItem(_data);
+								eventplanner.ui.notification('success', "Changement enregistré.");
+								$.when(eventplanner.ui.init()).then(function(){
+									//eventplanner.ui.loadPage('map');
+								});
+							},
+						error: function(_data){
+							eventplanner.ui.notification('error', "Impossible d'enregistrer la modification.<br>" + _data.message);
+						  }	
+						});
+				}catch(e){
+					eventplanner.ui.notification('error', "Probléme lors de l'enregistrement.<br>" + e.message);
+				}
 			}
 		});
 
@@ -992,7 +1013,9 @@ eventplanner.ui.plans = {
 			
 			if(planId == 'new'){
 				try {
-				   	var planItem = new eventplanner.plan.planItem();
+				   	var planItem = new eventplanner.plan.planItem({
+				   		planOrganisationId: eventplanner.ui.currentUser.getDiscipline().disciplineOrganisationId,
+				   	});
 				}
 				catch (e) {
 				   eventplanner.ui.notification('error', "Impossible de créer le plan.<br>" + e.message);
@@ -1060,15 +1083,17 @@ eventplanner.ui.map = {
 	currentMode: 'global',
 	
 	init: function(){
-		var currentEvent = eventplanner.event.byId(eventplanner.ui.currentUser.userEventId);
+		var currentEvent = eventplanner.ui.currentUser.getEvent();
+		
 		this.llMap = this.initializeEventMap("map", currentEvent.eventId, currentEvent.eventLocalisation);
 	    this.llMap.contextmenu.addItem({
 	        text: 'Ajouter une zone',
 	        callback: function(e) {
-		      	var currentEvent = eventplanner.event.byId(eventplanner.ui.currentUser.userEventId);
+		      	var currentEvent = eventplanner.ui.currentUser.getEvent();
 				
 				try {
 				   	var zoneItem = new eventplanner.zone.zoneItem({
+				   		zoneEventLevelId: currentEvent.eventDefaultEventLevelId,
 						zoneEventId: currentEvent.eventId,
 						zoneLocalisation: e.latlng,
 						zoneInstallDate: currentEvent.eventStartDate,
@@ -1294,6 +1319,7 @@ eventplanner.ui.map = {
 						        callback: function(e) {
 						        	try {
 										var missionItem = new eventplanner.mission.missionItem({
+											missionDisciplineId: eventplanner.ui.currentUser.userDisciplineId,
 											missionEventId: eventplanner.ui.currentUser.userEventId,
 											missionZones: [e.relatedTarget.zoneId.toString()],
 										});
@@ -1485,9 +1511,11 @@ eventplanner.ui.planning = {
 			var zoneId = $(this).attr('data-zone-id');
 			
 			if(zoneId == 'new'){
-				var currentEvent = eventplanner.event.byId(eventplanner.ui.currentUser.userEventId);
+				var currentEvent = eventplanner.ui.currentUser.getEvent();
+				
 				try {
 				   	var zoneItem = new eventplanner.zone.zoneItem({
+				   		zoneEventLevelId: currentEvent.eventDefaultEventLevelId,
 						zoneEventId: currentEvent.eventId,
 						zoneLocalisation: currentEvent.eventLocalisation,
 						zoneInstallDate: currentEvent.eventStartDate,
@@ -1551,6 +1579,7 @@ eventplanner.ui.planning = {
 
 			try {
 			   	var missionItem = new eventplanner.mission.missionItem({
+			   		missionDisciplineId: eventplanner.ui.currentUser.userDisciplineId,
 					missionEventId: eventplanner.ui.currentUser.userEventId,
 					missionZones: zoneList,
 				});
@@ -1768,6 +1797,7 @@ eventplanner.ui.equipements = {
 			if(eqId == 'new'){
 				try {
 				   	var eqLogicItem = new eventplanner.eqLogic.eqLogicItem({
+				   		eqLogicDisciplineId: eventplanner.ui.currentUser.userDisciplineId,
 						eqLogicEventId: eventplanner.ui.currentUser.userEventId
 					});
 				}
@@ -1882,9 +1912,11 @@ eventplanner.ui.zones ={
 			var zoneId = $(this).attr('data-zone-id');
 			
 			if(zoneId == 'new'){
-				var currentEvent = eventplanner.event.byId(eventplanner.ui.currentUser.userEventId);
+				var currentEvent = eventplanner.ui.currentUser.getEvent();
+				
 				try {
 				   	var zoneItem = new eventplanner.zone.zoneItem({
+				   		zoneEventLevelId: currentEvent.eventDefaultEventLevelId,
 						zoneEventId: currentEvent.eventId,
 						zoneLocalisation: currentEvent.eventLocalisation,
 						zoneInstallDate: currentEvent.eventStartDate,
@@ -1988,6 +2020,7 @@ eventplanner.ui.mission ={
 			if(missionId == 'new'){
 				try {
 				   	var missionItem = new eventplanner.mission.missionItem({
+				   		missionDisciplineId: eventplanner.ui.currentUser.userDisciplineId,
 						missionEventId: eventplanner.ui.currentUser.userEventId
 					});
 				}
@@ -2172,7 +2205,7 @@ eventplanner.ui.scan = {
 eventplanner.ui.eventinfos = {
 	title: 'Infos événement',
 	init: function(){
-		var currentEvent = eventplanner.event.byId(eventplanner.ui.currentUser.userEventId);
+		var currentEvent = eventplanner.ui.currentUser.getEvent();
 
 		// GENERAL
 		$('#eventInfosContainer').html(currentEvent.eventGeneralInfo);
@@ -2183,37 +2216,40 @@ eventplanner.ui.eventinfos = {
 		$('#validEventInfoBtn')
 			.hide()
 			.click(function(){
-				var eventParam = {
-			        id: eventplanner.ui.currentUser.userEventId,
-			        generalInfo: $('#eventInfosTextarea').val()
-			    };
-
-			    eventplanner.event.save({
-			      event: eventParam,
-			      success: function(_data) {
-						eventplanner.ui.checkNewMsg();
+				var newEvent = eventplanner.ui.currentUser.getEvent().clone();
+				
+				newEvent.eventGeneralInfo = $('#eventInfosTextarea').val();
+			    				
+				try{
+					newEvent.save({
+						success: function(_data) {
+								eventplanner.ui.checkNewMsg();
 						
-						// On cache les éléments d'édition
-						$('#validEventInfoBtn').hide();
-						$('#eventInfosEditorContainer').hide();
-						
-						// On met à jour le DivContainer avec les infos éditées 
-						$('#eventInfosContainer').html($('#eventInfosTextarea').val());
-						
-						// On affiche de DivContainer et le bouton éditer
-						$('#editEventInfoBtn').show();
-						$('#eventInfosContainer').show();
-
-						eventplanner.ui.notification('success', "Changement enregistré.");	
-					},
-				  error: function(_data){
-			        eventplanner.ui.notification('error', "Impossible d'enregistrer la modification.<br>" + _data.message);
-			      }	
-			    });
+								// On cache les éléments d'édition
+								$('#validEventInfoBtn').hide();
+								$('#eventInfosEditorContainer').hide();
+								
+								// On met à jour le DivContainer avec les infos éditées 
+								$('#eventInfosContainer').html($('#eventInfosTextarea').val());
+								
+								// On affiche de DivContainer et le bouton éditer
+								$('#editEventInfoBtn').show();
+								$('#eventInfosContainer').show();
+								
+								eventplanner.ui.notification('success', "Changement enregistré.");	
+							},
+						error: function(_data){
+							eventplanner.ui.notification('error', "Impossible d'enregistrer la modification.<br>" + _data.message);
+						  }	
+						});
+				}catch(e){
+					eventplanner.ui.notification('error', "Probléme lors de l'enregistrement.<br>" + e.message);
+				}
+				
+				return false;
 			});
 		
-		$('#editEventInfoBtn')
-			.click(function(){
+		$('#editEventInfoBtn').click(function(){
 				// On cache le DivContainer et le bouton éditer
 				$('#editEventInfoBtn').hide();
 				$('#eventInfosContainer').hide();
@@ -2225,9 +2261,6 @@ eventplanner.ui.eventinfos = {
 				$('#validEventInfoBtn').show();
 				$('#eventInfosEditorContainer').show();
 			});
-		
-		// CONFIGURATION
-		
 	}
 };
 
@@ -2244,7 +2277,6 @@ eventplanner.ui.contact = {
 			eventplanner.contact.all(true));
 
 		$("#contactTable").bind("addItem", function(event, _contactId){
-			console.log(_contactId);
 			var newItem = $('<div>').loadTemplate($("#templateContactTable"), eventplanner.contact.byId(_contactId, true));
 			$(this).append($(newItem).contents());
 
@@ -2367,77 +2399,83 @@ eventplanner.ui.userinfos = {
 
 		// Submit SCAN
 		$("#userinfos").find('#userLoginForm').submit(this, function(event) {
-				var userParam = {
-			        id: eventplanner.ui.currentUser.userId,
-			        login: $(this).find("#userLogin").val(),
-			        name: $(this).find("#userName").val()
-			    };
-
-			    if(($(this).find("#userPassword1").val() != '') || ($(this).find("#userPassword2").val() != '')){
+				var newUser = eventplanner.ui.currentUser.clone();
+				
+				newUser.userLogin = $(this).find("#userLogin").val();
+			    newUser.userName = $(this).find("#userName").val();
+				
+				if(($(this).find("#userPassword1").val() != '') || ($(this).find("#userPassword2").val() != '')){
 			    	if(($(this).find("#userPassword1").val() == $(this).find("#userPassword2").val())){
-			    		userParam.password = $(this).find("#userPassword1").val();
+			    		newUser.userPassword = $(this).find("#userPassword1").val();
 			    	}else{
 			    		eventplanner.ui.notification('error', "Les mots de passes saisis ne sont pas identiques. Pour ne pas modifier le mot de passe, laisser les 2 champs vides.");
 			    		return false;
 			    	}
 			    }
-
-				eventplanner.user.save({
-			      user: userParam,
-			      success: function(_data) {
-						eventplanner.ui.checkNewMsg();
-						eventplanner.ui.currentUser = _data;
-						eventplanner.ui.notification('success', "Changement enregistré.");	
-					},
-				  error: function(_data){
-			        eventplanner.ui.notification('error', "Impossible d'enregistrer la modification.<br>" + _data.message);
-			      }	
-			    });
+				
+				try{
+					newUser.save({
+						success: function(_data) {
+								eventplanner.ui.checkNewMsg();
+								eventplanner.ui.currentUser = new eventplanner.user.userItem(_data);
+								eventplanner.ui.notification('success', "Changement enregistré.");	
+							},
+						error: function(_data){
+							eventplanner.ui.notification('error', "Impossible d'enregistrer la modification.<br>" + _data.message);
+						  }	
+						});
+				}catch(e){
+					eventplanner.ui.notification('error', "Probléme lors de l'enregistrement.<br>" + e.message);
+				}
 
 			    return false;
 			});
 
 		// Submit Slack
 		$("#userinfos").find('#userSlackForm').submit(this, function(event) {
-				var userParam = {
-			        id: eventplanner.ui.currentUser.userId,
-			        slackID: $(this).find("#userSlackID").val()
-			    };
-
-			    eventplanner.user.save({
-			      user: userParam,
-			      success: function(_data) {
-						eventplanner.ui.checkNewMsg();
-						eventplanner.ui.currentUser = _data;
-						eventplanner.ui.notification('success', "Changement enregistré.");	
-					},
-				  error: function(_data){
-			        eventplanner.ui.notification('error', "Impossible d'enregistrer la modification.<br>" + _data.message);
-			      }	
-			    });
-			    
+				var newUser = eventplanner.ui.currentUser.clone();
+				
+				newUser.userSlackID = $(this).find("#userSlackID").val();
+			    				
+				try{
+					newUser.save({
+						success: function(_data) {
+								eventplanner.ui.checkNewMsg();
+								eventplanner.ui.currentUser = new eventplanner.user.userItem(_data);
+								eventplanner.ui.notification('success', "Changement enregistré.");	
+							},
+						error: function(_data){
+							eventplanner.ui.notification('error', "Impossible d'enregistrer la modification.<br>" + _data.message);
+						  }	
+						});
+				}catch(e){
+					eventplanner.ui.notification('error', "Probléme lors de l'enregistrement.<br>" + e.message);
+				}
+							    
 			    return false;
 			});
 
 
 		// Submit SCAN
 		$("#userinfos").find('#userScanForm').submit(this, function(event) {
-				var userParam = {
-			        id: eventplanner.ui.currentUser.userId,
-			        actionOnScan: $(this).find("#scanSelect").val()
-			    };
-
-			    eventplanner.user.save({
-			      user: userParam,
-			      success: function(_data) {
-						eventplanner.ui.checkNewMsg();
-						eventplanner.ui.currentUser = _data;
-						eventplanner.ui.notification('success', "Changement enregistré.");	
-					},
-				  error: function(_data){
-			        eventplanner.ui.notification('error', "Impossible d'enregistrer la modification.<br>" + _data.message);
-			      }	
-			    });
+				var newUser = eventplanner.ui.currentUser.clone();
+				
+				newUser.userActionOnScan = $(this).find("#scanSelect").val();
+			    				
+				try{
+					newUser.save({
+						success: function(_data) {
+								eventplanner.ui.checkNewMsg();
+								eventplanner.ui.currentUser = new eventplanner.user.userItem(_data);
+								eventplanner.ui.notification('success', "Changement enregistré.");	
+							},
+						error: function(_data){
+							eventplanner.ui.notification('error', "Impossible d'enregistrer la modification.<br>" + _data.message);
+						  }	
+						});
+				}catch(e){
+					eventplanner.ui.notification('error', "Probléme lors de l'enregistrement.<br>" + e.message);
+				}
 
 			    return false;
 			});
@@ -2985,51 +3023,50 @@ eventplanner.ui.modal.EpModalEqConfiguration = function(_eqLogic){
 				});
 
 			this.modal.find('#eqLogicForm').submit(this, function(event) {
-			    var eqParam = {
-			        id: event.data.data.eqLogicId,
-			        eventId: event.data.data.eqLogicEventId,
-			        zoneId: $(this).find("#eqLogicZoneId").val(),
-			        matTypeId: $(this).find("#eqLogicMatTypeId").val(),
-			        eqRealId: $(this).find("#eqLogicEqRealId").val() == "None" ? null : $(this).find("#eqLogicEqRealId").val(),
-			        ip: $(this).find("#eqLogicIp").val(),
-			        comment: $(this).find("#eqLogicComment").val(),
-			        state: event.data.data.eqLogicState,
-			        eqLinks: event.data.getEqLinks(),
-			        attributes: []
-			    };
-
+				var newEqLogic =  event.data.data.clone();
+				
+				newEqLogic.eqLogicZoneId = $(this).find("#eqLogicZoneId").val();
+			    newEqLogic.eqLogicMatTypeId = $(this).find("#eqLogicMatTypeId").val();
+			    newEqLogic.eqLogicEqRealId = $(this).find("#eqLogicEqRealId").val() == "None" ? null : $(this).find("#eqLogicEqRealId").val();
+			    newEqLogic.eqLogicComment = $(this).find("#eqLogicComment").val();
+			    newEqLogic.eqLogicEqLinks = event.data.getEqLinks();
 			    if($(this).find("#eqLocalisation").bootstrapSwitch('state')){
-			    	eqParam.localisation = event.data.eqMarker.getLatLng();
+			    	newEqLogic.eqLogicLocalisation = event.data.eqMarker.getLatLng();
 			    }else{
-			    	eqParam.localisation = null;
+			    	newEqLogic.eqLogicLocalisation = null;
 			    }
 
-			    $(this).find(".eqLogicAttribute").each(function(_eqParam){
+			    newEqLogic.eqLogicAttributes = [];
+			    $(this).find(".eqLogicAttribute").each(function(_newEqLogic){
 			    	return function(i, eqLogicAttribute){
 			    		if($(eqLogicAttribute).val() != ''){
-					    	_eqParam.attributes.push({
+					    	_newEqLogic.eqLogicAttributes.push({
 					    		id: $(eqLogicAttribute).attr('data-attribute-id'),
 					    		value: $(eqLogicAttribute).val(),
 					    		matTypeAttributeId: $(eqLogicAttribute).attr('data-mat-type-attribute-id')
 					    	});
 					    }
 			    	}
-			    }(eqParam));
+			    }(newEqLogic));
+				
+				
+				try{
+					newEqLogic.save({
+						success: function(thisModal){
+									return function(_data) {
+										eventplanner.ui.checkNewMsg();
+								        thisModal.close();
+										eventplanner.ui.notification('success', "Equipement enregistré.");	
+									}
+								}(event.data),
+						error: function(_data){
+							eventplanner.ui.notification('error', "Impossible d'enregistrer l'équipement.<br>" + _data.message);
+						  }	
+						});
+				}catch(e){
+					eventplanner.ui.notification('error', "Probléme lors de l'enregistrement.<br>" + e.message);
+				}
 
-			    eventplanner.eqLogic.save({
-			      eqLogic: eqParam,
-			      success: function(thisModal){
-								return function() {
-									eventplanner.ui.checkNewMsg();
-									thisModal.close();
-									eventplanner.ui.notification('success', "Equipement enregistré.");
-								}
-							}(event.data),
-			      error: function(_data){
-			        eventplanner.ui.notification('error', "Impossible d'enregistrer l'équipement.<br>" + _data.message);
-			      }
-			    });
-			    
 			    return false;
 			});
 		}
@@ -3212,6 +3249,7 @@ eventplanner.ui.modal.EpModalZoneConfiguration = function(_zone){
 				if(eqId == 'new'){
 					try {
 					   	var eqLogicItem = new eventplanner.eqLogic.eqLogicItem({
+				   			eqLogicDisciplineId: eventplanner.ui.currentUser.userDisciplineId,
 							eqLogicZoneId: event.data.data.zoneId,
 							eqLogicEventId: eventplanner.ui.currentUser.userEventId
 						});
@@ -3246,25 +3284,22 @@ eventplanner.ui.modal.EpModalZoneConfiguration = function(_zone){
 			}(this));
 
 			this.modal.find('#zoneForm').submit(this, function(event) {
-			    var zoneParam = {
-			        id: event.data.data.zoneId,
-			        eventId: event.data.data.zoneEventId,
-			        eventLevelId: $(this).find("#zoneEventLevelId").val(),
-			        name: $(this).find("#zoneName").val(),
-			        localisation: event.data.zoneMarker.getLatLng(),
-			        installDate: formatDateDmy2Ymd($(this).find("#zoneInstallDate").val()),
-			        uninstallDate: formatDateDmy2Ymd($(this).find("#zoneUninstallDate").val()),
-			        state: event.data.data.zoneState,
-			        comment: $(this).find("#zoneComment").val()
-			    };
-
-			    eventplanner.zone.save({
-			      zone: zoneParam,
-			      success: function(thisModal){
+				var newZone = event.data.data.clone();
+				
+				newZone.zoneEventLevelId = $(this).find("#zoneEventLevelId").val();
+			    newZone.zoneName = $(this).find("#zoneName").val();
+			    newZone.zoneLocalisation = event.data.zoneMarker.getLatLng();
+			    newZone.zoneInstallDate = formatDateDmy2Ymd($(this).find("#zoneInstallDate").val());
+			    newZone.zoneUninstallDate = formatDateDmy2Ymd($(this).find("#zoneUninstallDate").val());
+			    newZone.zoneComment = $(this).find("#zoneComment").val();
+				
+				try{
+					newZone.save({
+					      success: function(thisModal){
 								return function(_data) {
 									eventplanner.ui.checkNewMsg();
 									if(thisModal.data.zoneId==""){
-										thisModal.data.zoneId=_data.zoneId;
+										thisModal.data.zoneId = _data.zoneId;
 										thisModal.modal.find('.eqZoneConf').show();
 									}else{
 										thisModal.close();
@@ -3272,10 +3307,14 @@ eventplanner.ui.modal.EpModalZoneConfiguration = function(_zone){
 									eventplanner.ui.notification('success', "Zone enregistrée.");	
 								}
 							}(event.data),
-				  error: function(_data){
-			        eventplanner.ui.notification('error', "Impossible d'enregistrer la zone.<br>" + _data.message);
-			      }			  
-			    });
+						  error: function(_data){
+					        eventplanner.ui.notification('error', "Impossible d'enregistrer la zone.<br>" + _data.message);
+					      }			  
+					    });
+				}catch(e){
+					eventplanner.ui.notification('error', "Probléme lors de l'enregistrement.<br>" + e.message);
+				}
+				
 			    return false;
 			});
 		}
@@ -3329,7 +3368,7 @@ eventplanner.ui.modal.EpModalEventConfiguration = function(_event){
 										return function(_data) {
 											eventplanner.ui.checkNewMsg();
 									        thisModal.close();
-											eventplanner.ui.notification('success', "Evenement enregistrée.");	
+											eventplanner.ui.notification('success', "Evenement enregistré.");	
 										}
 									}(event.data),
 						  error: function(_data){
@@ -3340,34 +3379,6 @@ eventplanner.ui.modal.EpModalEventConfiguration = function(_event){
 					eventplanner.ui.notification('error', "Probléme lors de l'enregistrement.<br>" + e.message);
 				}
 				
-				
-				/*
-			    var eventParam = {
-			        id: event.data.data.eventId,
-			        organisationId: eventplanner.ui.currentUser.getDiscipline().getOrganisation().organisationId,
-			        name: $(this).find("#eventName").val(),
-			        ville: $(this).find("#eventVille").val(),
-			        localisation: event.data.eventMarker.getLatLng(),
-			        startDate: formatDateDmy2Ymd($(this).find("#eventStartDate").val()),
-			        endDate: formatDateDmy2Ymd($(this).find("#eventEndDate").val()),
-			        generalInfo: "",
-			        configuration: {}
-			    };
-
-				eventplanner.event.save({
-			      event: eventParam,
-			      success: function(thisModal){
-								return function(_data) {
-									eventplanner.ui.checkNewMsg();
-							        thisModal.close();
-									eventplanner.ui.notification('success', "Zone enregistrée.");	
-								}
-							}(event.data),
-				  error: function(_data){
-			        eventplanner.ui.notification('error', "Impossible d'enregistrer l'événement.<br>" + _data.message);
-			      }			  
-			    });
-			    */
 			    return false;
 			});
 		}
@@ -3426,28 +3437,28 @@ eventplanner.ui.modal.EpModalEqRealConfiguration = function(_eqReal){
 			});
 			
 			this.modal.find('#eqRealForm').submit(this, function(event) {
-			    var eqRealParam = {
-			        id: event.data.data.eqRealId,
-			        matTypeId: $(this).find("#eqRealMatTypeId").val(),
-			        name: $(this).find("#eqRealName").val(),
-			        comment: $(this).find("#eqRealComment").val(),
-			        state: event.data.data.eqRealState,
-			        localisation: ""
-			    };
-			   
-			    eventplanner.eqReal.save({
-			      eqReal: eqRealParam,
-			      success: function(thisModal){
-								return function(_data) {
-									eventplanner.ui.checkNewMsg();
-							        thisModal.close();
-									eventplanner.ui.notification('success', "Matériel enregistrée.");	
-								}
-							}(event.data),
-				  error: function(_data){
-			        eventplanner.ui.notification('error', "Impossible d'enregistrer le matériel.<br>" + _data.message);
-			      }			  
-			    });
+				var newEqReal = event.data.data.clone();
+				
+				newEqReal.eqRealMatTypeId = $(this).find("#eqRealMatTypeId").val();
+			    newEqReal.eqRealName = $(this).find("#eqRealName").val();
+			    newEqReal.eqRealComment = $(this).find("#eqRealComment").val();
+				
+				try{
+					newEqReal.save({
+					      success: function(thisModal){
+										return function(_data) {
+											eventplanner.ui.checkNewMsg();
+									        thisModal.close();
+											eventplanner.ui.notification('success', "Matériel enregistré.");	
+										}
+									}(event.data),
+						  error: function(_data){
+					        eventplanner.ui.notification('error', "Impossible d'enregistrer le matériel.<br>" + _data.message);
+					      }			  
+					    });
+				}catch(e){
+					eventplanner.ui.notification('error', "Probléme lors de l'enregistrement.<br>" + e.message);
+				}
 
 			    return false;
 			});
@@ -3553,44 +3564,42 @@ eventplanner.ui.modal.EpModalMissionConfiguration = function(_mission){
 		});
 		
 		this.modal.find('#missionForm').submit(this, function(event) {
-		    var missionParam = {
-		        id: event.data.data.missionId,
-		        name: $(this).find("#missionName").val(),
-		        comment: $(this).find("#missionComment").val(),
-		        eventId: event.data.data.missionEventId,
-		        state: $(this).find("#stateSelect").val(),
-		        zones: [],
-		        users: [],
-		        configuration: {}
-		    };
-
-		    $(this).find('.missionUserItem')
-		    	.each(function(_missionParam){
+			var newMission = event.data.data.clone();
+			
+			newMission.missionName = $(this).find("#missionName").val();
+			newMission.missionComment = $(this).find("#missionComment").val();
+			newMission.missionState = $(this).find("#stateSelect").val();
+			newMission.missionUsers = [];
+			$(this).find('.missionUserItem')
+		    	.each(function(_newMission){
 			    	return function(i, _userItem){ 
-			    		_missionParam.users.push($(_userItem).attr("data-user-id"));
+			    		_newMission.missionUsers.push($(_userItem).attr("data-user-id"));
 			    	}
-			    }(missionParam));
-
+			    }(newMission));
+			newMission.missionZones = [];
 			$(this).find('.missionZoneItem')
-		    	.each(function(_missionParam){
+		    	.each(function(_newMission){
 			    	return function(i, _zoneItem){ 
-			    		_missionParam.zones.push($(_zoneItem).attr("data-zone-id"));
+			    		_newMission.missionZones.push($(_zoneItem).attr("data-zone-id"));
 			    	}
-			    }(missionParam));
-
-		   	eventplanner.mission.save({
-		      mission: missionParam,
-		      success: function(thisModal){
-							return function(_data) {
-								eventplanner.ui.checkNewMsg();
-						        thisModal.close();
-								eventplanner.ui.notification('success', "Mission enregistrée.");	
-							}
-						}(event.data),
-			  error: function(_data){
-		        eventplanner.ui.notification('error', "Impossible d'enregistrer la mission.<br>" + _data.message);
-		      }			  
-		    });
+			    }(newMission));
+			
+			try{
+				newMission.save({
+					  success: function(thisModal){
+									return function(_data) {
+										eventplanner.ui.checkNewMsg();
+										thisModal.close();
+										eventplanner.ui.notification('success', "Mission enregistrée.");	
+									}
+								}(event.data),
+					  error: function(_data){
+						eventplanner.ui.notification('error', "Impossible d'enregistrer la mission.<br>" + _data.message);
+					  }			  
+					});
+			}catch(e){
+				eventplanner.ui.notification('error', "Probléme lors de l'enregistrement.<br>" + e.message);
+			}
 
 		    return false;
 		});
@@ -3657,36 +3666,38 @@ eventplanner.ui.modal.EpModalMatTypeConfiguration = function(_matType){
 			});
 			
 			this.modal.find('#matTypeForm').submit(this, function(event) {
-			    var matTypeParam = {
-			        id: event.data.data.matTypeId,
-			        name: $(this).find("#matTypeName").val(),
-			        parentId: $(this).find("#matTypeParentId").val() == "" ? null : $(this).find("#matTypeParentId").val(),
-			        attributes: []
-			    };
-
-			    $(this).find(".matTypeAttributeItem").each(function(_matTypeParam){
+				var newMatType = event.data.data.clone();
+				
+				newMatType.matTypeName = $(this).find("#matTypeName").val();
+			    newMatType.matTypeParentId = $(this).find("#matTypeParentId").val() == "" ? null : $(this).find("#matTypeParentId").val();
+				newMatType.matTypeAttributes = [];					
+				$(this).find(".matTypeAttributeItem").each(function(_newMatType){
 			    	return function(i, matTypeAttributeItem){
-				    	_matTypeParam.attributes.push({
+				    	_newMatType.matTypeAttributes.push({
 				    		id: $(matTypeAttributeItem).attr('data-attribute-id'),
 				    		name: $(matTypeAttributeItem).find('input').val(),
 				    		options: {default: ""}
 				    	});
 			    	}
-			    }(matTypeParam));
-
-			    eventplanner.matType.save({
-			      matType: matTypeParam,
-			      success: function(thisModal){
-								return function(_data) {
-									eventplanner.ui.checkNewMsg();
-							        thisModal.close();
-									eventplanner.ui.notification('success', "Type de matériel enregistrée.");	
-								}
-							}(event.data),
-				  error: function(_data){
-			        eventplanner.ui.notification('error', "Impossible d'enregistrer le type de matériel.<br>" + _data.message);
-			      }	
-			    });
+			    }(newMatType));
+				
+				try{
+					newMatType.save({
+						  success: function(thisModal){
+										return function(_data) {
+											eventplanner.ui.checkNewMsg();
+											thisModal.close();
+											eventplanner.ui.notification('success', "Type de matériel enregistré.");	
+										}
+									}(event.data),
+						  error: function(_data){
+							eventplanner.ui.notification('error', "Impossible d'enregistrer le type de matériel.<br>" + _data.message);
+						  }			  
+						});
+				}catch(e){
+					eventplanner.ui.notification('error', "Probléme lors de l'enregistrement.<br>" + e.message);
+				}
+				
 			    return false;
 			});	
 		}
@@ -3736,34 +3747,32 @@ eventplanner.ui.modal.EpModalUserConfiguration = function(_user){
 				})
 
 			this.modal.find('#userForm').submit(this, function(event) {
-			    var userParam = {
-			        id: event.data.data.userId,
-			        login: $(this).find("#userLogin").val(),
-			        name: $(this).find("#userName").val(),
-			        actionOnScan: event.data.data.userActionOnScan,
-			        slackID: event.data.data.userSlackID,
-			    	lastConnection: event.data.data.userLastConnection,
-			        rights: event.data.data.userRights,
-			        enable: ($(this).find("#userEnable").bootstrapSwitch('state') ? "1" : "0")
-			    };
-			    
-			    if(userParam.id == ''){
-			    	userParam.password = userParam.login;
+				var newUser = event.data.data.clone();
+				
+				newUser.userLogin = $(this).find("#userLogin").val();
+			    newUser.userName = $(this).find("#userName").val();
+				newUser.userEnable = ($(this).find("#userEnable").bootstrapSwitch('state') ? "1" : "0");
+				if(newUser.userId == ''){
+			    	newUser.userPassword = newUser.userLogin;
 			    }
-
-			    eventplanner.user.save({
-			      user: userParam,
-			      success: function(thisModal){
-								return function(_data) {
-									eventplanner.ui.checkNewMsg();
-							        thisModal.close();
-									eventplanner.ui.notification('success', "Utilisateur enregistré.");	
-								}
-							}(event.data),
-				  error: function(_data){
-			        eventplanner.ui.notification('error', "Impossible d'enregistrer l'utilisateur.<br>" + _data.message);
-			      }	
-			    });
+				
+				try{
+					newUser.save({
+						  success: function(thisModal){
+										return function(_data) {
+											eventplanner.ui.checkNewMsg();
+											thisModal.close();
+											eventplanner.ui.notification('success', "Utilisateur enregistré.");	
+										}
+									}(event.data),
+						  error: function(_data){
+							eventplanner.ui.notification('error', "Impossible d'enregistrer l'utilisateur.<br>" + _data.message);
+						  }			  
+						});
+				}catch(e){
+					eventplanner.ui.notification('error', "Probléme lors de l'enregistrement.<br>" + e.message);
+				}
+				
 			    return false;
 			});
 		}
@@ -3798,39 +3807,40 @@ eventplanner.ui.modal.EpModalContactConfiguration = function(_contact){
 	
 	this.postShow = function(){
 			this.modal.find('#contactForm').submit(this, function(event) {
-			    var contactParam = {
-			        id: event.data.data.contactId,
-			        eventId: event.data.data.contactEventId,
-			        name: $(this).find("#contactName").val(),
-			        fct: $(this).find("#contactFct").val(),
-			        zoneId: $(this).find("#contactZoneId").val(),
-			        coord: []
-			        };
-			    
-			    $(this).find(".contactCoord").each(function(_contactParam){
+				var newContact = event.data.data.clone();
+				
+				newContact.contactName = $(this).find("#contactName").val();
+			    newContact.contactFct = $(this).find("#contactFct").val();
+			    newContact.contactZoneId = $(this).find("#contactZoneId").val();
+				newContact.contactCoord = [];
+				$(this).find(".contactCoord").each(function(_newContact){
 			    	return function(i, contactCoord){
 			    		if($(contactCoord).val() != ''){
-					    	_contactParam.coord.push({
+					    	_newContact.contactCoord.push({
 					    		type: $(contactCoord).attr('data-coord-type'),
 					    		value: $(contactCoord).val()
 					    	});
 					    }
 			    	}
-			    }(contactParam));
-
-			    eventplanner.contact.save({
-			      contact: contactParam,
-			      success: function(thisModal){
-								return function(_data) {
-									eventplanner.ui.checkNewMsg();
-							        thisModal.close();
-									eventplanner.ui.notification('success', "Contact enregistré.");	
-								}
-							}(event.data),
-				  error: function(_data){
-			        eventplanner.ui.notification('error', "Impossible d'enregistrer le contact.<br>" + _data.message);
-			      }	
-			    });
+			    }(newContact));
+				
+				try{
+					newContact.save({
+						  success: function(thisModal){
+										return function(_data) {
+											eventplanner.ui.checkNewMsg();
+											thisModal.close();
+											eventplanner.ui.notification('success', "Contact enregistré.");	
+										}
+									}(event.data),
+						  error: function(_data){
+							eventplanner.ui.notification('error', "Impossible d'enregistrer le contact.<br>" + _data.message);
+						  }			  
+						});
+				}catch(e){
+					eventplanner.ui.notification('error', "Probléme lors de l'enregistrement.<br>" + e.message);
+				}
+				
 			    return false;
 			});
 		}
@@ -3886,7 +3896,8 @@ eventplanner.ui.modal.EpModalPlanConfiguration = function(_plan){
 			});
 
 			if(!is_array(this.bounds) || !is_array(this.bounds[0]) || !is_array(this.bounds[1]) || !is_array(this.bounds[2])){
-				var currentEvent = eventplanner.event.byId(eventplanner.ui.currentUser.userEventId);
+				var currentEvent = eventplanner.ui.currentUser.getEvent();
+				
 				this.bounds = [
 					{
 						lat: currentEvent.eventLocalisation.lat + (180/Math.PI)*(100/6378137), 
@@ -3910,32 +3921,27 @@ eventplanner.ui.modal.EpModalPlanConfiguration = function(_plan){
 		this.reloadLog();	
 
 		this.modal.find('#planForm').submit(this, function(event) {
-			    var planParam = {
-			        id: event.data.data.planId,
-			        organisationId: event.data.data.planOrganisationId,
-			        name: $(this).find("#planName").val(),
-			        bounds: event.data.bounds
-			        };
-			    
-		
-			    eventplanner.plan.save({
-			      plan: planParam,
-			      success: function(thisModal){
-								return function(_data) {
-									eventplanner.ui.checkNewMsg();
-									if(thisModal.data.planId==""){
-										thisModal.data.planId = _data.planId;
-										thisModal.initUpload();
-									}else{
-										thisModal.close();
-									}
-									eventplanner.ui.notification('success', "Plan enregistré.");	
-								}
-							}(event.data),
-				  error: function(_data){
-			        eventplanner.ui.notification('error', "Impossible d'enregistrer le Plan.<br>" + _data.message);
-			      }	
-			    });
+				var newPlan = event.data.data.clone();
+				
+				newPlan.planName = $(this).find("#planName").val();
+				
+				try{
+					newPlan.save({
+						  success: function(thisModal){
+										return function(_data) {
+											eventplanner.ui.checkNewMsg();
+											thisModal.close();
+											eventplanner.ui.notification('success', "Plan enregistré.");	
+										}
+									}(event.data),
+						  error: function(_data){
+							eventplanner.ui.notification('error', "Impossible d'enregistrer le plan.<br>" + _data.message);
+						  }			  
+						});
+				}catch(e){
+					eventplanner.ui.notification('error', "Probléme lors de l'enregistrement.<br>" + e.message);
+				}
+				
 			    return false;
 			});
 	}
@@ -3989,7 +3995,8 @@ eventplanner.ui.modal.EpModalPlanConfiguration = function(_plan){
 	}
 	
 	this.initMap = function(){
-		var currentEvent = eventplanner.event.byId(eventplanner.ui.currentUser.userEventId);
+		var currentEvent = eventplanner.ui.currentUser.getEvent();
+		
 		this.eventMapPlanConfig = eventplanner.ui.map.initialiseMap('mapPlanConfig' + this.id, currentEvent.eventLocalisation, 18);
 	}
 

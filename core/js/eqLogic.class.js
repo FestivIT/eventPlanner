@@ -14,9 +14,7 @@ eventplanner.eqLogic = {
             throw new Error("eqLogicEventId manquant!");
         }
         if(!this.hasOwnProperty('eqLogicDisciplineId')){
-            //throw new Error("eqLogicDisciplineId manquant!");
-            this.eqLogicDisciplineId = 1; // TEMPORAIRE
-            console.log('eqLogicDisciplineId temporaire: 1');
+            throw new Error("eqLogicDisciplineId manquant!");
         }
         if(!this.hasOwnProperty('eqLogicZoneId')){
             if(eventplanner.zone.all().length != 0){
@@ -24,7 +22,6 @@ eventplanner.eqLogic = {
             }else{
                 throw new Error("Créer d'abord une zone pour pouvoir créer un équipement!");
             }
-            
         }
         if(!this.hasOwnProperty('eqLogicMatTypeId')){
             this.eqLogicMatTypeId = eventplanner.matType.all()[0].matTypeId; // Sélection par défaut d'un type...
@@ -76,6 +73,58 @@ eventplanner.eqLogic = {
 
         this.remove = function(_params = {}){
             return eventplanner.eqLogic.remove($.extend(_params, {id: this.eqLogicId}));
+        }
+        
+        this.checkValues = function(){            
+            if(this.eqLogicEventId == ""){
+                throw new Error("L'équipement doit être rattaché à un événement.");
+            }
+            
+            if(this.eqLogicDisciplineId == ""){
+                throw new Error("L'équipement doit être rattaché à une discipline.");
+            }         
+			
+            if(this.eqLogicZoneId == ""){
+                throw new Error("L'équipement doit être rattaché à une zone.");
+            } 
+			
+            if(this.eqLogicMatTypeId == ""){
+                throw new Error("Un type de matériel doit être défini.");
+            }
+			
+            if(this.eqLogicEqRealId == ""){
+                this.eqLogicEqRealId = null;
+            }			
+			
+            if(this.eqLogicState <= 0){
+                throw new Error("L'état de l'équipement n'est pas valide.");
+            }
+                        
+            return true;
+        }
+        
+        this.getValues = function(){
+            var values = {};
+            
+            for (keys in this){
+                if(typeof this[keys] != 'function'){
+                    if(keys.substring(0, "eqLogic".length) == "eqLogic"){
+                        values[firstToLowerCase(keys.substring("eqLogic".length))] = this[keys];
+                    }
+                }
+            }
+            
+            return values;
+        };
+        
+        this.clone = function(){
+            return new eventplanner.eqLogic.eqLogicItem(this);
+        }
+        
+        this.save = function(_params = {}){
+            this.checkValues();
+
+            return eventplanner.eqLogic.save($.extend({eqLogic: this.getValues()}, _params));
         }
     },
     

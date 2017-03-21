@@ -12,9 +12,7 @@ eventplanner.matType = {
             this.matTypeId = ''; // Nouveau matType
         }
         if(!this.hasOwnProperty('matTypeDisciplineId')){
-            //throw new Error("matTypeDisciplineId manquant!");
-            this.matTypeDisciplineId = 1; // TEMPORAIRE
-            console.log('matTypeDisciplineId temporaire: 1');
+            throw new Error("matTypeDisciplineId manquant!");
         }
         if(!this.hasOwnProperty('matTypeName')){
             this.matTypeName = "";
@@ -22,7 +20,6 @@ eventplanner.matType = {
         if(!this.hasOwnProperty('matTypeParentId')){
             this.matTypeParentId = null;
         }
-
 
     	this.getParent = function(_fullData = false){
 			return eventplanner.matType.byId(this.matTypeParentId, _fullData);
@@ -45,6 +42,45 @@ eventplanner.matType = {
             return eventplanner.matType.remove($.extend(_params, {id: this.matTypeId}));
         }
         
+        this.checkValues = function(){
+        	if(this.matTypeDisciplineId == ""){
+				throw new Error("Le type de matériel doit être rattaché à une discipline.");
+			}
+			
+			if(this.matTypeName == ""){
+				throw new Error("Le nom du type de matériel ne peut pas être vide.");
+			}
+			
+		    if(this.matTypeParentId == ""){
+				this.matTypeParentId = null;
+			}
+			
+			return true;
+        }
+        
+        this.getValues = function(){
+        	var values = {};
+        	
+        	for (keys in this){
+        		if(typeof this[keys] != 'function'){
+        			if(keys.substring(0, "matType".length) == "matType"){
+        				values[firstToLowerCase(keys.substring("matType".length))] = this[keys];
+        			}
+        		}
+        	}
+        	
+        	return values;
+        };
+        
+        this.clone = function(){
+            return new eventplanner.matType.matTypeItem(this);
+        }
+        
+        this.save = function(_params = {}){
+        	this.checkValues();
+
+			return eventplanner.matType.save($.extend({matType: this.getValues()}, _params));
+        }        
     },
 
     // Chargement initial des données depuis le serveur

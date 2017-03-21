@@ -104,8 +104,8 @@ try {
 		if(($class == 'eqLogic') && array_key_exists('eqLinks',$json)){
 			foreach ($json['eqLinks']['create'] as $eqLinkData){
 			    $eqLink = new eqLink();
-			    $eqLink->setEventId($eqLogic->getEventId());
-			    $eqLink->setEqLogicId1($eqLogic->getId());
+			    $eqLink->setEventId($el->getEventId());
+			    $eqLink->setEqLogicId1($el->getId());
 			    $eqLink->setEqLogicId2($eqLinkData['eqLinkTargetEqLogicId']);
 			    $eqLink->setType($eqLinkData['eqLinkType']);
 			    $eqLink->save();
