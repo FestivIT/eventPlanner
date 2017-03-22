@@ -28,8 +28,8 @@ eventplanner.eqLink = {
         if(!this.hasOwnProperty('eqLinkType')){
             this.eqLinkType = eventplanner.eqLink.type[1];
         }
-        if(!this.hasOwnProperty('eqLinkConfiguration')){
-            this.eqLinkConfiguration = [];
+        if(!this.hasOwnProperty('eqLinkComment')){
+            this.eqLinkComment = "";
         }
 
         this.getEqLogics = function(_fullData = false){
@@ -76,10 +76,6 @@ eventplanner.eqLink = {
 			
             if(this.eqLinkType == ""){
                 throw new Error("Le type du lien ne peut pas être vide.");
-            }
-			
-            if(!is_array(this.eqLinkConfiguration)){
-                throw new Error("La configuration du lien doit être un tableau.");
             }
             
             return true;

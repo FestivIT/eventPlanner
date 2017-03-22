@@ -193,8 +193,12 @@
 		</script>
 		<script type="text/html" id="templateEqLinkTable">
 				<div class="row">
-				  <div class="col-xs-2"><span class="label label-primary" data-content="eqLinkType"></span></div>
-				  <div class="col-xs-10"><span class="label label-info"><span data-content="eqLinkTargetEqLogicZoneName"></span> <span data-content="eqLinkTargetEqLogicMatTypeName"></span> <span data-content="eqLinkTargetEqLogicEqRealName"></span></span></div>
+					<div class="col-xs-2"><span class="label label-primary" data-content="eqLinkType"></span></div>
+					<div class="col-xs-10"><span class="label label-info"><span data-content="eqLinkTargetEqLogicZoneName"></span> <span data-content="eqLinkTargetEqLogicMatTypeName"></span> <span data-content="eqLinkTargetEqLogicEqRealName"></span></span></div>
+				</div>
+				<div class="row">
+					<div class="col-xs-2"></div>
+					<div class="col-xs-10"><small data-content="eqLinkComment"></small></div>
 				</div>
 		</script>
 

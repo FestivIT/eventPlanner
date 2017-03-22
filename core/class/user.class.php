@@ -242,6 +242,10 @@ class user {
 		return $this->eventId;
 	}
 
+	public function getEvent() {
+		return event::byId($this->getEventId());
+	}
+
 	public function getEventLevelId() {
 		return $this->eventLevelId;
 	}

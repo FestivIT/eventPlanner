@@ -108,6 +108,7 @@ try {
 			    $eqLink->setEqLogicId1($el->getId());
 			    $eqLink->setEqLogicId2($eqLinkData['eqLinkTargetEqLogicId']);
 			    $eqLink->setType($eqLinkData['eqLinkType']);
+			    $eqLink->setComment($eqLinkData['eqLinkComment']);
 			    $eqLink->save();
 			}
 
@@ -117,6 +118,7 @@ try {
 				    $eqLink->setEqLogicId1($el->getId());
 				    $eqLink->setEqLogicId2($eqLinkData['eqLinkTargetEqLogicId']);
 				    $eqLink->setType($eqLinkData['eqLinkType']);
+			    	$eqLink->setComment($eqLinkData['eqLinkComment']);
 				    $eqLink->save();
 				}
 			}
@@ -296,6 +298,8 @@ try {
 		$uploaddir = dirname(__FILE__) . '/../../ressources/msgPhoto/';
 
 		$msg = new msg();
+		$msg->setOrganisationId($_SESSION['user']->getEvent()->getOrganisationId());
+		$msg->setDisciplineId($_SESSION['user']->getDisciplineId());
 		$msg->setEventId($_SESSION['user']->getEventId());
 		$msg->setzoneId(init('zoneId', null));
 		$msg->setEqId(init('eqLogicId', null));

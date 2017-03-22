@@ -326,9 +326,9 @@ eventplanner.eqLogic = {
     },
 
     compareZoneIdAsc: function(a,b) {
-      if (a.zoneId < b.zoneId)
+      if (a.eqLogicZoneId < b.eqLogicZoneId)
         return -1;
-      if (a.zoneId > b.zoneId)
+      if (a.eqLogicZoneId > b.eqLogicZoneId)
         return 1;
       return 0;
     }

@@ -78,7 +78,7 @@ eventplanner.ui = {
 				// Liste les ID
 				_ops[_op].forEach(function(_id){
 					if(_op == 'add'){
-						$("." + _type + "Table").trigger("addItem", _id, _type);
+						$("." + _type + "Table").trigger("addItem", [_id, _type]);
 					}else{
 						$("." + _type + "Item[data-id=" + _id + "]").trigger(_op + "Item");
 					}
@@ -105,6 +105,10 @@ eventplanner.ui = {
 
 		if(_data.hasOwnProperty('eqLink')){
 			$(".eqLinkTable").trigger("refreshEqLinkTable");
+		}
+		
+		if(_data.hasOwnProperty('eqLogic')){
+			$(".eqLogicTable").trigger("refreshEqLogicTable");
 		}
 
 		if(_data.hasOwnProperty('plan')){
@@ -1536,6 +1540,30 @@ eventplanner.ui.planning = {
 			}
 		});
 		
+		$('#planning').delegate('.editEqBtn', 'click', function () {
+			var eqId = $(this).attr('data-eqlogic-id');
+			
+			if(eqId == 'new'){
+				try {
+				   	var eqLogicItem = new eventplanner.eqLogic.eqLogicItem({
+				   		eqLogicDisciplineId: eventplanner.ui.currentUser.userDisciplineId,
+						eqLogicEventId: eventplanner.ui.currentUser.userEventId
+					});
+				}
+				catch (e) {
+				   eventplanner.ui.notification('error', "Impossible de créer l'équipement.<br>" + e.message);
+				}
+				
+				if(eqLogicItem != undefined){
+					var eqModal = new eventplanner.ui.modal.EpModalEqConfiguration(eqLogicItem);
+					eqModal.open();
+				}
+			}else{
+				var eqModal = new eventplanner.ui.modal.EpModalEqConfiguration(eventplanner.eqLogic.byId(eqId));
+				eqModal.open();
+			}
+		});
+		
 		$('#planning').delegate('.editMultipleStateBtn', 'click', function () {
 			var eqList = [];
 			var eqState = 0;
@@ -1637,9 +1665,10 @@ eventplanner.ui.planning = {
 		// TRIGGER ADDITEM
 		$("#planningTable").bind("addItem", function(event, _id, _type){
 			if(_type == 'eqLogic'){
+				var _eqData = eventplanner.eqLogic.byId(_id, true);
 				$("#planningTable .zoneItem[data-id=" + _eqData.zoneId + "] .zoneEqList").loadTemplate(
 					$("#templatePlanningTableEq"), 
-					eventplanner.eqLogic.byId(_id, true), 
+					_eqData, 
 					{append: true}
 					);
 			}
@@ -2895,6 +2924,7 @@ eventplanner.ui.modal.EpModalZone = function(_zone){
 		var eqLinkData = {
 				eqLinkId: eqLink.eqLinkId,
 				eqLinkType: eventplanner.eqLink.type[eqLink.eqLinkType],
+				eqLinkComment: eqLink.eqLinkComment,
 				eqLinkTargetEqLogicZoneName: targetEqLogic.zoneName,
 				eqLinkTargetEqLogicMatTypeName: targetEqLogic.matTypeName,
 				eqLinkTargetEqLogicEqRealName: targetEqLogic.eqRealName,
@@ -3076,10 +3106,12 @@ eventplanner.ui.modal.EpModalEqConfiguration = function(_eqLogic){
 	    var eqLinkOldList = eqLinkTable.find("tr[data-status=old]");
 	    var eqLinkNewList = eqLinkTable.find("tr[data-status=new]");
 	    var eqLinkDeletedList = eqLinkTable.find("tr[data-status=deleted]").not("tr[data-eq-link-id^=new]");
+	    
 	    var getEqLinkValues = function(jqEqLink){
 	    	var eqLinkData = {
 	    		eqLinkTargetEqLogicId: $(jqEqLink).find(".eqLinkEqLogicIdSelect").val(),
 	    		eqLinkType: $(jqEqLink).find(".eqLinkTypeSelect").val(),
+	    		eqLinkComment: $(jqEqLink).find(".eqLinkComment").val()
 	    	}
 
 	    	if(Number.isInteger(parseInt($(jqEqLink).attr('data-eq-link-id')))){
@@ -3232,6 +3264,12 @@ eventplanner.ui.modal.EpModalZoneConfiguration = function(_zone){
 			}
 			
 			this.constructEqTable();
+			
+			$("#eqTableZone").bind("refreshEqLogicTable", function(thisModal){
+				return function() {
+					thisModal.constructEqTable();
+				}
+			}(this));
 
 			this.modal.find("#zoneEventLevelId").loadTemplate($("#templateZoneEventLevel"), eventplanner.eventLevel.all(true), {success: function(thisModal){
 				return function() {

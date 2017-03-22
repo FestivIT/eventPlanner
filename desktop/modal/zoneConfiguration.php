@@ -44,7 +44,7 @@
   		<button type="button" class="btn btn-success btn-xs editEqBtn" data-eq-id="new" data-template-bind='[{"attribute": "data-zone-id", "value": "zoneId"}]'>Ajouter</button>
   		</label>
 	  	<div class="col-sm-9">
-	  		<table class="table table-striped table-hover table-condensed eqTable" id="eqTableZone">
+	  		<table class="table table-striped table-hover table-condensed eqLogicTable" id="eqTableZone">
 				<thead>
 					<tr>
 						<th>Type</th>

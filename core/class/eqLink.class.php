@@ -11,7 +11,7 @@ class eqLink {
 	private $eqLogicId1;
 	private $eqLogicId2;
 	private $type;
-	private $configuration;
+	private $comment;
 
 
 	/*     * ***********************Méthodes statiques*************************** */
@@ -118,9 +118,9 @@ class eqLink {
 	public function getType() {
 		return $this->type;
 	}	
-	public function getConfiguration($_key = '', $_default = '') {
-		return utils::getJsonAttr($this->configuration, $_key, $_default);
-	}
+	public function getComment() {
+		return $this->comment;
+	}	
 
 	public function setId($id) {
 		$this->id = $id;
@@ -137,9 +137,8 @@ class eqLink {
 	public function setType($type) {
 		$this->type = $type;
 	}
-	public function setConfiguration($_key, $_value) {
-		$this->configuration = utils::setJsonAttr($this->configuration, $_key, $_value);
+	public function setComment($comment) {
+		$this->comment = $comment;
 	}
-
 }
 ?>

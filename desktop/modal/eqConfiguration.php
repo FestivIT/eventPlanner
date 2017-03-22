@@ -66,15 +66,16 @@
 		
 		<div role="tabpanel" class="tab-pane" id="link">
 			<div class="form-group eqLinkConf">
-		      <label for="eqTableZone" class="col-sm-3 control-label" >Liens<br>
+		      <label for="eqTableZone" class="col-sm-2 control-label" >Liens<br>
 		      <button type="button" class="btn btn-success btn-xs addEqLinkBtn" data-template-bind='[{"attribute": "data-eq-logic-id", "value": "eqLogicId"}]'>Ajouter</button>
 		      </label>
-		      <div class="col-sm-9">
+		      <div class="col-sm-10">
 		        <table class="table table-striped table-hover table-condensed eqLinkTable" id="eqLinkTable">
 		        <thead>
 		          <tr>
 		            <th>Vers</th>
 		            <th>Type</th>
+		            <th>Commentaire</th>
 		            <th class="text-right">Actions</th>
 		          </tr>
 		        </thead>
@@ -83,11 +84,14 @@
 		      </table>
 		      <script type="text/html" id="templateEqConfigurationEqLinkTable">
 		        <tr data-template-bind='[{"attribute": "data-eq-link-id", "value": "eqLinkId"}, {"attribute": "data-status", "value": "status"}]'>
-		          <th class="col-xs-7" scope="row">
+		          <td class="col-xs-6">
 		            <select class="form-control eqLinkEqLogicIdSelect"></select>
-		          </th>
+		          </td>
 		          <td class="col-xs-2">
 		            <select class="form-control eqLinkTypeSelect"></select>
+		          </td>
+		          <td class="col-xs-3">
+		            <input class="form-control eqLinkComment" placeholder="Commentaire" data-value="eqLinkComment">
 		          </td>
 		          <td class="col-xs-1" style="text-align: right;">
 		            <button type="button" class="btn btn-danger btn-xs deleteEqLinkBtn" data-template-bind='[{"attribute": "data-eq-link-id", "value": "eqLinkId"}]' title="Supprimer"><span class="glyphicon glyphicon-remove"></span></button>
