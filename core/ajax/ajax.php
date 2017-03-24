@@ -223,9 +223,10 @@ try {
 				$attrFind = false;
 				foreach ($json['attributes'] as $i => $jsonAttribute){
 					if($eqLogicAttribute->getId() == $jsonAttribute['id']){
-						// Si l'attribut existe déjà, on le met à jour
-						$eqLogicAttribute->setValue($jsonAttribute['value']);
+						// Si l'attribut existe déjà, on le met à jour						
 						$eqLogicAttribute->setMatTypeAttributeId($jsonAttribute['matTypeAttributeId']);
+						$eqLogicAttribute->setValue($jsonAttribute['value']);
+						$eqLogicAttribute->setViewOnPlanning($jsonAttribute['viewOnPlanning']);
 						$eqLogicAttribute->save();
 						$attrFind = true;
 						unset($json['attributes'][$i]);
@@ -242,8 +243,9 @@ try {
 			foreach ($json['attributes'] as $jsonAttribute){
 				$eqLogicAttribute = new eqLogicAttribute();
 				$eqLogicAttribute->setEqLogicId($el->getId());
-				$eqLogicAttribute->setValue($jsonAttribute['value']);
 				$eqLogicAttribute->setMatTypeAttributeId($jsonAttribute['matTypeAttributeId']);
+				$eqLogicAttribute->setValue($jsonAttribute['value']);
+				$eqLogicAttribute->setViewOnPlanning($jsonAttribute['viewOnPlanning']);
 				$eqLogicAttribute->save();
 			}
 		}

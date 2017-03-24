@@ -62,6 +62,10 @@ eventplanner.eqLogic = {
         this.getEqLogicAttributes = function(_fullData = false){
             return eventplanner.eqLogicAttribute.byEqLogicId(this.eqLogicId, _fullData);
         }
+        
+        this.getEqLogicAttributesForPlanning = function(_fullData = false){
+            return eventplanner.eqLogicAttribute.byEqLogicId(this.eqLogicId, _fullData, true);
+        }        
 
         this.duplicate = function(){
             var eqLogicItem = new eventplanner.eqLogic.eqLogicItem(this);
@@ -355,6 +359,9 @@ eventplanner.eqLogicAttribute = {
         if(!this.hasOwnProperty('eqLogicAttributeValue')){
             this.eqLogicAttributeValue = '';
         }
+        if(!this.hasOwnProperty('eqLogicAttributeViewOnPlanning')){
+            this.eqLogicAttributeViewOnPlanning = '0';
+        }
 
         this.getMatTypeAttribute = function(_fullData = false){
             return eventplanner.matTypeAttribute.byId(this.eqLogicAttributeMatTypeAttributeId, _fullData);
@@ -417,13 +424,13 @@ eventplanner.eqLogicAttribute = {
     },
     
     // Accés aux données
-    byEqLogicId: function(_eqLogicId, _fulldata = false){
+    byEqLogicId: function(_eqLogicId, _fulldata = false, _viewOnPlanningFilter = false){
         if(this.dataReady.state() == 'resolved'){
             // Selection des données à conserver dans le container:
             var dataSelection = Array();
 
             Object.keys(this.container).forEach(function(id) {
-               if(eventplanner.eqLogicAttribute.container[id].eqLogicAttributeEqLogicId == _eqLogicId){
+               if((eventplanner.eqLogicAttribute.container[id].eqLogicAttributeEqLogicId == _eqLogicId) && (eventplanner.eqLogicAttribute.container[id].eqLogicAttributeViewOnPlanning == '1' || !_viewOnPlanningFilter)){
                     dataSelection.push(eventplanner.eqLogicAttribute.container[id]);
                 }
             });

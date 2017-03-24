@@ -47,19 +47,16 @@
 			  </div>
 		</div>
 		
-		<div role="tabpanel" class="tab-pane" id="attributs">
-			  <div class="form-group">
-			      <label for="eqLogicIp" class="col-sm-3 control-label" >IP</label>
-			      <div class="col-sm-9">
-			        <input type="text" class="form-control" id="eqLogicIp" placeholder="IP" data-value="eqLogicIp">
-			      </div>
-			  </div>
-		</div>
+		<div role="tabpanel" class="tab-pane" id="attributs"></div>
+		
 		<script type="text/html" id="templateEqConfigurationEqLogicAttribute">
-			<div class="form-group">
+			<div class="form-group eqLogicAttribute" data-attribute-id="" data-template-bind='[{"attribute": "data-mat-type-attribute-id", "value": "matTypeAttributeId"}]'>
 				<label class="col-sm-3 control-label" data-content="matTypeAttributeName"></label>
-				<div class="col-sm-9">
-					<input type="text" class="form-control eqLogicAttribute" data-attribute-id="" data-template-bind='[{"attribute": "data-mat-type-attribute-id", "value": "matTypeAttributeId"}]'>
+				<div class="col-sm-6">
+					<input type="text" class="form-control eqLogicAttributeValue">
+				</div>
+				<div class="col-sm-3">
+					<input type="checkbox" class="form-control eqLogicAttributeViewOnPlanning">
 				</div>
 			</div>
 		</script>

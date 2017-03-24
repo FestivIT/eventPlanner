@@ -202,6 +202,35 @@ $.addTemplateFormatter("contactCoord", function(contactId, coordType) {
 $.addTemplateFormatter("formatEqLogicAttributes", function(eqLogicId, templateId) {
     return $('<div>').loadTemplate($('#' + templateId), eventplanner.eqLogic.byId(eqLogicId).getEqLogicAttributes(true)).html();
 });
+$.addTemplateFormatter("formatEqLogicAttributesForPlanning", function(eqLogicId, templateId) {
+    return $('<div>').loadTemplate($('#' + templateId), eventplanner.eqLogic.byId(eqLogicId).getEqLogicAttributesForPlanning(true)).html();
+});
+
+$.addTemplateFormatter("formatEqLogicEqLink", function(eqLogicId, templateId) {
+	var linkList = eventplanner.eqLink.byEqLogicId(eqLogicId, true);
+	var eqLinkDataList = [];
+	
+	linkList.forEach(function(eqLink){
+		if(eqLink.eqLinkEqLogicId1 == eqLogicId){
+			var targetEqLogic = eventplanner.eqLogic.byId(eqLink.eqLinkEqLogicId2, true);
+		}else{
+			var targetEqLogic = eventplanner.eqLogic.byId(eqLink.eqLinkEqLogicId1, true);
+		}
+		
+		eqLinkDataList.push({
+				eqLinkId: eqLink.eqLinkId,
+				eqLinkType: eventplanner.eqLink.type[eqLink.eqLinkType],
+				eqLinkComment: eqLink.eqLinkComment,
+				eqLinkTargetEqLogicZoneName: targetEqLogic.zoneName,
+				eqLinkTargetEqLogicMatTypeName: targetEqLogic.matTypeName,
+				eqLinkTargetEqLogicEqRealName: targetEqLogic.eqRealName,
+				eqLinkTargetEqLogicId: targetEqLogic.eqLogicId
+			});
+	});
+
+    return $('<div>').loadTemplate($('#' + templateId), eqLinkDataList).html();
+});
+
 
 function formatDateYmd2Dmy(date){
 	return date.split("-").reverse().join("/");

@@ -3014,7 +3014,6 @@ eventplanner.ui.modal.EpModalEqConfiguration = function(_eqLogic){
 		}(this)});
 		
 		this.constructAndSelectEqReal();
-		this.constructAttributeTable();
 	}
 
 	this.postShow = function(){
@@ -3034,13 +3033,13 @@ eventplanner.ui.modal.EpModalEqConfiguration = function(_eqLogic){
 			this.modal.find("#eqLogicZoneId").on('change', this, function() {
 			  	event.data.mapZone.panTo(event.data.modal.find('#eqLogicZoneId option:selected').data('zone-loc'));
 			});
-			
+						
 			this.modal.find("#eqLocalisation")
 				.bootstrapSwitch({
 					state: is_array(this.data.eqLogicLocalisation),
 					onText: "Oui",
 					offText: "Non"
-				})			
+				})		
 				.on('switchChange.bootstrapSwitch', this, function(event, state) {
 					if(state){
 						event.data.modal.find("#mapDiv").show();
@@ -3051,6 +3050,8 @@ eventplanner.ui.modal.EpModalEqConfiguration = function(_eqLogic){
 						event.data.modal.find("#mapDiv").hide();
 					}
 				});
+			
+			this.constructAttributeTable();
 
 			this.modal.find('#eqLogicForm').submit(this, function(event) {
 				var newEqLogic =  event.data.data.clone();
@@ -3069,11 +3070,12 @@ eventplanner.ui.modal.EpModalEqConfiguration = function(_eqLogic){
 			    newEqLogic.eqLogicAttributes = [];
 			    $(this).find(".eqLogicAttribute").each(function(_newEqLogic){
 			    	return function(i, eqLogicAttribute){
-			    		if($(eqLogicAttribute).val() != ''){
+			    		if($(eqLogicAttribute).find('.eqLogicAttributeValue').val() != ''){
 					    	_newEqLogic.eqLogicAttributes.push({
 					    		id: $(eqLogicAttribute).attr('data-attribute-id'),
-					    		value: $(eqLogicAttribute).val(),
-					    		matTypeAttributeId: $(eqLogicAttribute).attr('data-mat-type-attribute-id')
+					    		value: $(eqLogicAttribute).find('.eqLogicAttributeValue').val(),
+					    		matTypeAttributeId: $(eqLogicAttribute).attr('data-mat-type-attribute-id'),
+					    		viewOnPlanning: ($(eqLogicAttribute).find('.eqLogicAttributeViewOnPlanning').bootstrapSwitch('state') ? "1" : "0")
 					    	});
 					    }
 			    	}
@@ -3224,11 +3226,20 @@ eventplanner.ui.modal.EpModalEqConfiguration = function(_eqLogic){
 	this.constructAttributeTable = function(){
 		this.modal.find("#attributs").loadTemplate(this.modal.find("#templateEqConfigurationEqLogicAttribute"), eventplanner.matType.byId(this.modal.find('#eqLogicMatTypeId option:selected').val()).getAllAttributes());
 		
+		this.modal.find("#attributs .eqLogicAttributeViewOnPlanning").bootstrapSwitch({
+			state: false,
+			onText: "Oui",
+			offText: "Non",
+			labelText: "Planning"
+		});
+		
 		this.data.getEqLogicAttributes().forEach(function(thisModal){
 			return function(attr){
-				thisModal.modal.find(".eqLogicAttribute[data-mat-type-attribute-id=" + attr.eqLogicAttributeMatTypeAttributeId + "]")
-					.val(attr.eqLogicAttributeValue)
-					.attr('data-attribute-id', attr.eqLogicAttributeId);
+				var attribute = thisModal.modal.find(".eqLogicAttribute[data-mat-type-attribute-id=" + attr.eqLogicAttributeMatTypeAttributeId + "]");
+				
+				attribute.attr('data-attribute-id', attr.eqLogicAttributeId);
+				attribute.find('.eqLogicAttributeValue').val(attr.eqLogicAttributeValue);
+				attribute.find('.eqLogicAttributeViewOnPlanning').bootstrapSwitch('state', !!parseInt(attr.eqLogicAttributeViewOnPlanning));
 			}
 		}(this));
 	}

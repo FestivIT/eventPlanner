@@ -146,10 +146,11 @@
 							</div>
 						</div>
 					</div>
-					<div class="col-sm-2 hidden-xs" data-template-bind='[{"attribute": "content", "value": "eqLogicId", "formatter": "formatEqLogicAttributes", "formatOptions": "templateEqLogicAttributes"}]'>
+					<div class="col-sm-2 hidden-xs" data-template-bind='[{"attribute": "content", "value": "eqLogicId", "formatter": "formatEqLogicAttributesForPlanning", "formatOptions": "templateEqLogicAttributes"}]'>
 					</div>
 					<div class="col-sm-3 hidden-xs">
-						<span data-content="eqLogicComment"></span>
+						<div data-template-bind='[{"attribute": "content", "value": "eqLogicId", "formatter": "formatEqLogicEqLink", "formatOptions": "templateEqLink"}]'></div>
+						<small><span data-content="eqLogicComment"></span></small>
 					</div>
 					<div class="col-xs-6 col-sm-2">
 						<button type="button" style="width: 100%;font-weight: bold;" data-template-bind='[{"attribute": "class", "value": "eqLogicState", "formatter": "formatStateColorClass", "formatOptions": "editStateBtn btn btn-xs btn"},{"attribute": "content", "value": "eqLogicState", "formatter": "formatState"}, {"attribute": "data-eqLogic-id", "value": "eqLogicId"}, {"attribute": "data-eqLogic-state", "value": "eqLogicState"}]'></span>
@@ -167,9 +168,18 @@
 			</li>
 		</script>
 		<script type="text/html" id="templateEqLogicAttributes">
-			<span class="label label-info">
-				<span data-content="matTypeAttributeName"></span>: <span data-content="eqLogicAttributeValue"></span>
+			<span>
+				<span class="label label-info" data-content-prepend="matTypeAttributeName"> :</span> <small><strong><span data-content="eqLogicAttributeValue"></span></strong></small>
 			</span><br>
 		</script>
-		
+		<script type="text/html" id="templateEqLink">
+			<div class="row">
+				<div class="col-xs-2"><span class="label label-primary" data-content="eqLinkType"></span></div>
+				<div class="col-xs-10"><span class="label label-info"><span data-content="eqLinkTargetEqLogicZoneName"></span> <span data-content="eqLinkTargetEqLogicMatTypeName"></span> <span data-content="eqLinkTargetEqLogicEqRealName"></span></span></div>
+			</div>
+			<div class="row">
+				<div class="col-xs-2"></div>
+				<div class="col-xs-10"><small data-content="eqLinkComment"></small></div>
+			</div>
+		</script>
 </div>

@@ -10,6 +10,7 @@ class eqLogicAttribute {
 	private $matTypeAttributeId;
 	private $eqLogicId;
 	private $value;
+	private $viewOnPlanning;
 
 
 	/*     * ***********************Méthodes statiques*************************** */
@@ -115,6 +116,10 @@ class eqLogicAttribute {
 	public function getValue() {
 		return $this->value;
 	}
+	public function getViewOnPlanning() {
+		return $this->viewOnPlanning;
+	}
+	
 
 	public function setId($id) {
 		$this->id = $id;
@@ -127,6 +132,9 @@ class eqLogicAttribute {
 	}
 	public function setValue($value) {
 		$this->value = $value;
+	}
+	public function setViewOnPlanning($viewOnPlanning) {
+		$this->viewOnPlanning = $viewOnPlanning;
 	}
 
 }
