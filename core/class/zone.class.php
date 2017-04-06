@@ -122,8 +122,23 @@ class zone {
 	}
 
 	public function remove($_addMsg = true) {
+		// suppression des équipements
+		foreach($this->getEqLogics() as $eqLogic){
+			$eqLogic->remove();
+		}
+		
+		// suppression des contact
+		foreach($this->getContacts() as $contact){
+			$contact->setZoneId(null);
+		}
+		
+		// suppression des msg
+		foreach(msg::byZoneId($this->getId()) as $msg){
+			$msg->remove();
+		}
+		
 		if($_addMsg){
-			msg::add($this->getEvent()->getOrganisationId(), null, $this->getEventId(), $this->getId(), null, $_SESSION['user']->getId(), "Suppression de la zone." , 'zone', 'remove', $this);
+			msg::add($this->getEvent()->getOrganisationId(), null, $this->getEventId(), null , null, $_SESSION['user']->getId(), "Suppression de la zone " . $this->getName() . "." , 'zone', 'remove', $this);
 		}
 
 		return DB::remove($this);
@@ -162,6 +177,12 @@ class zone {
 	}
 	public function getComment() {
 		return $this->comment;
+	}
+	public function getEqLogics() {
+		return eqLogic::byZoneId($this->getId());
+	}
+	public function getContacts() {
+		return contact::byZoneId($this->getId());
 	}
 
 	public function setId($id) {

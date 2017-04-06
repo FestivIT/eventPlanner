@@ -144,6 +144,17 @@ class mission {
 	}
 
 	public function remove($_addMsg = true) {
+		// suppression des utilisateurs associés
+		foreach($this->getUsers() as $userAssociation){
+			$userAssociation->remove();
+		}
+		
+		// suppression des zones associées
+		foreach($this->getZones() as $zoneAssociation){
+			$zoneAssociation->remove();
+		}	
+		
+		
 		if($_addMsg){
 			msg::add($this->getEvent()->getOrganisationId(), $this->getDisciplineId(), $this->getEventId(), null, null, $_SESSION['user']->getId(), "Suppression de la mission." , 'mission', 'remove', $this);
 		}

@@ -62,10 +62,25 @@ eventplanner.eqLogic = {
         this.getEqLogicAttributes = function(_fullData = false){
             return eventplanner.eqLogicAttribute.byEqLogicId(this.eqLogicId, _fullData);
         }
+
+		this.getFullData = function(){
+			return eventplanner.eqLogic.getFullData(this);
+		}
         
         this.getEqLogicAttributesForPlanning = function(_fullData = false){
             return eventplanner.eqLogicAttribute.byEqLogicId(this.eqLogicId, _fullData, true);
-        }        
+        }
+        
+
+        this.getEqLogicAttributesByMatTypeAttributeId = function(_matTypeAttributeId, _fullData = false){
+            var result = false;
+            this.getEqLogicAttributes(_fullData).forEach(function(attr){
+                if(attr.eqLogicAttributeMatTypeAttributeId == _matTypeAttributeId){
+                    result = attr;
+                }
+            });
+            return result;
+        }    
 
         this.duplicate = function(){
             var eqLogicItem = new eventplanner.eqLogic.eqLogicItem(this);
@@ -153,6 +168,39 @@ eventplanner.eqLogic = {
 
     updateState: function(_params) {
         return eventplanner.updateStateToServer('eqLogic' ,_params);
+    },
+    
+    saveEqLogicList: function(_params) {
+    	var paramsRequired = ['saveList', 'deleteList'];
+        var paramsSpecifics =  {
+        	pre_success: function(_data) {
+	            		if(_data.state == 'ok'){
+			        		/*
+			        		eventplanner.updateDataFromServer('eqLogic', _data.result);
+                            _data.result = new eventplanner.eqLogic.eqLogicItem(_data.result);
+                            */
+			        	}
+                        return _data;
+	            	}
+        };
+
+        try {
+            eventplanner.private.checkParamsRequired(_params || {}, paramsRequired);
+        } catch (e) {
+            (_params.error || paramsSpecifics.error || eventplanner.private.default_params.error)(e);
+            return;
+        }
+
+        var params = $.extend({}, eventplanner.private.default_params, paramsSpecifics, _params || {});
+        var paramsAJAX = eventplanner.private.getParamsAJAX(params);
+        paramsAJAX.url = 'core/ajax/ajax.php';
+        paramsAJAX.data = {
+            type: 'eqLogic',
+            action: 'saveEqLogicList',
+            saveList: json_encode(_params.saveList),
+            deleteList: json_encode(_params.deleteList)
+        };
+        return $.ajax(paramsAJAX);
     },
 
     // Accés aux données

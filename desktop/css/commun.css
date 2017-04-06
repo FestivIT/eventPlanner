@@ -48,6 +48,53 @@ body {
 }
 */
 
+.screenContainer{
+	position: relative;
+	overflow: scroll;
+	margin-bottom: 0px;
+}
+.screenContainer > .table{
+	margin-bottom: 0px;
+}
+.screenContainer > .eqLogicTable{
+	width: initial;
+}
+
+#eqColSelectBtn-target label {
+  display: block;
+}
+
+#equipements .eqLogicTable th span {
+  display: block;
+}
+#equipements .eqLogicTable .eqColAttr[readonly]{
+  background-color: #e7e7e7;
+}
+.eqColAct{
+	width: 65px;
+	min-width: 65px;
+}
+.eqColMatType{
+	width: 230px; 
+	min-width: 230px;
+}
+.eqColEqReal{
+	width: 140px;
+	min-width: 140px;
+}
+.eqColZone{
+	width: 200px;
+	min-width: 200px;
+}
+.eqColComment{
+	width: 200px;
+	min-width: 200px;
+}
+.eqColAttr{
+	width: 150px;
+	min-width: 150px;
+}
+
 .cbBtn span.glyphicon {    			
 	opacity: 0;				
 }

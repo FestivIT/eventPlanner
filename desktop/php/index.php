@@ -47,9 +47,6 @@ global $EVENTPLANNER_INTERNAL_CONFIG;
 	<!-- END icon for iOS Devices -->
 
 	<?php
-include_file('3rdparty', 'bootstrap/css/bootstrap.min', 'css');
-include_file('3rdparty', 'roboto/roboto', 'css');
-
 
 include_file('core', 'icon.inc', 'php');
 include_file('core', 'core', 'css');
@@ -91,6 +88,7 @@ include_file('3rdparty', 'jquery.fileupload/jquery.fileupload-image', 'js');
 include_file('3rdparty', 'jquery.tablesorter/jquery.tablesorter.min', 'js');
 include_file('3rdparty', 'jquery.tablesorter/jquery.tablesorter.widgets.min', 'js');
 include_file('3rdparty', 'jquery.tablesorter/jquery.tablesorter.pager', 'js');
+include_file('3rdparty', 'jquery.tablesorter/widgets/widget-columnSelector.min', 'js');
 include_file('3rdparty', 'jquery.typeahead/jquery.typeahead.min', 'js');
 include_file('3rdparty', 'bootstrap-switch/bootstrap-switch.min', 'js');
 include_file('3rdparty', 'bootstrap-datepicker/bootstrap-datepicker.min', 'js');
@@ -106,6 +104,7 @@ include_file('3rdparty', 'leaflet/leaflet.easy-button', 'js');
 include_file('3rdparty', 'leaflet/leaflet.contextmenu.min', 'js');
 include_file('3rdparty', 'leaflet/leaflet.locate.min', 'js');
 include_file('3rdparty', 'snap.svg/snap.svg-min', 'js');
+include_file('3rdparty', 'editable-table/editabletable', 'js');
 
 include_file('core', 'core', 'js');
 include_file('core', 'js.inc', 'php');
@@ -131,6 +130,8 @@ include_file('3rdparty', 'leaflet/leaflet.awesome-markers', 'css');
 include_file('3rdparty', 'leaflet/leaflet.easy-button', 'css');
 include_file('3rdparty', 'leaflet/leaflet.contextmenu.min', 'css');
 include_file('3rdparty', 'leaflet/leaflet.locate.min', 'css');
+include_file('3rdparty', 'bootstrap/css/bootstrap.min', 'css');
+include_file('3rdparty', 'roboto/roboto', 'css');
 
 include_file('desktop', 'commun', 'css');
 

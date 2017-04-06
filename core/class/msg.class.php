@@ -112,7 +112,7 @@ class msg {
 		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
 	}
 
-	public static function byEqId($_eqId) {
+	public static function byEqLogicId($_eqId) {
 		$values = array(
 			'eqId' => $_eqId,
 		);

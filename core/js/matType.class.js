@@ -181,6 +181,10 @@ eventplanner.matTypeAttribute = {
         if(!this.hasOwnProperty('matTypeAttributeName')){
             this.matTypeAttributeName = '';
         }
+
+        this.getMatType = function(_fullData = false){
+            return eventplanner.matType.byId(this.matTypeAttributeMatTypeId, _fullData);
+        }
     },
 
     // Chargement initial des données depuis le serveur
@@ -266,14 +270,49 @@ eventplanner.matTypeAttribute = {
     },
 
     getFullData: function(_data){
-        return _data;
+        var processData = function(_matTypeAttributeData){
+            // matType
+            var matType = _matTypeAttributeData.getMatType(true);
+            if(!is_object(matType)){
+                matType = {};
+            }
+           
+            // Concaténation
+            return $.extend(true, {}, _matTypeAttributeData, matType);
+        }
+       
+       if(is_object(_data)){
+            // c'est un objet, donc un seul enregistrement à traiter
+            if(_data.hasOwnProperty('matTypeAttributeId')){
+                return processData(_data);
+            }           
+        }else if(is_array(_data)){
+            // c'est un array, donc plusieurs enregistrement à traiter
+            var dataArray = [];
+            
+            _data.forEach(function(element) {
+                if(element.hasOwnProperty('matTypeAttributeId')){
+                    dataArray.push(processData(element));
+                }
+            });
+
+            return dataArray;
+        }else{
+            return _data;
+        }
     },
 
     compareNameAsc: function(a,b) {
-      if (a.matTypeAttributeName.toLowerCase() < b.matTypeAttributeName.toLowerCase())
-        return -1;
-      if (a.matTypeAttributeName.toLowerCase() > b.matTypeAttributeName.toLowerCase())
-        return 1;
-      return 0;
+    	if (a.getMatType().matTypeName < b.getMatType().matTypeName){
+		    return -1;
+    	}else if (a.getMatType().matTypeName > b.getMatType().matTypeName){
+        	return 1;
+    	}else{
+    		if (a.matTypeAttributeName.toLowerCase() < b.matTypeAttributeName.toLowerCase())
+		        return -1;
+		    if (a.matTypeAttributeName.toLowerCase() > b.matTypeAttributeName.toLowerCase())
+		        return 1;
+		    return 0;
+    	}
     }
 }

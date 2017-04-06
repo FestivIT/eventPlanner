@@ -78,7 +78,7 @@
 	</nav>
   	
   	
-  		<div id="planningTable" class="panel-group eqLogicTable zoneTable" role="tablist" aria-multiselectable="true"></div>
+  		<div id="planningTable" class="panel-group screenContainer eqLogicTable zoneTable" role="tablist" aria-multiselectable="true"></div>
 
   		<script type="text/html" id="templatePlanningTableZone">
   		<div class="panel panel-default zoneItem" data-template-bind='[{"attribute": "data-id", "value": "zoneId"}]'>

@@ -115,8 +115,23 @@ class eqLogic {
 	}
 
 	public function remove($_addMsg = true) {
+		// suppression des attributs
+		foreach($this->getAttributes() as $attr){
+			$attr->remove();
+		}
+		
+		// suppression des liens
+		foreach($this->getEqLinks() as $eqLink){
+			$eqLink->remove();
+		}
+		
+		// suppression des msg
+		foreach(msg::byEqLogicId($this->getId()) as $msg){
+			$msg->remove();
+		}
+		
 		if($_addMsg){
-			msg::add($this->getEvent()->getOrganisationId(), $this->getDisciplineId(), $this->getEventId(), $this->getZoneId(), $this->getId(), $_SESSION['user']->getId(), "Suppression de l'équipement." , 'eqLogic', 'remove', $this);
+			msg::add($this->getEvent()->getOrganisationId(), $this->getDisciplineId(), $this->getEventId(), $this->getZoneId(), null, $_SESSION['user']->getId(), "Suppression de l'équipement." , 'eqLogic', 'remove', $this);
 		}
 
 		return DB::remove($this);
@@ -170,7 +185,10 @@ class eqLogic {
 		return json_decode($this->localisation, true);
 	}
 	public function getAttributes() {
-		return false;
+		return eqLogicAttribute::byEqLogicId($this->getId());
+	}
+	public function getEqLinks() {
+		return eqLink::byEqLogicId($this->getId());
 	}
 
 	public function setId($id) {

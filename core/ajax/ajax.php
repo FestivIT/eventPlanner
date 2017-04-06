@@ -84,10 +84,69 @@ try {
 		}
 		ajax::success($results);
 	}
+	
+	// eqLogic: traitement de la sauvegarde en liste
+	if(init('action') == 'saveEqLogicList'){
+		$saveList = json_decode(init('saveList'), true);
+		$deleteList = json_decode(init('deleteList'), true);
+		$return = array('eqLogic' => array(), 'eqLogicAttribute' => array());
+
+		foreach ($saveList as $eqLogicData){
+			$el = null;
+			
+			if (isset($eqLogicData['id']) && $eqLogicData['id']!='') {
+				$el = eqLogic::byId($eqLogicData['id']);
+				utils::a2o($el, $eqLogicData);
+				$el->save();
+			}
+	
+			if (!isset($el) || !is_object($el)) {
+				$el = new eqLogic();
+				utils::a2o($el, $eqLogicData);
+				$el->save();
+				$el->refresh();
+			}
+			
+			array_push($return['eqLogic'], $el->formatForFront());
+			
+			foreach ($eqLogicData['attr'] as $matTypeAttrId => $matTypeValue){
+				if($matTypeValue == ""){
+					$eqLogicAttribute = eqLogicAttribute::byMatTypeAttributeIdEqLogicId($matTypeAttrId, $el->getId());
+					if(is_object($eqLogicAttribute)){
+						$eqLogicAttribute->remove();
+					}
+				}else{
+					$eqLogicAttribute = eqLogicAttribute::byMatTypeAttributeIdEqLogicId($matTypeAttrId, $el->getId());
+					
+					if(!is_object($eqLogicAttribute)){
+						$eqLogicAttribute = new eqLogicAttribute();
+						$eqLogicAttribute->setEqLogicId($el->getId());
+						$eqLogicAttribute->setMatTypeAttributeId($matTypeAttrId);
+						$eqLogicAttribute->setViewOnPlanning("0");
+					}
+					
+					$eqLogicAttribute->setValue($matTypeValue);
+					$eqLogicAttribute->save();
+					
+					array_push($return['eqLogicAttribute'], $eqLogicAttribute->formatForFront());
+				}
+			}
+		}
+		
+		foreach ($deleteList as $eqLogicId){
+			$el = eqLogic::byId($eqLogicId);
+	
+			if (isset($el) && is_object($el)) {
+				$el->remove();
+			}
+		}
+		
+		ajax::success($return);
+	}
 
 	if (init('action') == 'save') {
 		$json = json_decode(init($class), true);
-		
+				
 		if (isset($json['id'])) {
 			$el = $class::byId($json['id']);
 			utils::a2o($el, $json);
@@ -274,15 +333,35 @@ try {
 	}
 
 	if (init('action') == 'remove') {
-		throw new Exception('Droit insuffisant pour supprimer - ' . $class);
+		switch($class){
+			case "eqLink":
+			case "eqLogic":
+			case "mission":
+			case "zone":
+			case "contact":
+				$el = $class::byId(init('id'));
 
-		$el = $class::byId(init('id'));
-
-		if (isset($el) && is_object($el)) {
-			$el->remove();
+				if (isset($el) && is_object($el)) {
+					$el->remove();
+				}
+		
+				ajax::success();
+			
+			case "msg":
+			case "eqLogicAttribute":
+			case "eventLevel":
+			case "matType":
+			case "matTypeAttribute":
+			case "eqReal":
+			case "user":
+			case "event":
+			case "discipline":
+			case "plan":
+			case "organisation":
+			default:
+				throw new Exception('Droit insuffisant pour supprimer - ' . $class);
+				break;
 		}
-
-		ajax::success();
 	}
 
 	// MSG

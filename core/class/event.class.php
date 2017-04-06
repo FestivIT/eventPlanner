@@ -63,7 +63,8 @@ class event {
 	/*     * *********************Méthodes d'instance************************* */
 
 	public function save($_addMsg = true) {
-		if($this->getId() == null){
+		if(($this->getId() == null) || ($this->getId() == "")){
+			$this->setDefaultEventLevelId(null);
 			DB::save($this);
 			$this->refresh();
 

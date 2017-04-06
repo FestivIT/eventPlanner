@@ -47,7 +47,6 @@ eventplanner.ui = {
 		this.pageContainer = $("#pageContainer");
 		this.modalContainer = $("#modalContainer");
 		this.searchBox = $("#searchbox");
-
 	},
 
 	initData: function (){
@@ -137,8 +136,18 @@ eventplanner.ui = {
 		  e.preventDefault();
 		});
 	},
+	
+	setScreenContainerHeight: function (){
+	    var h = $(window).height()
+	    var p = $(".screenContainer").position()
+	    if(p != undefined && p.hasOwnProperty('top')){
+	    	$(".screenContainer").height(h-p.top);
+	    }
+	},
 
 	initTrigger: function(){
+		$(window).resize(this.setScreenContainerHeight);
+
 		$("body").delegate('.msgForm', 'submit', function () {
 			if($(this).find('.msgFormInput').val()==''){
 			    return false;
@@ -208,9 +217,12 @@ eventplanner.ui = {
 		});
 	},
 
+	checkNewMsgReady: $.Deferred(),
 	checkNewMsg: function(){
+		eventplanner.ui.checkNewMsgReady = $.Deferred();
 		eventplanner.msg.getLastMsg({
 		    success: function(_data, _date) {
+		    	eventplanner.ui.checkNewMsgReady.resolve();
 		    	if(!eventplanner.ui.onlineState){
             		eventplanner.ui.onlineState = true;
             		$('#epNavBar').removeClass('navbar-inverse').addClass('navbar-default');
@@ -218,6 +230,7 @@ eventplanner.ui = {
             	}
 			},
 			error: function(_data){
+				eventplanner.ui.checkNewMsgReady.resolve();
 		        if(eventplanner.ui.onlineState){
             		eventplanner.ui.onlineState = false;
                 	$('#epNavBar').removeClass('navbar-default').addClass('navbar-inverse');
@@ -225,6 +238,7 @@ eventplanner.ui = {
             	}
 		    }
 		});
+		return eventplanner.ui.checkNewMsgReady;
 	},
 
 	serverListener: function (){
@@ -301,6 +315,7 @@ eventplanner.ui = {
 
 		this.pageContainer.load("desktop/php/" + _page + ".php", function(){
 			eventplanner.ui[_page].init(_option);
+			eventplanner.ui.setScreenContainerHeight();
 			$('#loadingContainer').hide();
 		});
 
@@ -1805,116 +1820,333 @@ eventplanner.ui.planning = {
 /////////////////////////////////////////////////
 eventplanner.ui.equipements = {
 	title: 'Equipements',
+	attributesColumns: {},
+	$container: null,
+	left: null,
+	top: null,
+
 	init: function(){
-	  	$("#eqLogicTable")
-	  		.tablesorter({
+		this.$container = $('.screenContainer');
+		this.left = this.$container.scrollLeft();
+		this.top = this.$container.scrollTop();
+		
+		$('#eqLogicTable')
+		  .on('sortStart filterStart', function() {
+		    eventplanner.ui.equipements.left = eventplanner.ui.equipements.$container.scrollLeft();
+		    eventplanner.ui.equipements.top = eventplanner.ui.equipements.$container.scrollTop();
+		  })
+		  .on('sortEnd filterEnd', function() {
+		    eventplanner.ui.equipements.$container.scrollLeft(eventplanner.ui.equipements.left);
+		    eventplanner.ui.equipements.$container.scrollTop(eventplanner.ui.equipements.top);
+		  });
+		
+		$("#dupZoneForm select").loadTemplate(
+			$("#templateEqZoneOptions"), 
+			eventplanner.zone.all()
+		);
+
+		$('.saveEqBtn').click(function(event){
+			var dataToSave = [];
+			var dataToRemove = [];
+
+			$('#eqLogicTable td.success').parent().each(function(i, eqLogicItem){
+				var eqLogicId = $(eqLogicItem).attr('data-id');
+				
+				if(eqLogicId != ""){
+					var eqLogicValues = {
+							id: eqLogicId
+						}
+				}else{
+					var eqLogic = new eventplanner.eqLogic.eqLogicItem ({
+						eqLogicEventId: eventplanner.ui.currentUser.userEventId,
+						eqLogicDisciplineId: eventplanner.ui.currentUser.userDisciplineId
+					});
+					var eqLogicValues = eqLogic.getValues();
+				}
+				
+				eqLogicValues.attr = {};
+				
+				$(eqLogicItem).find('.success[data-property]').each(function(j, prop){
+					var propName = firstToLowerCase($(prop).attr('data-property').substring("eqLogic".length));
+					
+					if($(prop).attr('data-val')){
+						var propVal = $(prop).attr('data-val');	
+						if(propVal == '0'){
+							propVal = null;
+						}
+					}else{
+						var propVal = $(prop).text();	
+					}
+					
+					if(propName == 'attribute'){
+						if(!$(prop).attr('readonly')){
+							eqLogicValues.attr[$(prop).attr('data-mattypeattributeid')] = propVal;
+						}
+					}else{
+						eqLogicValues[propName] = propVal;
+					}
+				});
+				
+				dataToSave.push(eqLogicValues);
+			});
+			
+			$('#eqLogicTable .eqLogicItem.danger').each(function(i, eqLogicItem){
+				if($(eqLogicItem).attr('data-id') != ''){
+					dataToRemove.push($(eqLogicItem).attr('data-id'));
+				}
+			});
+			
+			eventplanner.eqLogic.saveEqLogicList({
+				saveList: dataToSave,
+				deleteList: dataToRemove,
+				success: function(_data) {
+							eventplanner.ui.checkNewMsg().then(eventplanner.ui.equipements.constructEqList);
+							eventplanner.ui.notification('success', "Modifications enregistrées.");
+						},
+				error: function(_data){
+							eventplanner.ui.notification('error', "Impossible d'enregistrer les modifications.<br>" + _data.message);
+						}
+				});
+		});
+		
+		$("#btnDupZoneSubmit").click(function(){
+			var sourceZoneId = $('#dupZoneSource').val();
+			
+			var destZoneId = []; 
+			$('#dupZoneDest :selected').each(function(i, selected){ 
+			  destZoneId[i] = $(selected).val(); 
+			});
+			
+			var eqFromSource = $('#eqLogicTable td[data-property="eqLogicZoneId"][data-val="' + sourceZoneId + '"]').parent();
+			
+			destZoneId.forEach(function(zoneDestId){
+				eqFromSource.each(function(i, eqSource){
+					var newEqLogicTr = $(eqSource).clone();
+					newEqLogicTr.attr('data-id', '');
+					newEqLogicTr.removeClass('danger');
+					newEqLogicTr.find('td').addClass('success');
+					
+					var destZone = eventplanner.zone.byId(zoneDestId);
+					newEqLogicTr.find('td[data-property="eqLogicZoneId"]')
+						.attr('data-val', destZone.zoneId)
+						.text(destZone.zoneName);
+										
+					$("#eqLogicTable > tbody").append(newEqLogicTr);
+				});
+			});
+
+			$('#eqLogicTable').trigger('update');
+			$('#zoneDupModal').modal('toggle');
+		});
+
+		$(".addEqLogicBtn").click(function(event){
+			$("#eqLogicTable > tbody").loadTemplate(
+				$("#templateEqTable"), 
+	    		new eventplanner.eqLogic.contactItem({
+					eqLogicEventId : eventplanner.ui.currentUser.userEventId
+				}),
+				{append: true}
+			);
+		});
+		
+		this.constructEqTable();
+
+		var zoneList = {};
+		eventplanner.zone.all().forEach(function(zone){
+			zoneList[zone.zoneId] = zone.zoneName;
+		});
+
+		var matTypeList = {};
+		eventplanner.matType.all().forEach(function(matType){
+			matTypeList[matType.matTypeId] = matType.matTypeName;
+		});
+
+		$('#eqLogicTable')
+			.tablesorter({
 			    theme : "bootstrap",
-			    widthFixed: false,
+			    widthFixed: true,
 			    headerTemplate : '{content} {icon}',
-			    widgets : ["uitheme", "filter", "zebra"],
+			    widgets : ["uitheme", "filter", "zebra", "columnSelector", "stickyHeaders"],
 			    widgetOptions : {
 			      filter_reset : ".reset",
 			      filter_cssFilter: "form-control",
-			      filter_childRows  : true,
+			      columnSelector_mediaquery: false,
+			      columnSelector_columns : {
+			        0: 'disable',
+			        1: 'disable',
+			        2: 'disable'
+			      },
+			      stickyHeaders_attachTo : '#eqLogicTableWrapper'
 			    },
 			    sortList: [[0,0],[1,0]]
 			})
-
-		$('#equipements').delegate('.editEqBtn', 'click', function () {
-			var eqId = $(this).attr('data-eq-id');
-			
-			if(eqId == 'new'){
-				try {
-				   	var eqLogicItem = new eventplanner.eqLogic.eqLogicItem({
-				   		eqLogicDisciplineId: eventplanner.ui.currentUser.userDisciplineId,
-						eqLogicEventId: eventplanner.ui.currentUser.userEventId
-					});
-				}
-				catch (e) {
-				   eventplanner.ui.notification('error', "Impossible de créer l'équipement.<br>" + e.message);
-				}
-				
-				if(eqLogicItem != undefined){
-					var eqModal = new eventplanner.ui.modal.EpModalEqConfiguration(eqLogicItem);
-					eqModal.open();
-				}
-			}else{
-				var eqModal = new eventplanner.ui.modal.EpModalEqConfiguration(eventplanner.eqLogic.byId(eqId));
-				eqModal.open();
+			.editableTableWidget({
+				showEditedCell: true,
+				columns: {
+					zone: 'zone',
+					matType: 'matType',
+					eqReal: 'eqReal'
+				},
+				types: {
+					zone: {
+						type: 'dropdown',
+						source: zoneList
+						},
+					matType: {
+						type: 'dropdown',
+						source: matTypeList
+						},
+					eqReal: {
+						type: 'dropdown',
+						source: function(activeCell){
+								var matTypeId = activeCell.parent().find('[data-property="eqLogicMatTypeId"]').attr('data-val');
+								var eqRealList = {
+									null: 'Aucun'
+								};
+								eventplanner.eqReal.byMatTypeId(matTypeId).forEach(function(eqReal){
+									eqRealList[eqReal.eqRealId] = eqReal.eqRealName;
+								});
+								return eqRealList
+							}
+						}
 			}
 		});
+		$.tablesorter.columnSelector.attachTo( $('#eqLogicTable'), '#eqColSelectBtn-target');
+		
+		$('#eqLogicTable').on('change', function(event){
+			if($(event.activeCell).attr('data-property') == 'eqLogicMatTypeId'){
+				var newEqLogic = new eventplanner.eqLogic.eqLogicItem({
+						eqLogicId: $(event.activeCell).parent().attr('data-id'),
+						eqLogicEventId: eventplanner.ui.currentUser.userEventId,
+						eqLogicDisciplineId: eventplanner.ui.currentUser.userDisciplineId,
+						eqLogicMatTypeId: $(event.activeCell).attr('data-val'),
+						eqLogicZoneId: $(event.activeCell).parent().find('[data-property="eqLogicZoneId"]').attr('data-val'),
+						eqLogicEqRealId: null,
+						eqLogicComment: $(event.activeCell).parent().find('[data-property="eqLogicComment"]').text()
+					});
 
-		$('#eqLogicTable').delegate('.dupEqBtn', 'click', function () {
-			var eqId = $(this).attr('data-eq-id');
-
-			var eqLogicBase = eventplanner.eqLogic.byId(eqId);
-			var eqModal = new eventplanner.ui.modal.EpModalEqConfiguration(eqLogicBase.duplicate());
-			eqModal.open();
+				var newEqLogicItem = eventplanner.ui.equipements.getEqLogicItem(newEqLogic);
+				newEqLogicItem.find('td')
+					.not('[data-property="eqLogicZoneId"]')
+					.not('[data-property="eqLogicComment"]')
+					.addClass('success');
+				$(event.activeCell).parent().replaceWith(newEqLogicItem);
+			}
+			
+			$('#eqLogicTable').trigger('update');
 		});
-
-		$('#eqLogicTable').delegate('.deleteEqBtn', 'click', function (event) {
-			var eqLogic = eventplanner.eqLogic.byId($(this).attr('data-eq-id'), true);
-			var eqLogicName = eqLogic.zoneName + " " + eqLogic.matTypeName + " " + (eqLogic.eqRealName || '');
-
-			var eqLogic = eventplanner.eqLogic.byId($(this).attr('data-eq-id'));
-			bootbox.confirm({
-			    message: "<strong>Confirmer la suppression de l'équipement " + eqLogicName + " ?</strong>",
-			    buttons: {
-			        confirm: {
-			            label: 'Oui',
-			            className: 'btn-success'
-			        },
-			        cancel: {
-			            label: 'Non',
-			            className: 'btn-danger'
-			        }
-			    },
-			    callback: function (result) {
-			    	if(result){
-			    		eqLogic.remove({
-			    			success: function(_data) {
-											eventplanner.ui.checkNewMsg();
-											eventplanner.ui.notification('success', "Equipement supprimé! ");	
-										},
-							error: function(_data){
-								eventplanner.ui.notification('error', "Impossible de supprimer l'équipement.<br>" + _data.message);
-							}
-			    		});
-			    	}
-			    }
-			});
-
-			event.preventDefault();
-			return false;
-		});
-
-		$("#eqLogicTable").bind("addItem", function(event, _eqId){
-			var newItem = $('<div>').loadTemplate($("#templateEqTable"), eventplanner.eqLogic.byId(_eqId, true));
-			$(this).find('tbody').append($(newItem).contents());
-
+		
+		$('#equipements').delegate('.addEqBtn', 'click', function(event){
+			var newEqLogic = new eventplanner.eqLogic.eqLogicItem({
+					eqLogicId: '',
+					eqLogicEventId: eventplanner.ui.currentUser.userEventId,
+					eqLogicDisciplineId: eventplanner.ui.currentUser.userDisciplineId
+				});
+				
+			var newEqLogicItem = eventplanner.ui.equipements.getEqLogicItem(newEqLogic);
+			newEqLogicItem.find('td').addClass('success');
+			
+			$("#eqLogicTable > tbody").append(newEqLogicItem);
 			$('#eqLogicTable').trigger('update');
 		});
 
-		$("#eqLogicTable").delegate(".eqLogicItem", "updateItem", function(){
-			var eqId = $(this).attr('data-id');
-			var newItem = $('<div>').loadTemplate($("#templateEqTable"), eventplanner.eqLogic.byId(eqId, true));
-			$(this).replaceWith($(newItem).contents());
-
+		$('#eqLogicTable').delegate('.dupEqBtn', 'click', function(event){
+			eventplanner.ui.equipements.duplicateRow(this);
 			$('#eqLogicTable').trigger('update');
 		});
 
-		$("#eqLogicTable").delegate(".eqLogicItem", "removeItem", function(){
-			$(this).remove();
-			$('#eqLogicTable').trigger('update');
+		$('#eqLogicTable').delegate('.deleteEqBtn', 'click', function(event) {
+			$(this).closest('.eqLogicItem').toggleClass('danger');
 		});
-
-		this.constructEqTable();
 	},
 
 	constructEqTable: function(){
-		$("#eqLogicTable > tbody").loadTemplate($("#templateEqTable"), eventplanner.eqLogic.all(true));
+		eventplanner.matTypeAttribute.all().forEach(function(attr){
+			$('#eqLogicTable thead tr').loadTemplate($('#templateAttributeHeader'), eventplanner.matTypeAttribute.byId(attr.matTypeAttributeId, true), {append: true})
+		});
+
+		this.constructEqList();
+	},
+	
+	constructEqList: function(){
+		$('#eqLogicTable > tbody').empty();
+		eventplanner.eqLogic.all().forEach(function(eqLogic){
+			$("#eqLogicTable > tbody").append(eventplanner.ui.equipements.getEqLogicItem(eqLogic));
+		});
+		
 		$('#eqLogicTable').trigger('update');
-	}
+	},
+
+	duplicateRow: function(row){
+		var eqLogicTr = $(row).closest('.eqLogicItem');
+		var newEqLogicTr = eqLogicTr.clone();
+
+		newEqLogicTr.attr('data-id', '');
+		newEqLogicTr.removeClass('danger');
+		newEqLogicTr.find('td').addClass('success');
+
+		eqLogicTr.after(newEqLogicTr);
+
+		return newEqLogicTr;
+	},
+
+	fillEqLogicAttribute: function(eqLogicItem, eqLogic){
+		eqLogic.getMatType().getAllAttributes().forEach(function(matTypeAttr){
+			var attrItem = eqLogicItem.find(".eqColAttr[data-matTypeAttributeId=" + matTypeAttr.matTypeAttributeId + "]");
+			attrItem.removeAttr('readonly');
+
+			eqLogicAttr = eqLogic.getEqLogicAttributesByMatTypeAttributeId(matTypeAttr.matTypeAttributeId);
+			if(eqLogicAttr && eqLogicAttr.hasOwnProperty('eqLogicAttributeValue')){
+				attrItem.text(eqLogicAttr.eqLogicAttributeValue);
+			}else{
+				attrItem.text('');
+			}
+		});
+	},
+
+	getEqLogicItem: function(eqLogic){
+		var fullEqLogic = eqLogic.getFullData();
+		if(fullEqLogic.eqLogicEqRealId == null){
+			fullEqLogic.eqRealName = 'Aucun';
+			fullEqLogic.eqRealId = '0';
+		}
+		
+		var newEqLogicItem = $("<div>").loadTemplate($("#templateEqTable"), fullEqLogic).contents();
+
+		$("#eqLogicTable th.eqColAttr").each(function(i, thAttr){
+			newEqLogicItem.loadTemplate($('#templateAttributeCell'), {matTypeAttributeId: $(thAttr).attr('data-attribute-id')}, {append: true});
+		});
+
+		newEqLogicItem.find(".eqColAttr").attr('readonly');
+
+		this.fillEqLogicAttribute(newEqLogicItem, eqLogic);
+		
+		return newEqLogicItem;
+	},
+	
+	importCSV: function(){
+		// Chaine CSV
+		s = "Accueil VIP / Bénévoles;NS5M;06/04/2017;09/04/2017;UBNT195;172.30.50.195;;SSID OMNI_PANO2;;mdp=festivit / freq 5420\n;POE 24V;;;;;;;;\n;PICOSTATION UNIFI M2HP;;;PW-PM2-21;DHCP;;Port 2 NS5M;;\n;Switch Netgear 8 ports;;;;172.30.51.10;;Port Lan POE;;\n;TPE;;;;10.15.0.10;;;;\n;Câbles;;;;;;;;1x1M et 1x5M\n;;;;;;;;;\nAmbulants;NS5M;07/04/2017;09/04/2017;UBNT167;172.30.50.167;;SSID OMNI_PANO;;mdp=festivit freq=5520\n;POE 24V;;;;;;;;\n;PICOSTATION UNIFI M2HP;;;PW-PM2-25;DHCP;;Port 2 NS5M;;\n;Câbles;;;;;;;;1x1M et 1x5M\n;Mât Informatique;;;;;;;;\n;;;;;;;;;\nAnnexe Medias;NS5M;06/04/2017;09/04/2017;UBNT073;172.30.50.73;;SSID OMNI_PANO;;mdp=festivit freq=5520\n;POE 24V;;;;;;;;\n;PICOSTATION UNIFI M2HP;;;PW-PM2-23;DHCP;;Port 2 NS5M;;\n;Câbles;;;;;;;;1x1M et 1x5M\n;;;;;;;;;\nBar 1;NS5M;06/04/2017;09/04/2017;UBNT007;172.30.50.007;;SSID NS5M_GRANDCLUB;;client freq 5480 mdp=festivit\n;POE 24V;;;;;;;;\n;UAP AC LITE;;;FIT-UAP001;DHCP;;Port 2 NS5M;;\n;Câbles;;;;;;;;1x1M et 1x5M\n;;;;;;;;;\nBar 2;NS5M;06/04/2017;09/04/2017;UBNT006;172.30.50.006;;SSID NS5M_GRANDCLUB;;client freq 5480 mdp=festivit\n;POE 24V;;;;;;;;\n;UAP AC LITE;;;LVC-UAP002;DHCP;;Port 2 NS5M;;\n;Câbles;;;;;;;;1x1M et 1x5M\n;;;;;;;;;\n;;;;;;;;;";
+		
+		// Découpage des lignes
+		eqs = s.split('\n');
+		
+		// Découpage des champs
+		eqs = eqs.map(function(eq){
+			return eq.split(';');
+		});
+		
+		// Variable par section:
+		var zoneEnCours = "";
+	
+		// Pour chaque champs
+		eqs.forEach(function(eq){
+			if(eq[0] != ""){
+				zoneEnCours = eq[0];
+			}
+			console.log(zoneEnCours);
+		});
+	},
 };
 
 /////////////////////////////////////////////////
@@ -2033,7 +2265,152 @@ eventplanner.ui.zones ={
 /////////////////////////////////////////////////
 eventplanner.ui.configevent = {
 	title: 'Configuration de l\'événement',
-	init: function(){}
+	init: function(){
+		$("#contactTable > tbody").loadTemplate(
+			$("#templateContactTable"), 
+			eventplanner.contact.all(true));
+
+		$(".addContactBtn").click(function(event){
+			$("#contactTable > tbody").loadTemplate(
+				$("#templateContactTable"), 
+	    		new eventplanner.contact.contactItem({
+	    			contactName: 'Nouveau contact',
+	    			contactFct: 'Fonction',
+	    			contactZoneId: 0,
+					contactEventId : eventplanner.ui.currentUser.userEventId
+				}),
+				{append: true}
+			);
+		});
+
+		$(".saveContactBtn").click(function(event){
+			var contactList = [];
+
+			$('#contactTable .success').closest('.contactItem').each(function(i, contactItem){
+				var contactId = $(contactItem).attr('data-id');
+
+				if(contactId != ''){
+					var originalContact = eventplanner.contact.byId(contactId);
+
+					$(contactItem).find(".success").each(function(j, contactProp){
+						console.log($(contactProp).attr('data-property') + " : " + $(contactProp).text());
+					});
+
+				}else{
+					var originalContact = new eventplanner.contact.contactItem({
+						contactName: $(contactItem).find("td[data-property=contactName]").text(),
+						contactFct: $(contactItem).find("td[data-property=contactFct]").text(),
+						contactZoneId: $(contactItem).find("td[data-property=contactZoneId]").attr('data-value'),
+						contactEventId : eventplanner.ui.currentUser.userEventId
+					});
+				}
+				contactList.push(originalContact);
+			});
+
+			console.log(contactList);
+		});
+		
+		var zoneList = {
+			0: 'Aucune'
+		};
+		eventplanner.zone.all().forEach(function(zone){
+			zoneList[zone.zoneId] = zone.zoneName;
+		});
+
+		$('#contactTable').editableTableWidget({
+			showEditedCell: true,
+			columns: {zone: 'zone'},
+			types: {
+				zone: {
+					type: 'dropdown',
+					source: zoneList
+					}
+			}
+		});
+
+		/*
+		$('#contactTable td').on('change', function(event, newValue){
+			var contactId = $(this).closest('.contactItem').attr('data-id');
+			console.log(contactId);
+			if(contactId != ''){
+				var originalContact = eventplanner.contact.byId(contactId);
+			}else{
+				var originalContact = new eventplanner.contact.contactItem({
+					contactEventId : eventplanner.ui.currentUser.userEventId
+				});
+			}
+
+
+			if(originalContact === false){
+				eventplanner.ui.notification('error', "Contact inconnu, vérifier qu'il n'a pas été supprimé par ailleur, ou actualiser la page.<br>");
+				return;
+			}
+
+			var newContact = originalContact.clone();
+
+				if(newContact.hasOwnProperty($(this).data('property'))){
+					var property = $(this).data('property');
+
+					if(property == 'contactCoord'){
+						var coordType = $(this).data('property-item');
+						var newCoordArray = [];
+						var coordFinded = false;
+
+						newContact.contactCoord.forEach(function(coord){
+					    	if(coord.type == coordType){
+					    		coordFinded = true;
+					    		if(newValue != ''){
+					    			coord.value = newValue;
+					    			newCoordArray.push(coord);
+					    		}
+					    	}else{
+					    		newCoordArray.push(coord);
+					    	}
+					    });
+
+						if(!coordFinded && newValue != ''){
+							newCoordArray.push({
+								type: coordType,
+								value: newValue
+							});
+						}
+
+						newContact.contactCoord = newCoordArray;
+					}else if(property == 'contactZoneId'){
+						var newZoneId = $(this).attr('data-value');
+						console.log(newZoneId);
+						if(newZoneId > 0){
+							newContact[property] = newZoneId;
+						}else{
+							newContact[property] = null;
+						}
+					}else{
+						newContact[property] = newValue;
+					}
+				}
+
+				try{
+					newContact.save({
+						  success: function(thisTd, newValue){
+										return function(_data) {
+											eventplanner.ui.checkNewMsg();
+											$(thisTd).data('original-value', newValue);
+										}
+									}(this, newValue),
+						  error: function(thisTd, newValue){
+										return function(_data) {
+											eventplanner.ui.notification('error', "Impossible d'enregistrer le contact.<br>" + _data.message);
+										  	$(thisTd).addClass('danger');
+									 	}
+									}(this, newValue)
+						});
+				}catch(e){
+					eventplanner.ui.notification('error', "Probléme lors de l'enregistrement.<br>" + e.message);
+					$(this).addClass('danger');
+				}
+		});
+		*/
+	}
 }
 
 

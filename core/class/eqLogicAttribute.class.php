@@ -42,6 +42,18 @@ class eqLogicAttribute {
         	WHERE eqLogicId=:eqLogicId';
 		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
 	}
+	
+	public static function byMatTypeAttributeIdEqLogicId($_matTypeAttributeId, $_eqLogicId) {
+		$values = array(
+			'eqLogicId' => $_eqLogicId,
+			'matTypeAttributeId' => $_matTypeAttributeId,
+		);
+
+		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
+        	FROM eqLogicAttribute
+        	WHERE matTypeAttributeId=:matTypeAttributeId AND eqLogicId=:eqLogicId';
+		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ROW, PDO::FETCH_CLASS, __CLASS__);
+	}
 
 	public static function listIdByEqLogicId($_eqLogicId) {
 		$list = array();
