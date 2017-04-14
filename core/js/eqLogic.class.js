@@ -212,7 +212,7 @@ eventplanner.eqLogic = {
             });
 
             // Tri
-            dataSelection.sort(this.compareMatTypeIdAsc);
+            dataSelection.sort(this.compareMatTypeNameAsc);
 
             // Si on demande les data consolidées (pour l'utilisation avec les template)
             if(_fulldata){
@@ -385,10 +385,12 @@ eventplanner.eqLogic = {
       return 0;
     },
 
-    compareMatTypeIdAsc: function(a,b) {
-      if (a.eqLogicMatTypeId < b.eqLogicMatTypeId)
+    compareMatTypeNameAsc: function(a,b) {
+      var matTypeA = eventplanner.matType.byId(a.eqLogicMatTypeId);
+      var matTypeB = eventplanner.matType.byId(b.eqLogicMatTypeId);
+      if (matTypeA.matTypeName < matTypeB.matTypeName)
         return -1;
-      if (a.eqLogicMatTypeId > b.eqLogicMatTypeId)
+      if (matTypeA.matTypeName > matTypeB.matTypeName)
         return 1;
       return 0;
     }
