@@ -3577,6 +3577,19 @@ eventplanner.ui.modal.EpModalEqConfiguration = function(_eqLogic){
 				}
 			}
 		}(this, eqLink));
+		
+		// Rangement des options par nom
+		var options = this.modal.find("tr[data-eq-link-id=" + eqLink.eqLinkId + "] .eqLinkEqLogicIdSelect option");
+		var arr = options.map(function(_, o) { return { t: $(o).text(), v: o.value }; }).get();
+		arr.sort(function(o1, o2) {
+		  var t1 = o1.t.toLowerCase(), t2 = o2.t.toLowerCase();
+
+		  return t1 > t2 ? 1 : t1 < t2 ? -1 : 0;
+		});
+		options.each(function(i, o) {
+		  o.value = arr[i].v;
+		  $(o).text(arr[i].t);
+		});
 
 		// Liste des types (ajout des options aux selects)
 		$.each(eventplanner.eqLink.type, function(thisModal, eqLink){
