@@ -212,7 +212,7 @@ eventplanner.eqLogic = {
             });
 
             // Tri
-            dataSelection.sort(this.compareZoneIdAsc);
+            dataSelection.sort(this.compareMatTypeIdAsc);
 
             // Si on demande les data consolidées (pour l'utilisation avec les template)
             if(_fulldata){
@@ -381,6 +381,14 @@ eventplanner.eqLogic = {
       if (a.eqLogicZoneId < b.eqLogicZoneId)
         return -1;
       if (a.eqLogicZoneId > b.eqLogicZoneId)
+        return 1;
+      return 0;
+    },
+
+    compareMatTypeIdAsc: function(a,b) {
+      if (a.eqLogicMatTypeId < b.eqLogicMatTypeId)
+        return -1;
+      if (a.eqLogicMatTypeId > b.eqLogicMatTypeId)
         return 1;
       return 0;
     }
