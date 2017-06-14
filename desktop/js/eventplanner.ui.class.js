@@ -1496,6 +1496,8 @@ eventplanner.ui.planning = {
 	title: 'Planning',
 	sortBy: 'zoneInstallDate',
 	sortOrder: 'asc',
+	zoneEqListSelector: {},
+
 	init: function(){
 		$('#planning .showAllZone').click(this, function (event) {
 			event.data.showAllZone();
@@ -1681,17 +1683,14 @@ eventplanner.ui.planning = {
 		$("#planningTable").bind("addItem", function(event, _id, _type){
 			if(_type == 'eqLogic'){
 				var _eqData = eventplanner.eqLogic.byId(_id, true);
-				$("#planningTable .zoneItem[data-id=" + _eqData.zoneId + "] .zoneEqList").loadTemplate(
+				eventplanner.ui.planning.zoneEqListSelector[_eqData.zoneId].loadTemplate(
 					$("#templatePlanningTableEq"), 
 					_eqData, 
 					{append: true}
 					);
 			}
 			if(_type == 'zone'){
-				$("#planningTable").loadTemplate(
-					$("#templatePlanningTableZone"), 
-					eventplanner.zone.byId(_id, true), 
-					{append: true});
+				eventplanner.ui.planning.zoneEqListSelector[_id] = $('<div>').loadTemplate($("#templatePlanningTableZone"), eventplanner.zone.byId(_id, true)).contents().appendTo("#planningTable").find(".zoneEqList");
 			}
 			
 			eventplanner.ui.planning.sortPlanning();
@@ -1795,12 +1794,16 @@ eventplanner.ui.planning = {
 	},
 
 	constructPlanning: function(){
-		$("#planningTable").loadTemplate($("#templatePlanningTableZone"), eventplanner.zone.all(true));
+		this.zoneEqListSelector = {};
+		
+		var zonesData = eventplanner.zone.all(true);
+    	zonesData.forEach(function(_zoneData) {
+    		eventplanner.ui.planning.zoneEqListSelector[_zoneData.zoneId] = $('<div>').loadTemplate($("#templatePlanningTableZone"), _zoneData).contents().appendTo("#planningTable").find(".zoneEqList");
+		});
     	
 		var eqsData = eventplanner.eqLogic.all(true);
-
     	eqsData.forEach(function(_eqData) {
-    		$("#planningTable .zoneItem[data-id=" + _eqData.zoneId + "] .zoneEqList").loadTemplate($("#templatePlanningTableEq"), _eqData, {append: true});
+    		eventplanner.ui.planning.zoneEqListSelector[_eqData.zoneId].loadTemplate($("#templatePlanningTableEq"), _eqData, {append: true});
 		});
 		
 		this.sortPlanning();
@@ -1851,20 +1854,18 @@ eventplanner.ui.equipements = {
 
 			$('#eqLogicTable td.success').parent().each(function(i, eqLogicItem){
 				var eqLogicId = $(eqLogicItem).attr('data-id');
-				
-				if(eqLogicId != ""){
-					var eqLogicValues = {
-							id: eqLogicId
-						}
+
+				if(eqLogicId != ''){
+					var eqLogic = eventplanner.eqLogic.byId(eqLogicId);
 				}else{
-					var eqLogic = new eventplanner.eqLogic.eqLogicItem ({
+					var eqLogic = new eventplanner.eqLogic.eqLogicItem({
+						eqLogicId: '',
 						eqLogicEventId: eventplanner.ui.currentUser.userEventId,
 						eqLogicDisciplineId: eventplanner.ui.currentUser.userDisciplineId
 					});
-					var eqLogicValues = eqLogic.getValues();
 				}
 				
-				eqLogicValues.attr = {};
+				var eqLogic = eqLogic.getValues();
 				
 				$(eqLogicItem).find('.success[data-property]').each(function(j, prop){
 					var propName = firstToLowerCase($(prop).attr('data-property').substring("eqLogic".length));
@@ -1880,14 +1881,14 @@ eventplanner.ui.equipements = {
 					
 					if(propName == 'attribute'){
 						if(!$(prop).attr('readonly')){
-							eqLogicValues.attr[$(prop).attr('data-mattypeattributeid')] = propVal;
+							eqLogic.attr[$(prop).attr('data-mattypeattributeid')] = propVal;
 						}
 					}else{
-						eqLogicValues[propName] = propVal;
+						eqLogic[propName] = propVal;
 					}
 				});
 				
-				dataToSave.push(eqLogicValues);
+				dataToSave.push(eqLogic);
 			});
 			
 			$('#eqLogicTable .eqLogicItem.danger').each(function(i, eqLogicItem){
@@ -2070,8 +2071,9 @@ eventplanner.ui.equipements = {
 	
 	constructEqList: function(){
 		$('#eqLogicTable > tbody').empty();
+
 		eventplanner.eqLogic.all().forEach(function(eqLogic){
-			$("#eqLogicTable > tbody").append(eventplanner.ui.equipements.getEqLogicItem(eqLogic));
+			$('#eqLogicTable > tbody').append(eventplanner.ui.equipements.getEqLogicItem(eqLogic));
 		});
 		
 		$('#eqLogicTable').trigger('update');
@@ -2122,31 +2124,7 @@ eventplanner.ui.equipements = {
 		this.fillEqLogicAttribute(newEqLogicItem, eqLogic);
 		
 		return newEqLogicItem;
-	},
-	
-	importCSV: function(){
-		// Chaine CSV
-		s = "Accueil VIP / Bénévoles;NS5M;06/04/2017;09/04/2017;UBNT195;172.30.50.195;;SSID OMNI_PANO2;;mdp=festivit / freq 5420\n;POE 24V;;;;;;;;\n;PICOSTATION UNIFI M2HP;;;PW-PM2-21;DHCP;;Port 2 NS5M;;\n;Switch Netgear 8 ports;;;;172.30.51.10;;Port Lan POE;;\n;TPE;;;;10.15.0.10;;;;\n;Câbles;;;;;;;;1x1M et 1x5M\n;;;;;;;;;\nAmbulants;NS5M;07/04/2017;09/04/2017;UBNT167;172.30.50.167;;SSID OMNI_PANO;;mdp=festivit freq=5520\n;POE 24V;;;;;;;;\n;PICOSTATION UNIFI M2HP;;;PW-PM2-25;DHCP;;Port 2 NS5M;;\n;Câbles;;;;;;;;1x1M et 1x5M\n;Mât Informatique;;;;;;;;\n;;;;;;;;;\nAnnexe Medias;NS5M;06/04/2017;09/04/2017;UBNT073;172.30.50.73;;SSID OMNI_PANO;;mdp=festivit freq=5520\n;POE 24V;;;;;;;;\n;PICOSTATION UNIFI M2HP;;;PW-PM2-23;DHCP;;Port 2 NS5M;;\n;Câbles;;;;;;;;1x1M et 1x5M\n;;;;;;;;;\nBar 1;NS5M;06/04/2017;09/04/2017;UBNT007;172.30.50.007;;SSID NS5M_GRANDCLUB;;client freq 5480 mdp=festivit\n;POE 24V;;;;;;;;\n;UAP AC LITE;;;FIT-UAP001;DHCP;;Port 2 NS5M;;\n;Câbles;;;;;;;;1x1M et 1x5M\n;;;;;;;;;\nBar 2;NS5M;06/04/2017;09/04/2017;UBNT006;172.30.50.006;;SSID NS5M_GRANDCLUB;;client freq 5480 mdp=festivit\n;POE 24V;;;;;;;;\n;UAP AC LITE;;;LVC-UAP002;DHCP;;Port 2 NS5M;;\n;Câbles;;;;;;;;1x1M et 1x5M\n;;;;;;;;;\n;;;;;;;;;";
-		
-		// Découpage des lignes
-		eqs = s.split('\n');
-		
-		// Découpage des champs
-		eqs = eqs.map(function(eq){
-			return eq.split(';');
-		});
-		
-		// Variable par section:
-		var zoneEnCours = "";
-	
-		// Pour chaque champs
-		eqs.forEach(function(eq){
-			if(eq[0] != ""){
-				zoneEnCours = eq[0];
-			}
-			console.log(zoneEnCours);
-		});
-	},
+	}
 };
 
 /////////////////////////////////////////////////

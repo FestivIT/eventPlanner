@@ -5,7 +5,8 @@ eventplanner.eqLink = {
         1: 'Eth',
         2: 'Wifi2.4',
         3: 'Wifi5',
-        4: 'VDSL'
+        4: 'VDSL',
+        4: 'FO'
     },
     eqLinkItem: function(_data){
         for (var prop in _data) {
