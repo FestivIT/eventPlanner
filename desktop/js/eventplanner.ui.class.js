@@ -3274,6 +3274,17 @@ eventplanner.ui.modal.EpModalZone = function(_zone){
 				thisModal.addEqLinkRow(eqLink, eqLogicId);
 			}
 		}(this, eqLogicId));
+
+		var orientation = eventplanner.eqLogic.byId(eqLogicId).getOrientationByLinkType(3);
+		if(orientation !== false){
+			var eqLinkData = {
+				eqLinkType: 'Orient.',
+				eqLinkTargetEqLogicZoneName: orientation + '°'
+			};
+		
+			this.modal.find('.eqLinkTable[data-eq-logic-id=' + eqLogicId + ']').loadTemplate($("#templateEqLinkTable"), eqLinkData, {append: true});
+	
+		}
 	}
 
 	this.addEqLinkRow = function(eqLink, eqLogicId){

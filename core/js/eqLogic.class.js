@@ -63,6 +63,30 @@ eventplanner.eqLogic = {
             return eventplanner.eqLogicAttribute.byEqLogicId(this.eqLogicId, _fullData);
         }
 
+        this.getOrientationByLinkType = function(_type = 3){
+            var orientationMoyenne = false;
+            var orientationTotale = 0;
+            var linkCount = 0;
+
+            this.getEqLinks().forEach(function(eqLink){
+                if(eqLink.eqLinkType == _type){
+                    linkCount++;
+
+                    if(eqLink.eqLinkEqLogicId1 == this.eqLogicId){
+                        orientationTotale += eqLink.getHeading()[0]
+                    }else{
+                        orientationTotale += eqLink.getHeading()[1]
+                    }
+                }
+            });
+
+            if(linkCount){
+                orientationMoyenne = Math.round(orientationTotale / linkCount);
+            }
+
+            return orientationMoyenne;
+        }
+
 		this.getFullData = function(){
 			return eventplanner.eqLogic.getFullData(this);
 		}
