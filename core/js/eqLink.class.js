@@ -6,7 +6,7 @@ eventplanner.eqLink = {
         2: 'Wifi2.4',
         3: 'Wifi5',
         4: 'VDSL',
-        4: 'FO'
+        5: 'FO'
     },
     eqLinkItem: function(_data){
         for (var prop in _data) {
@@ -43,14 +43,14 @@ eventplanner.eqLink = {
             var eqLogic2 = eventplanner.eqLogic.byId(this.eqLinkEqLogicId2);
             var result = [];
             
-            if(eqLogic1.eqLogicConfiguration.hasLocalisation){
-                result.push(eqLogic1.eqLogicConfiguration.localisation);
+            if(eqLogic1.eqLogicLocalisation){
+                result.push(eqLogic1.eqLogicLocalisation);
             }else{
                 result.push(eqLogic1.getZone().zoneLocalisation);
             }
             
-            if(eqLogic2.eqLogicConfiguration.hasLocalisation){
-                result.push(eqLogic2.eqLogicConfiguration.localisation);
+            if(eqLogic2.eqLogicLocalisation){
+                result.push(eqLogic2.eqLogicLocalisation);
             }else{
                 result.push(eqLogic2.getZone().zoneLocalisation);
             }
