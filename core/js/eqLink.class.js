@@ -57,6 +57,16 @@ eventplanner.eqLink = {
             
             return result;
         }
+	
+        this.getDistance = function(){
+		var pos = this.getPointsLocalisation();
+		return getDistanceFromLatLng(pos[0].lat, pos[0].lng, pos[1].lat, pos[1].lng);
+	}
+	
+	this.getHeading = function(){
+		var pos = this.getPointsLocalisation();
+		return getHeadingFromLatLng(pos[0].lat, pos[0].lng, pos[1].lat, pos[1].lng); // [heading 0 -> 1, heading 1 -> 0]
+	}
 
         this.remove = function(_params = {}){
             return eventplanner.eqLink.remove($.extend(_params, {id: this.eqLinkId}));
