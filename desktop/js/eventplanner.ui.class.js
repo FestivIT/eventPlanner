@@ -1246,7 +1246,7 @@ eventplanner.ui.map = {
 			map.addLayer(L.tileLayer.fallback('./ressources/eventPlan/' + item.eventLevelPlanId + '/tiles/{z}/{x}/{y}.png', {
 			      minZoom: 14,
 			      maxZoom: 21,
-			      tms: true
+			      tms: false
 			  }));
 		});
 
