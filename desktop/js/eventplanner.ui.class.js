@@ -1436,7 +1436,7 @@ eventplanner.ui.maincourante = {
 		});
 
 		$('#searchMsgInput')
-			.keyup(this, function (event) {
+			.keyup(this, debounce(function (event) {
 				eventplanner.ui.maincourante.constructMsgTable(true);
 
 				if($(this).val().length < 2){
@@ -1444,7 +1444,7 @@ eventplanner.ui.maincourante = {
 				}else{
 					$(this).parent().addClass('has-error');
 				}
-			})
+			}, 500))
 			.closest('form').submit(function (event) {
 				event.preventDefault();
 				return false;
@@ -1522,9 +1522,9 @@ eventplanner.ui.planning = {
 			event.preventDefault();
 		});
 		
-		$('#planningSearch').keyup(this, function (event) {
+		$('#planningSearch').keyup(this, debounce(function (event) {
 			eventplanner.ui.planning.searchVal($(this).val());
-		});
+		}, 500));
 
 		$('#planningSearchClear').click(function(){
 			$('#planningSearch')
