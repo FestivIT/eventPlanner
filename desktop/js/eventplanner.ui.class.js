@@ -1304,6 +1304,12 @@ eventplanner.ui.map = {
 		return eventMarker;
 	},
 	
+	addEqLinksLinesOnMap: function(map){
+		eventplanner.eqLink.all().forEach(function(eqLink){
+			L.polygon(eqLink.getPointsLocalisation()).addTo(eventplanner.ui.map.llMap);
+		})
+	},
+	
 	refreshZoneMarker: function(){
 		var zones = eventplanner.zone.all();
 		zones.forEach(function(zone) {
