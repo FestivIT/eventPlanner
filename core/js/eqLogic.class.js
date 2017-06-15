@@ -64,6 +64,7 @@ eventplanner.eqLogic = {
         }
 
         this.getOrientationByLinkType = function(_type = 3){
+            var currentEqLogicId = this.eqLogicId;
             var orientationMoyenne = false;
             var orientationTotale = 0;
             var linkCount = 0;
@@ -71,11 +72,11 @@ eventplanner.eqLogic = {
             this.getEqLinks().forEach(function(eqLink){
                 if(eqLink.eqLinkType == _type){
                     linkCount++;
-
-                    if(eqLink.eqLinkEqLogicId1 == this.eqLogicId){
-                        orientationTotale += eqLink.getHeading()[0]
+                    
+                    if(eqLink.eqLinkEqLogicId1 == currentEqLogicId){
+                        orientationTotale += eqLink.getHeading()[0];
                     }else{
-                        orientationTotale += eqLink.getHeading()[1]
+                        orientationTotale += eqLink.getHeading()[1];
                     }
                 }
             });

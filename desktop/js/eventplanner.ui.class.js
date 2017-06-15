@@ -1098,6 +1098,7 @@ eventplanner.ui.map = {
 	title: 'Carte',
 	llMap: {},
 	zonesMarkers: {},
+	eqLinkLayer: L.layerGroup(),
 	stateToShow: {min: 0, max: 999},
 	currentMode: 'global',
 	
@@ -1173,6 +1174,9 @@ eventplanner.ui.map = {
 		$('#map').bind("refreshZone", this, function(event){
 			eventplanner.ui.map.refreshZoneMarker();
 		});
+
+		this.eqLinkLayer.addTo(this.llMap);
+		this.addEqLinksLinesOnMap();
 
 		$(window).resize(function() {
 			$(".leaflet-control-layers").css("max-height", $("#map").height() - 50);
@@ -1305,9 +1309,11 @@ eventplanner.ui.map = {
 	},
 	
 	addEqLinksLinesOnMap: function(map){
+		this.eqLinkLayer.clearLayers();
+
 		eventplanner.eqLink.all().forEach(function(eqLink){
-			L.polygon(eqLink.getPointsLocalisation()).addTo(eventplanner.ui.map.llMap);
-		})
+			eventplanner.ui.map.eqLinkLayer.addLayer(L.polyline(eqLink.getPointsLocalisation(), {opacity: 0.5, weight: 2, }));
+		});
 	},
 	
 	refreshZoneMarker: function(){
