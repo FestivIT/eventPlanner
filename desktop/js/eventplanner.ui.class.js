@@ -3306,7 +3306,8 @@ eventplanner.ui.modal.EpModalZone = function(_zone){
 				eqLinkTargetEqLogicZoneName: targetEqLogic.zoneName,
 				eqLinkTargetEqLogicMatTypeName: targetEqLogic.matTypeName,
 				eqLinkTargetEqLogicEqRealName: targetEqLogic.eqRealName,
-				eqLinkTargetEqLogicId: targetEqLogic.eqLogicId
+				eqLinkTargetEqLogicId: targetEqLogic.eqLogicId,
+				eqLinkDistance: '(' + eqLink.getDistance() + 'm)'
 			};
 		
 		this.modal.find('.eqLinkTable[data-eq-logic-id=' + eqLogicId + ']').loadTemplate($("#templateEqLinkTable"), eqLinkData, {append: true});
