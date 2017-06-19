@@ -136,9 +136,22 @@ $.addTemplateFormatter("formatStateColorClass", function(value, template) {
 
 function formatDateMsg(date){
 	if(date != null){
-		var theDate = new Date(date.replace(' ', 'T'));
+		var d = new Date(date.replace(' ', 'T')),
+		        month = '' + (d.getMonth() + 1).toString(),
+                day = '' + d.getDate().toString(),
+                year = d.getFullYear().toString(),
+                hr = '' + d.getHours().toString(),
+                min = d.getMinutes().toString(),
+                sec = d.getSeconds().toString();
+
+            if (month.length < 2) month = '0' + month;
+            if (day.length < 2) day = '0' + day;
+            if (hr.length < 2) hr = '0' + hr;
+            if (min.length < 2) min = '0' + min;
+            if (sec.length < 2) sec = '0' + sec;
+
 		var days = ["Dimanche","Lundi","Mardi", "Mercredi","Jeudi","Vendredi","Samedi"];
-		return days[theDate.getDay()] + " " + theDate.getDate() + '/' + (theDate.getMonth() + 1) + ' ' + theDate.getHours() + ':' + theDate.getMinutes();
+		return days[d.getDay()] + " " + day + '/' + month + ' ' + hr + ':' + min + ':' + sec;
 	}else{
 		return '';
 	}

@@ -228,7 +228,7 @@ try {
 			// Pour les ID restants, on créer les liaisons
 			foreach ($json['zones'] as $zoneId){
 				$missionZone = new missionZoneAssociation();
-				$missionZone->setMissionId($json['id']);
+				$missionZone->setMissionId($el->getId());
 				$missionZone->setZoneId($zoneId);
 				$missionZone->save();
 

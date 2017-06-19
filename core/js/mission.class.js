@@ -27,7 +27,23 @@ eventplanner.mission = {
             this.missionState = 400;
         }
         if(!this.hasOwnProperty('missionDate')){
-            this.missionDate = '2000-01-01 00:00:01';
+            var d = new Date(),
+                month = '' + (d.getMonth() + 1).toString(),
+                day = '' + d.getDate().toString(),
+                year = d.getFullYear().toString(),
+                hr = '' + d.getHours().toString(),
+                min = d.getMinutes().toString(),
+                sec = d.getSeconds().toString();
+
+            if (month.length < 2) month = '0' + month;
+            if (day.length < 2) day = '0' + day;
+            if (hr.length < 2) hr = '0' + hr;
+            if (min.length < 2) min = '0' + min;
+            if (sec.length < 2) sec = '0' + sec;
+
+            var date = [year, month, day].join('-');
+            var hour = [hr, min, sec].join(':');
+            this.missionDate = date + ' ' + hour;
         }
         if(!this.hasOwnProperty('missionZones')){
             this.missionZones = [];

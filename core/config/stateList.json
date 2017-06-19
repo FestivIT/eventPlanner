@@ -153,12 +153,16 @@
 			"text": "Etat",
 			"list": {
 				"400": {
-					"text": "Attribuée",
+					"text": "Non Attribuée",
 					"colorClass": "danger"
 				},
 				"401": {
-					"text": "En cours",
+					"text": "Attribuée",
 					"colorClass": "warning"
+				},
+				"402": {
+					"text": "En cours",
+					"colorClass": "active"
 				},
 				"499": {
 					"text": "Terminée",

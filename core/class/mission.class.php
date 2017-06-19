@@ -125,7 +125,7 @@ class mission {
 		if($this->getId() == null){
 			DB::save($this);
 			if($_addMsg){
-				msg::add($this->getEvent()->getOrganisationId(), $this->getDisciplineId(), null, $this->getEventId(), null, null, $_SESSION['user']->getId(), "Création de la mission.", 'mission', 'add', $this);
+				msg::add($this->getEvent()->getOrganisationId(), $this->getDisciplineId(), $this->getEventId(), null, null, $_SESSION['user']->getId(), "Création de la mission.", 'mission', 'add', $this);
 			}
 		}else{
 			DB::save($this);

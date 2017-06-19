@@ -1807,14 +1807,14 @@ eventplanner.ui.planning = {
 
 	constructPlanning: function(){
 		this.zoneEqListSelector = {};
-		
+
 		var zonesData = eventplanner.zone.all(true);
-    	zonesData.forEach(function(_zoneData) {
+		zonesData.forEach(function(_zoneData) {
     		eventplanner.ui.planning.zoneEqListSelector[_zoneData.zoneId] = $('<div>').loadTemplate($("#templatePlanningTableZone"), _zoneData).contents().appendTo("#planningTable").find(".zoneEqList");
 		});
-    	
+
 		var eqsData = eventplanner.eqLogic.all(true);
-    	eqsData.forEach(function(_eqData) {
+    	eqsData.forEach(function(_eqData, _i) {
     		eventplanner.ui.planning.zoneEqListSelector[_eqData.zoneId].loadTemplate($("#templatePlanningTableEq"), _eqData, {append: true});
 		});
 		
@@ -2476,22 +2476,19 @@ eventplanner.ui.mission ={
 
 		$("#missionTable").bind("addItem", function(event, _missionId){
 			var newItem = $('<div>').loadTemplate($("#templateMissionTable"), eventplanner.mission.byId(_missionId, true));
-			$(this).find('tbody').append($(newItem).contents());
-
-			$('#missionTable').trigger('update');
+			$(this).append($(newItem).contents());
+			eventplanner.ui.mission.sortMissionList();
 		});
 
 		$("#missionTable").delegate(".missionItem", "updateItem", function(){
 			var missionId = $(this).attr('data-id');
 			var newItem = $('<div>').loadTemplate($("#templateMissionTable"), eventplanner.mission.byId(missionId, true));
 			$(this).replaceWith($(newItem).contents());
-
-			$('#missionTable').trigger('update');
+			eventplanner.ui.mission.sortMissionList();
 		});
 
 		$("#missionTable").delegate(".missionItem", "removeItem", function(){
 			$(this).remove();
-			$('#missionTable').trigger('update');
 		});
 		
 		this.constructMissionTable();
@@ -2499,7 +2496,23 @@ eventplanner.ui.mission ={
 	
 	constructMissionTable: function(){
 		$("#missionTable").loadTemplate($("#templateMissionTable"), eventplanner.mission.all(true));
-		$('#missionTable').trigger('update');
+		this.sortMissionList();
+	},
+
+	sortMissionList: function(){		
+		var newLiOrder = $("#missionTable .missionItem").sort(function (a, b) {
+			var missionA = eventplanner.mission.byId(  $(a).attr('data-id') );
+			var missionB = eventplanner.mission.byId(  $(b).attr('data-id') );
+			
+			// Récupération des valeurs souhaitées pour le tri:
+			var contentA = (1000 - missionA.missionState) + missionA.missionDate;
+			var contentB = (1000 - missionB.missionState) + missionB.missionDate;
+			
+			return (contentA > contentB) ? -1 : (contentA < contentB) ? 1 : 0;
+		});
+		
+		$('#missionTable').empty();
+		$('#missionTable').append(newLiOrder);
 	}
 }
 
@@ -3957,7 +3970,7 @@ eventplanner.ui.modal.EpModalMissionConfiguration = function(_mission){
 		$.each(this.data.getUsers(), function(thisModal){
 			return function(i,item){
 				thisModal.modal.find("#missionUserList").loadTemplate($("#templateMissionUserOption"),item, {append: true});
-				thisModal.modal.find('#missionUserSelect option[value=' + item.userId + ']').remove();
+				thisModal.modal.find('#missionUserSelect option[value=' + item.userId + ']').remove();				
 			}
 		}(this));
 		this.sortList(this.modal.find(".missionUserItem"), this.modal.find("#missionUserList"));
@@ -3969,6 +3982,9 @@ eventplanner.ui.modal.EpModalMissionConfiguration = function(_mission){
 				event.data.modal.find("#missionUserList").loadTemplate($("#templateMissionUserOption"), eventplanner.user.byId(userId), {append: true});
 				event.data.modal.find('#missionUserSelect option[value=' + userId + ']').remove();
 				event.data.sortList(event.data.modal.find(".missionUserItem"), event.data.modal.find("#missionUserList"));
+				if((event.data.modal.find('.missionUserItem').length > 0) && (event.data.modal.find('#stateSelect').val() == '400')){
+					 event.data.modal.find('#stateSelect option[value="401"]').prop('selected', true);
+				}
 			}
 		});
 
@@ -3977,6 +3993,9 @@ eventplanner.ui.modal.EpModalMissionConfiguration = function(_mission){
 			$(this).closest('.list-group-item').remove();
 			event.data.modal.find("#missionUserSelect").loadTemplate($("#templateUserOptions"),eventplanner.user.byId(userId), {append: true});
 			event.data.sortList(event.data.modal.find("#missionUserSelect option"), event.data.modal.find("#missionUserSelect"));
+			if((event.data.modal.find('.missionUserItem').length == 0) && (event.data.modal.find('#stateSelect').val() == '401')){
+				event.data.modal.find('#stateSelect option[value="400"]').prop('selected', true);
+			}
 		});
 
 		// ETATS
