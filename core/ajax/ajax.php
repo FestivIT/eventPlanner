@@ -339,20 +339,18 @@ try {
 			case "mission":
 			case "zone":
 			case "contact":
+			case "eqReal":
 				$el = $class::byId(init('id'));
 
 				if (isset($el) && is_object($el)) {
 					$el->remove();
 				}
-		
 				ajax::success();
-			
 			case "msg":
 			case "eqLogicAttribute":
 			case "eventLevel":
 			case "matType":
 			case "matTypeAttribute":
-			case "eqReal":
 			case "user":
 			case "event":
 			case "discipline":

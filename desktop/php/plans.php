@@ -14,16 +14,18 @@
 		</div>
 	</nav>
 
-	<table class="table table-striped table-hover table-condensed planTable" id="planTable">
-		<thead>
-			<tr>
-				<th>Nom</th>
-				<th class="text-right">Actions</th>
-			</tr>
-		</thead>
-		<tbody>
-		</tbody>
-	</table>
+	<div class="screenContainer">
+		<table class="table table-striped table-hover table-condensed planTable" id="planTable">
+			<thead>
+				<tr>
+					<th>Nom</th>
+					<th class="text-right">Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+			</tbody>
+		</table>
+	</div>
 	<script type="text/html" id="templatePlanTable">
 		<tr class="planItem" data-template-bind='[{"attribute": "data-id", "value": "planId"}]'>
 			<th class="col-xs-11" scope="row" data-content="planName"></th>

@@ -204,10 +204,14 @@ include_file('desktop', 'commun', 'css');
             	<li class="dropdown epNavBtn">
 	              <a style="display: none;" id="eventDrop" href="#" role="button" class="dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-cd"></i>&nbsp;&nbsp;Evenement <b class="caret"></b></a>
 	              <ul class="dropdown-menu">
+	                <!-- NETTOYAGE POUR LA PROD VC
 	                <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="equipements"><i class="glyphicon glyphicon-hdd"></i>&nbsp;&nbsp;Equipements</a></li>
+	                -->
 	                <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="zones"><i class="glyphicon glyphicon-map-marker"></i>&nbsp;&nbsp;Zones</a></li>
+	              	<!-- NETTOYAGE POUR LA PROD VC
 	              	<li class="divider hidden-xs"></li>
 	                <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" class="navBarBtn" data-link="configevent"><i class="fa fa-cogs"></i>&nbsp;&nbsp;Configuration de l'événement</a></li>
+	            	-->
 	              </ul>
 	            </li>
 	          </ul>
@@ -248,7 +252,7 @@ include_file('desktop', 'commun', 'css');
 	    
 		<div id="modalContainer"></div>
 		<script type="text/html" id="templateModal">
-			<div class="modal fade" data-template-bind='[{"attribute": "id", "value": "modalId"}]' role="dialog">
+			<div class="modal" data-template-bind='[{"attribute": "id", "value": "modalId"}]' role="dialog">
 				<div class="modal-dialog modal-lg">
 					<div class="modal-content">
 						<div class="modal-header">
@@ -257,7 +261,8 @@ include_file('desktop', 'commun', 'css');
 						</div>
 						<div class="modal-body" data-content="modalContent"></div>
 						<div class="modal-footer">
-							<button type="button" class="btn btn-primary modalValidBtn">Valider</button>
+							<button type="button" class="btn btn-success modalValidBtn"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span> Valider</button>
+							<button type="button" class="btn btn-danger modalDeleteBtn" style="display:none"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Supprimer</button>
 							<button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
 						</div>
 					</div>

@@ -14,16 +14,18 @@
 		</div>
 	</nav>
 
-	<table class="table table-striped table-hover table-condensed disciplineTable" id="disciplineTable">
-		<thead>
-			<tr>
-				<th>Nom</th>
-				<th class="text-right">Actions</th>
-			</tr>
-		</thead>
-		<tbody>
-		</tbody>
-	</table>
+	<div class="screenContainer">
+		<table class="table table-striped table-hover table-condensed disciplineTable" id="disciplineTable">
+			<thead>
+				<tr>
+					<th>Nom</th>
+					<th class="text-right">Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+			</tbody>
+		</table>
+	</div>
 	<script type="text/html" id="templateDisciplineTable">
 		<tr class="disciplineItem" data-template-bind='[{"attribute": "data-id", "value": "disciplineId"}]'>
 			<th class="col-xs-11" scope="row" data-content="disciplineName"></th>

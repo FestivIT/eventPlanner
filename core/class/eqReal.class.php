@@ -115,6 +115,12 @@ class eqReal {
 	}
 
 	public function remove($_addMsg = true) {
+		// eqLogic: passage à Null des équipements sur lesquels le matériel était associé
+		foreach(eqLogic::byEqRealId($this->getId()) as $eqLogic){
+			$eqLogic->setEqRealId(null);
+			$eqLogic->save();
+		}
+		
 		if($_addMsg){
 			msg::add($_SESSION['user']->getDiscipline()->getOrganisationId(), $this->getDisciplineId(), null, null, null, $_SESSION['user']->getId(), "Suppression du matériel." , 'eqReal', 'remove', $this);
 		}

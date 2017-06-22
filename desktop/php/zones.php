@@ -13,19 +13,21 @@
 	    	</div>
 		</div>
 	</nav>
-			
-	<table class="table table-striped table-hover table-condensed zoneTable" id="zoneTable">
-		<thead>
-			<tr>
-				<th>Nom</th>
-				<th>Instal.</th>
-				<th>Désinstal.</th>
-				<th class="text-right">Actions</th>
-			</tr>
-		</thead>
-		<tbody>
-		</tbody>
-	</table>
+	
+	<div class="screenContainer">
+		<table class="table table-striped table-hover table-condensed zoneTable" id="zoneTable">
+			<thead>
+				<tr>
+					<th>Nom</th>
+					<th>Instal.</th>
+					<th>Désinstal.</th>
+					<th class="text-right">Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+			</tbody>
+		</table>
+	</div>
 	<script type="text/html" id="templateZoneTable">
 		<tr class="zoneItem" data-template-bind='[{"attribute": "data-id", "value": "zoneId"}]' >
 			<th class="col-xs-7" scope="row" data-content="zoneName"></th>

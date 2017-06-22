@@ -12,10 +12,12 @@
 		</div>
 	</nav>
 
-	<div id="eventInfosContainer"></div>
-				
-	<div id="eventInfosEditorContainer">
-		<textarea id="eventInfosTextarea" style="width: 100%; height: 400px; font-size: 14px; line-height: 18px;"></textarea>
+	<div class="screenContainer">
+		<div id="eventInfosContainer"></div>
+					
+		<div id="eventInfosEditorContainer">
+			<textarea id="eventInfosTextarea" style="width: 100%; height: 400px; font-size: 14px; line-height: 18px;"></textarea>
+		</div>
 	</div>
 		
 		<!--

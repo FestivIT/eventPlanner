@@ -2,6 +2,7 @@ eventplanner.ui = {
 	onlineState: true,
 	uiReady: $.Deferred(),
 	currentUser: false,
+	currentPage: 'dashboard',
 	STATE: {},
 
   	init: function() {
@@ -138,11 +139,11 @@ eventplanner.ui = {
 	},
 	
 	setScreenContainerHeight: function (){
-	    var h = $(window).height()
+	    /*var h = $(window).height()
 	    var p = $(".screenContainer").position()
 	    if(p != undefined && p.hasOwnProperty('top')){
 	    	$(".screenContainer").height(h-p.top);
-	    }
+	    }*/
 	},
 
 	initTrigger: function(){
@@ -325,6 +326,7 @@ eventplanner.ui = {
 			history.pushState(null, _page + ' - eventPlanner', "index.php");
 		}
 		
+		eventplanner.ui.currentPage = _page;
 		localStorage.setItem('lastPage', _page);
 		
 		document.title = eventplanner.ui[_page].title + ' - eventPlanner';
@@ -370,18 +372,31 @@ eventplanner.ui.search = {
     	});
 
 		// Ajout des eqLogics
-		var _eqLogicsData = eventplanner.eqLogic.all(true);
+		var _eqLogicsData = eventplanner.eqLogic.all();
 
 		_eqLogicsData.forEach(function(_eqLogicData){
-			if(_eqLogicData.eqRealName == undefined){
-				_eqLogicData.eqRealName = '';
+			var title = '';
+			if(_eqLogicData.getEqReal()){
+				title = _eqLogicData.getMatType().matTypeName + ' ' + _eqLogicData.getEqReal().eqRealName;
+			}else{
+				title = _eqLogicData.getMatType().matTypeName;
 			}
-    		eventplanner.ui.search.data.push({
-	    		title: _eqLogicData.matTypeName + ' ' + _eqLogicData.eqRealName,
+			
+			var eqLogicAttr = '';
+			_eqLogicData.getEqLogicAttributes().forEach(function(_attrData){
+				if(_attrData.eqLogicAttributeViewOnPlanning == '1'){
+					eqLogicAttr += '<br>' + _attrData.getMatTypeAttribute().matTypeAttributeName + ':' + _attrData.eqLogicAttributeValue;
+				}
+			});
+			
+			var eqData = {
+	    		title: title,
 	    		type: 'Equipement',
 	    		id: _eqLogicData.eqLogicId,
-	    		content: 'Zone: ' +  _eqLogicData.zoneName + '<br>IP: ' + _eqLogicData.eqLogicIp + '<br>Etat: ' + formatState(_eqLogicData.eqLogicState)
-	    	});
+	    		content: 'Zone: ' +  _eqLogicData.getZone().zoneName + '<br>Etat: ' + formatState(_eqLogicData.eqLogicState) + eqLogicAttr
+	    	};
+	    	
+    		eventplanner.ui.search.data.push(eqData);
     	});
 
 		// Initialisation du moteur de recherche
@@ -408,29 +423,56 @@ eventplanner.ui.search = {
 		    },
 		    callback: {
 		    	onClickBefore: function (node, a, item, event) {
-		    		if(item.type="Zone"){
+		    		if(item.type=="Zone"){
 						var zone = eventplanner.zone.byId(item.id);
+						var zoneModal = new eventplanner.ui.modal.EpModalZone(zone);
 					}
 					
-					if(item.type="Equipement"){
+					if(item.type=="Equipement"){
 						var eqLogic = eventplanner.eqLogic.byId(item.id);
 						var zone = eventplanner.zone.byId(eqLogic.eqLogicZoneId);
+						
+						var zoneModal = new eventplanner.ui.modal.EpModalZone(zone, eqLogic.eqLogicId);
 					}
-					var zoneModal = new eventplanner.ui.modal.EpModalZone(zone);
-						zoneModal.open();
-		    		
+					
+		    		zoneModal.open();
 		    	},
 		    	onClickAfter: function (node, a, item, event) {
 		    		node.val("");
 		    		node.blur();
 		    	},
-		    	onShowLayout:function () {
+		    	onMouseEnter: function (node, a, item, event) {
+		    		if(item.type=="Zone"){
+						var zone = eventplanner.zone.byId(item.id);
+					}
+					
+					if(item.type=="Equipement"){
+						var eqLogic = eventplanner.eqLogic.byId(item.id);
+						var zone = eventplanner.zone.byId(eqLogic.eqLogicZoneId);
+					}
+					
+					eventplanner.ui.map.llMap.flyTo(zone.zoneLocalisation, 20);
+		    	},
+		    	onShowLayout:function (node) {
 				    $(".navbar-collapse.in").css("max-height", $(document).height() - $(".navbar-header").height());
 				    $(".navbar-collapse.in").css("height", $(document).height() - $(".navbar-header").height());
+				    
+				    if(eventplanner.ui.currentPage == 'map'){
+				    	eventplanner.ui.map.lastBounds = eventplanner.ui.map.llMap.getBounds();
+				    	eventplanner.ui.map.lastZoom = eventplanner.ui.map.llMap.getZoom();
+				    }
 				  },
-		    	onHideLayout:function () {
+		    	onHideLayout:function (node) {
 				    $(".navbar-collapse.in").css("max-height", "");
 				    $(".navbar-collapse.in").css("height", "");
+				    
+				    if(eventplanner.ui.currentPage == 'map'){
+				    	eventplanner.ui.map.llMap.fitBounds(eventplanner.ui.map.lastBounds);
+				    	eventplanner.ui.map.llMap.setZoom(eventplanner.ui.map.lastZoom);
+				    }
+				    
+				    node.val("");
+		    		node.blur();
 				  }
 		    }
 		});
@@ -1312,7 +1354,7 @@ eventplanner.ui.map = {
 		this.eqLinkLayer.clearLayers();
 
 		eventplanner.eqLink.all().forEach(function(eqLink){
-			eventplanner.ui.map.eqLinkLayer.addLayer(L.polyline(eqLink.getPointsLocalisation(), {opacity: 0.5, weight: 2, }));
+			eventplanner.ui.map.eqLinkLayer.addLayer(L.polyline(eqLink.getPointsLocalisation(), {opacity: 0.2, weight: 2, }));
 		});
 	},
 	
@@ -1673,6 +1715,18 @@ eventplanner.ui.planning = {
 
 			return false;
 		});
+		
+		$('#planning').delegate('.eqLogicModalLink', 'click', function () {
+			var zone = eventplanner.zone.byId($(this).closest('.zoneItem').attr('data-id'));
+			var eqLogicId = $(this).closest('.eqLogicItem').attr('data-id');
+			
+			var zoneModal = new eventplanner.ui.modal.EpModalZone(zone, eqLogicId);
+			zoneModal.open();
+						
+			return false;
+		});
+		
+		
 
 		$('#planningTable').delegate( '.planningZoneCb', 'change' ,function(event) {
 			var zoneId = $(this).data('zone-id');
@@ -2953,7 +3007,7 @@ eventplanner.ui.modal.EpModal.prototype.close = function(){
 }
 
 ///// MODAL ZONE /////////////////////////////////////////
-eventplanner.ui.modal.EpModalZone = function(_zone){
+eventplanner.ui.modal.EpModalZone = function(_zone, presetEqLogicId = null){
 	eventplanner.ui.modal.EpModal.call(this, _zone.zoneName, "zone");
 	this.currentPage = 1;
 	this.resultsPerPage = 20;
@@ -2964,6 +3018,11 @@ eventplanner.ui.modal.EpModalZone = function(_zone){
 		this.constructMsgTable();
 		this.constructEqTable();
 		this.addTriggers();
+		
+		if(presetEqLogicId != null){
+			this.modal.find("#linkEquipement").tab('show')
+			this.modal.find('.eqLogicItem[data-id=' + presetEqLogicId + '] .collapse').collapse('show');
+		}
 		
 		this.modal.find('.modalValidBtn').hide();
 	}
@@ -3075,9 +3134,11 @@ eventplanner.ui.modal.EpModalZone = function(_zone){
 		}(this));
 
 		// EQLOGIC
-		this.modal.find("#zoneEqTable").bind("update", function(){
-			// SORT eqLogicItem
-		});
+		this.modal.find("#zoneEqTable").bind("update", function(thisModal){
+			return function(){
+				thisModal.sortEqTable();
+			}
+		}(this));
 		
 		this.modal.find("#zoneEqTable").bind("addItem", function(thisModal){
 			return function(event, _eqId){
@@ -3203,8 +3264,27 @@ eventplanner.ui.modal.EpModalZone = function(_zone){
 				thisModal.constructEqLinkTable(eqLogic.eqLogicId);
 				// Contruction de la main courante
 				thisModal.constructEqLogicMsgTable(eqLogic);
+				// Tri
+				thisModal.sortEqTable();
 			}
 		}(this));
+	}
+	
+	this.sortEqTable = function(){		
+		var newDivOrder = $('#zoneEqTable .eqLogicItem').sort(function (a, b) {
+			// Récupération des zones concernées
+			var eqLogicA = eventplanner.eqLogic.byId(  $(a).attr('data-id') );
+			var eqLogicB = eventplanner.eqLogic.byId(  $(b).attr('data-id') );
+			
+			// Récupération des valeurs souhaitées pour le tri:
+			var contentA = eqLogicA.getMatType().matTypeName.toLowerCase();
+			var contentB = eqLogicB.getMatType().matTypeName.toLowerCase();
+			
+			return (contentA < contentB) ? -1 : (contentA > contentB) ? 1 : 0;
+		});
+		
+		$('#zoneEqTable').empty();
+		$('#zoneEqTable').append(newDivOrder);
 	}
 
 	this.constructEqLogicMsgTable = function(eqLogic){
@@ -3374,6 +3454,40 @@ eventplanner.ui.modal.EpModalEqConfiguration = function(_eqLogic){
 			
 		this.modal.find('.modalValidBtn').click(this, function(event){
 			event.data.modal.find('#eqLogicForm').submit();
+		});
+		
+		this.modal.find('.modalDeleteBtn').show().click(this, function(event){
+			event.preventDefault();
+			
+			var eqLogicToRemove = event.data.data;
+			bootbox.confirm({
+			    message: "<strong>Confirmer la suppression de l'équipement ?</strong>",
+			    buttons: {
+			        confirm: {
+			            label: 'Oui',
+			            className: 'btn-success'
+			        },
+			        cancel: {
+			            label: 'Non',
+			            className: 'btn-danger'
+			        }
+			    },
+			    callback: function (result) {
+			    	if(result){
+			    		eqLogicToRemove.remove({
+			    			success: function(_data) {
+											eventplanner.ui.checkNewMsg();
+											eventplanner.ui.notification('success', "Equipement supprimé! ");	
+										},
+							error: function(_data){
+								eventplanner.ui.notification('error', "Impossible de supprimer l'équipement.<br>" + _data.message);
+							}
+			    		});
+			    	}
+			    }
+			});
+			event.data.close();
+			return false;
 		});
 
 		this.modal.find('#eqLogicForm').delegate('.deleteEqLinkBtn', 'click', this, function (event) {
@@ -3697,6 +3811,41 @@ eventplanner.ui.modal.EpModalZoneConfiguration = function(_zone){
 				event.data.modal.find('#zoneForm').submit();
 			});
 			
+			this.modal.find('.modalDeleteBtn').show().click(this, function(event){
+				event.preventDefault();
+				
+				var zoneToDelete = event.data.data;
+				bootbox.confirm({
+				    message: "<strong>Confirmer la suppression de la zone " + zoneToDelete.zoneName + " ?</strong>",
+				    buttons: {
+				        confirm: {
+				            label: 'Oui',
+				            className: 'btn-success'
+				        },
+				        cancel: {
+				            label: 'Non',
+				            className: 'btn-danger'
+				        }
+				    },
+				    callback: function (result) {
+				    	if(result){
+				    		zoneToDelete.remove({
+				    			success: function(_data) {
+												eventplanner.ui.checkNewMsg();
+												eventplanner.ui.notification('success', "Zone supprimée! ");	
+											},
+								error: function(_data){
+									eventplanner.ui.notification('error', "Impossible de supprimer la zone.<br>" + _data.message);
+								}
+				    		});
+				    	}
+				    }
+				});
+	
+				event.data.close();
+				return false;
+			});
+			
 			this.modal.find('#zoneForm').delegate('.editEqBtn', 'click', this, function (event) {
 				var eqId = $(this).attr('data-eq-id');
 				
@@ -3959,6 +4108,8 @@ eventplanner.ui.modal.EpModalMissionConfiguration = function(_mission){
 		});
 
 		this.modal.find("#missionZoneList").delegate('.deleteZoneOptionBtn', 'click', this, function (event) {
+			event.preventDefault();
+			
 			var zoneId = $(this).closest('.list-group-item').attr('data-zone-id');
 			$(this).closest('.list-group-item').remove();
 			event.data.modal.find("#missionZoneSelect").loadTemplate($("#templateZoneOptions"),eventplanner.zone.byId(zoneId), {append: true});
@@ -3989,6 +4140,8 @@ eventplanner.ui.modal.EpModalMissionConfiguration = function(_mission){
 		});
 
 		this.modal.find("#missionUserList").delegate('.deleteUserOptionBtn', 'click', this, function (event) {
+			event.preventDefault();
+			
 			var userId = $(this).closest('.list-group-item').attr('data-user-id');
 			$(this).closest('.list-group-item').remove();
 			event.data.modal.find("#missionUserSelect").loadTemplate($("#templateUserOptions"),eventplanner.user.byId(userId), {append: true});

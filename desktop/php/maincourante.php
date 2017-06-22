@@ -35,9 +35,10 @@
 		</div>
 	</nav>
 	
-  	<ul class="list-group msgTable" id="msgTable">
-	</ul>
-	
+	<div class="screenContainer">
+	  	<ul class="list-group msgTable" id="msgTable">
+		</ul>
+	</div>
 	<script type="text/html" id="templateMsgTable">
 	  	<li class="list-group-item msgItem" data-template-bind='[{"attribute": "data-id", "value": "msgId"}]'>
   			<p class="pull-right small">

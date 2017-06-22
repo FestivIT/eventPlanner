@@ -13,9 +13,11 @@
 	    	</div>
 		</div>
 	</nav>
-
-	<div class="matTypeTable" id="matTypeTable"></div>
-
+	
+	<div class="screenContainer">
+		<div class="matTypeTable" id="matTypeTable">
+		</div>
+	</div>
 </div>
 
 

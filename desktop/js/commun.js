@@ -126,8 +126,7 @@ $.addTemplateFormatter("formatStateColorClass", function(value, template) {
 	
 	var colorClass = formatStateColorClass(value);
 	
-	// cas particuliers...
-	if(colorClass=="active" && template.substring(template.length-6, template.length)=="label-"){
+	if(colorClass=="active" && ((template.substring(template.length-6, template.length)=="label-")||(template.substring(template.length-4, template.length)=="btn-"))){
 		colorClass="default";
 	}
 	

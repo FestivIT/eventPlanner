@@ -46,6 +46,17 @@ class eqLogic {
         WHERE eventId=:eventId';
 		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
 	}
+	
+	public static function byEqRealId($_eqRealId) {
+		$values = array(
+			'eqRealId' => $_eqRealId,
+		);
+
+		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
+        FROM eqLogic
+        WHERE eqRealId=:eqRealId';
+		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
+	}
 
 	public static function byZoneId($_zoneId) {
 		$values = array(
@@ -115,19 +126,19 @@ class eqLogic {
 	}
 
 	public function remove($_addMsg = true) {
+		// suppression des msg
+		foreach(msg::byEqLogicId($this->getId()) as $msg){
+			$msg->remove($_addMsg);
+		}
+		
 		// suppression des attributs
 		foreach($this->getAttributes() as $attr){
-			$attr->remove();
+			$attr->remove($_addMsg);
 		}
 		
 		// suppression des liens
 		foreach($this->getEqLinks() as $eqLink){
-			$eqLink->remove();
-		}
-		
-		// suppression des msg
-		foreach(msg::byEqLogicId($this->getId()) as $msg){
-			$msg->remove();
+			$eqLink->remove($_addMsg);
 		}
 		
 		if($_addMsg){

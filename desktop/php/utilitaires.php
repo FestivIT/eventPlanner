@@ -6,7 +6,7 @@
 		    </div>
 		</div>
 	</nav>
-	<div>
+	<div class="screenContainer">
 		<div class="panel panel-default">
 		  	<div class="panel-heading">Boussolle</div>
 		  	<div class="panel-body">

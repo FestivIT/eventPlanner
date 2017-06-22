@@ -204,8 +204,8 @@
 
 		<script type="text/html" id="templateEqConfigurationEqLogicAttribute">
 			<div class="row">
-			  <div class="col-xs-2"><label class="control-label" data-content="matTypeAttributeName"></label></div>
-			  <div class="col-xs-10"><span class="label label-info" data-content="eqLogicAttributeValue"></span></div>
+			  <div class="col-xs-4"><label class="control-label" data-content="matTypeAttributeName"></label></div>
+			  <div class="col-xs-8"><span class="label label-info" data-content="eqLogicAttributeValue"></span></div>
 			</div>
 		</script>
     </div>

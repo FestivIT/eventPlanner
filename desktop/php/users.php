@@ -14,16 +14,18 @@
 		</div>
 	</nav>
 
-	<table class="table table-striped table-hover table-condensed userTable" id="userTable">
-		<thead>
-			<tr>
-				<th>Nom</th>
-				<th class="text-right">Actions</th>
-			</tr>
-		</thead>
-		<tbody>
-		</tbody>
-	</table>
+	<div class="screenContainer">
+		<table class="table table-striped table-hover table-condensed userTable" id="userTable">
+			<thead>
+				<tr>
+					<th>Nom</th>
+					<th class="text-right">Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+			</tbody>
+		</table>
+	</div>
 	<script type="text/html" id="templateUserTable">
 		<tr class="userItem" data-template-bind='[{"attribute": "data-id", "value": "userId"}]'>
 			<th class="col-xs-11" scope="row" data-content="userName"></th>

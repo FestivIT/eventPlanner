@@ -13,9 +13,12 @@
 	    	</div>
 		</div>
 	</nav>
-		  	
-	<ul class="list-group missionTable" id="missionTable">
-	</ul>
+
+	<div class="screenContainer"> 	
+		<ul class="list-group missionTable" id="missionTable">
+		</ul>
+	</div>
+	
 	<script type="text/html" id="templateMissionTable">
 		<li class="list-group-item missionItem" data-template-bind='[{"attribute": "data-id", "value": "missionId"}]'>
   			<div class="row">

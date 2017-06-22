@@ -13,9 +13,11 @@ Math.degrees = function(radians) {
 function getDistanceFromLatLng(lat1, lng1, lat2, lng2){
     var lat1 = Math.radians(lat1);
     var lat2 = Math.radians(lat2);
+    var lng1 = Math.radians(lng1);
+    var lng2 = Math.radians(lng2);
     var R = 6371e3; // metres
-    var dlat = Math.radians(lat2-lat1);
-    var dlng = Math.radians(lng2-lng1);
+    var dlat = lat2-lat1;
+    var dlng = lng2-lng1;
     
     var a = Math.sin(dlat/2) * Math.sin(dlat/2) +
         Math.cos(lat1) * Math.cos(lat2) *

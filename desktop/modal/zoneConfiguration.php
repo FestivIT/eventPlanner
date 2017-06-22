@@ -61,7 +61,6 @@
 					<td class="col-xs-4" data-content="eqRealName"></td>
 					<td class="col-xs-1" style="text-align: right;">
 						<button type="button" class="btn btn-warning btn-xs editEqBtn" data-template-bind='[{"attribute": "data-eq-id", "value": "eqLogicId"}]' title="Modifier"><span class="glyphicon glyphicon-pencil"></span></button>
-						<button type="button" class="btn btn-danger btn-xs deleteEqBtn" data-template-bind='[{"attribute": "data-eq-id", "value": "eqLogicId"}]' title="Supprimer"><span class="glyphicon glyphicon-remove"></span></button>
 					</td>
 				</tr>
 			</script>

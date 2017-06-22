@@ -122,19 +122,20 @@ class zone {
 	}
 
 	public function remove($_addMsg = true) {
+		// suppression des msg
+		foreach(msg::byZoneId($this->getId()) as $msg){
+			$msg->remove($_addMsg);
+		}
+		
 		// suppression des équipements
 		foreach($this->getEqLogics() as $eqLogic){
-			$eqLogic->remove();
+			$eqLogic->remove($_addMsg);
 		}
 		
 		// suppression des contact
 		foreach($this->getContacts() as $contact){
 			$contact->setZoneId(null);
-		}
-		
-		// suppression des msg
-		foreach(msg::byZoneId($this->getId()) as $msg){
-			$msg->remove();
+			$contact->save($_addMsg);
 		}
 		
 		if($_addMsg){

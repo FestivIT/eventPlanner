@@ -49,16 +49,51 @@ body {
 */
 
 .screenContainer{
-	position: relative;
-	overflow: scroll;
-	margin-bottom: 0px;
+    padding-top: 55px;
 }
+
+@media (max-width: 767px) {
+	#planning .screenContainer{
+	    padding-top: 90px;
+	}
+	
+	#planning .planningSearchPanel {
+	    padding-top: 0px;
+	    padding-bottom: 0px;
+	    margin-top: 5px;
+	    margin-bottom: 5px;
+	}
+	
+	#maincourante .screenContainer {
+	    padding-top: 125px;
+	}
+	
+	
+	
+	#maincourante .searchMsgForm {
+	    padding-top: 0px;
+	    padding-bottom: 0px;
+	    margin-top: 5px;
+	    margin-bottom: 5px;
+	}
+	
+	#maincourante .msgForm {
+	    padding-top: 0px;
+	    padding-bottom: 0px;
+	    margin-top: 5px;
+	    margin-bottom: 5px;
+	}
+}
+
+
+/*
 .screenContainer > .table{
 	margin-bottom: 0px;
 }
 .screenContainer > .eqLogicTable{
 	width: initial;
 }
+*/
 
 #eqColSelectBtn-target label {
   display: block;
@@ -195,9 +230,16 @@ body {
 }
 
 .epContextualNavBar{
-    padding-right: 15px;
-    padding-left: 15px;
-    margin-bottom: 5px;
+    position: fixed;
+    width: 100%;
+    padding-right: 50px;
+    z-index: 1029;
+}
+
+@media (max-width: 767px) {
+	.epContextualNavBar{
+		padding-right: 0px;
+	}
 }
 
 #epNavBar .navbar-brand {
@@ -300,7 +342,12 @@ body {
   height: 50px;
 }
 .navbar-header a.navbar-icon {
-  margin-left: 25px;
+  margin-left: 23px;
+}
+
+.collapsing {
+    -webkit-transition: none;
+    transition: none;
 }
 
 

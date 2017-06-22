@@ -14,18 +14,20 @@
 		</div>
 	</nav>
 
-	<table class="table table-striped table-hover table-condensed eventTable" id="eventTable">
-		<thead>
-			<tr>
-				<th>Nom</th>
-				<th>Ville</th>
-				<th>Date</th>
-				<th class="text-right">Actions</th>
-			</tr>
-		</thead>
-		<tbody>
-		</tbody>
-	</table>
+	<div class="screenContainer">
+		<table class="table table-striped table-hover table-condensed eventTable" id="eventTable">
+			<thead>
+				<tr>
+					<th>Nom</th>
+					<th>Ville</th>
+					<th>Date</th>
+					<th class="text-right">Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+			</tbody>
+		</table>
+	</div>
 	<script type="text/html" id="templateEventTable">
 		<tr class="eventItem" data-template-bind='[{"attribute": "data-id", "value": "eventId"}]'>
 			<th class="col-xs-4" scope="row" data-content="eventName"></th>

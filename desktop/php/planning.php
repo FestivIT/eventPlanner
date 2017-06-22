@@ -139,10 +139,10 @@
 					<div class="col-xs-5 col-sm-4">
 						<div class="row">
 							<div class="col-sm-6">
-								<span class="label label-default" data-content="matTypeName"></span>
+								<button type="button" style="font-weight: bold;" class="btn btn-xs eqLogicModalLink" data-content="matTypeName"></button>
 							</div>
 							<div class="col-sm-6">
-								<span data-content="eqRealName"></span>
+								<span><strong data-content="eqRealName"></strong></span>
 							</div>
 						</div>
 					</div>

@@ -1,9 +1,9 @@
 <div id="contact">
 	<nav class="navbar navbar-default epContextualNavBar">
 		<div class="container-fluid">
-			<div class="nav navbar-nav navbar-left">
+			<div class="navbar-header">
 		    	<a class="navbar-brand">Contacts</a>
-		    	<div class="pull-right hidden-sm hidden-sm hidden-lg">
+		    	<div class="pull-right visible-xs">
 		    		<button type="button" class="btn navbar-btn btn-success editContactBtn btn-sm" data-contact-id="new"><span class="glyphicon glyphicon-plus-sign"></span> Ajouter</button>
 		    	</div>
 		    </div>
@@ -13,9 +13,11 @@
 	    	</div>
 		</div>
 	</nav>
-
-	<ul class="list-group contactTable" id="contactTable">
-	</ul>
+	
+	<div class="screenContainer">
+		<ul class="list-group contactTable" id="contactTable">
+		</ul>
+	</div>
 	<script type="text/html" id="templateContactTable">
 		<li class="list-group-item contactItem" data-template-bind='[{"attribute": "data-id", "value": "contactId"}]'>
 				<div class="row">
