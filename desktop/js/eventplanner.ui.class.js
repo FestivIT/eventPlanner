@@ -470,9 +470,6 @@ eventplanner.ui.search = {
 				    	eventplanner.ui.map.llMap.fitBounds(eventplanner.ui.map.lastBounds);
 				    	eventplanner.ui.map.llMap.setZoom(eventplanner.ui.map.lastZoom);
 				    }
-				    
-				    node.val("");
-		    		node.blur();
 				  }
 		    }
 		});
