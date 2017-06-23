@@ -1,4 +1,4 @@
-<div>
+<div id="modalZone">
   <!-- Nav tabs -->
   <ul class="nav nav-tabs" role="tablist">
     <li role="presentation" class="active"><a href="#zone" aria-controls="zone" role="tab" data-toggle="tab" id="linkHome">Zone</a></li>
@@ -79,10 +79,10 @@
 					  <input type="text" class="form-control msgFormInput" placeholder="Déposer un message...">
 					  <span class="input-group-btn">
 						<button type="submit" class="btn btn-default">Poster</button>
-						<button class="btn btn-success btn-file fileinput-button" id="uploadZonePhoto"><i class="glyphicon glyphicon-camera"></i><input id="uploadZonePhotoFile" type="file" name="file"></button>
+						<button class="btn btn-success btn-file fileinput-button" id="uploadZonePhoto"><i class="glyphicon glyphicon-camera"></i><input class="uploadPhotoFile" type="file" name="file"></button>
 					  </span>
 					</div>
-					<div id="progressZonePhotoUpload" class="progress">
+					<div class="progress progressPhotoUpload" style="display: none;">
 		              <div class="progress-bar progress-bar-success progress-bar-striped"></div>
 		            </div>
 				  </form>
@@ -106,7 +106,7 @@
 			  	<p data-content="value"></p>
 			  </script>
 			  <script type="text/html" class="templateZoneMsgContent" msg-content-type="msgPhoto">
-			  	<img class="img-rounded msgPhoto" data-template-bind='[{"attribute": "src", "value": "fileName", "formatter": "prepend", "formatOptions": "ressources/msgPhoto/"}]'/>
+			  	<img class="img-rounded msgPhoto" data-template-bind='[{"attribute": "src", "value": "fileName", "formatter": "prepend", "formatOptions": "ressources/msgPhoto/"},{"attribute": "data-fileName", "value": "fileName"}]'/>
 			  </script>
 			</div>
 		</div>
@@ -175,10 +175,10 @@
 									      <input type="text" class="form-control msgFormInput" placeholder="Déposer un message...">
 									      <span class="input-group-btn">
 									        <button type="submit" class="btn btn-default">Poster</button>
-									        <button class="btn btn-success btn-file fileinput-button"><i class="glyphicon glyphicon-camera"></i><input class="uploadEqLogicPhoto" type="file" name="file"></button>
+									        <button class="btn btn-success btn-file fileinput-button"><i class="glyphicon glyphicon-camera"></i><input class="uploadPhotoFile" type="file" name="file"></button>
 									      </span>
 									    </div>
-									    <div class="progress progressEqLogicPhotoUpload">
+									    <div class="progress progressPhotoUpload" style="display: none;">
 							              <div class="progress-bar progress-bar-success progress-bar-striped"></div>
 							            </div>
 								    </form>

@@ -149,6 +149,12 @@ eventplanner.ui = {
 	initTrigger: function(){
 		$(window).resize(this.setScreenContainerHeight);
 
+		$("body").undelegate('.msgPhoto', 'click');
+		$("body").delegate('.msgPhoto', 'click', function () {
+			var pictureModal = new eventplanner.ui.modal.EpModalPicture($(this).attr('data-fileName'));
+			pictureModal.open();
+		});
+
 		$("body").delegate('.msgForm', 'submit', function () {
 			if($(this).find('.msgFormInput').val()==''){
 			    return false;
@@ -190,6 +196,76 @@ eventplanner.ui = {
 		    });
 		    
 			return false;
+		});
+
+		$("body").delegate('.uploadPhotoFile', 'change', function (e) {
+			if($(this).val() == ''){
+				return false;
+			}
+
+			var _formData = { 
+			    	eventplanner_token: EVENTPLANNER_AJAX_TOKEN,
+			    	type: 'msg',
+			    	action: 'uploadPhoto'
+			    }
+
+			var attrZoneId = $(this).closest('.msgForm').attr('data-zone-id');
+			
+			if(typeof attrZoneId !== typeof undefined && attrZoneId !== false){
+				_formData.zoneId = attrZoneId;
+			}
+
+			var attrEqLogic = $(this).closest('.msgForm').attr('data-eqLogic-id');
+			
+			if(typeof attrEqLogic !== typeof undefined && attrEqLogic !== false){
+				_formData.eqLogicId = attrEqLogic;
+			}
+
+			$(this).fileupload({
+				disableImageResize: false,
+			    imageMaxWidth: 800,
+			    imageMaxHeight: 800,
+			    imageOrientation: true,
+			    disableImageMetaDataSave: true,
+			    dataType: 'json',
+			    replaceFileInput: false,
+			    url: 'core/ajax/ajax.php',
+			    formData: _formData,
+			    done: function (e, data) {
+					        if (data.result.state != 'ok') {
+					            eventplanner.ui.notification('error', "Impossible d'enregistrer la photo.<br>" + data.result.result);
+					        }else{
+					        	eventplanner.ui.checkNewMsg();
+					        	eventplanner.ui.notification('success', "Photo transférée.");
+					        }
+
+					        setTimeout(function(thisUploadForm){
+					        	return function(){
+							        	$(thisUploadForm).closest('.msgForm').find('.progressPhotoUpload').hide();
+							        }
+						    }(this), 2000);
+			    		},
+			    start: function (e) {
+				            var progress = 0;
+				            $(this).closest('.msgForm').find('.progressPhotoUpload').show();
+				            $(this).closest('.msgForm').find('.progressPhotoUpload .progress-bar').css(
+				                'width',
+				                progress + '%'
+				            );
+				        },
+		        progressall: function (e, data) {
+				            var progress = parseInt(data.loaded / data.total * 100);
+				            $(this).closest('.msgForm').find('.progressPhotoUpload .progress-bar').css(
+				                'width',
+				                progress + '%'
+				            );
+				        }
+			});
+		
+			$(this).fileupload('add', {fileInput: $(this)});
+			$(this).fileupload('destroy');
+			$(this).val('');
+
 		});
 
 		// MENU
@@ -3056,6 +3132,7 @@ eventplanner.ui.modal.EpModalZone = function(_zone, presetEqLogicId = null){
 		});
 
 		// MSG
+		/*
 		this.modal.find('#progressZonePhotoUpload').hide();
 		this.modal.find('#uploadZonePhotoFile').fileupload({
 				disableImageResize: false,
@@ -3102,6 +3179,7 @@ eventplanner.ui.modal.EpModalZone = function(_zone, presetEqLogicId = null){
 				            );
 				        }
 			});
+		*/
 
 		this.modal.find('.previous').click(this, function (event) {
 			event.data.currentPage--;
@@ -3259,12 +3337,11 @@ eventplanner.ui.modal.EpModalZone = function(_zone, presetEqLogicId = null){
 				thisModal.constructAttributeTable(eqLogic)
 				// Construction de la liste des liens
 				thisModal.constructEqLinkTable(eqLogic.eqLogicId);
-				// Contruction de la main courante
-				thisModal.constructEqLogicMsgTable(eqLogic);
-				// Tri
-				thisModal.sortEqTable();
 			}
 		}(this));
+
+		// Tri
+		this.sortEqTable();
 	}
 	
 	this.sortEqTable = function(){		
@@ -4859,6 +4936,29 @@ eventplanner.ui.modal.EpModalState = function(_listId, _type, _presetState){
 eventplanner.ui.modal.EpModalState.prototype = Object.create(eventplanner.ui.modal.EpModal.prototype, {
     constructor: {
         value: eventplanner.ui.modal.EpModalState,
+        enumerable: false,
+        writable: true,
+        configurable: true
+    }
+});
+
+/// MODAL PICTURE ////////////////////////////////
+eventplanner.ui.modal.EpModalPicture = function(_pictureFileName){
+	eventplanner.ui.modal.EpModal.call(this, "Afficher une photo", "picture");
+	this.data = {
+		fileName: _pictureFileName
+	};
+
+	this.preShow = function(){
+		this.modal.find('.modalValidBtn').hide();
+	}
+	
+	this.postShow = function(){}
+}
+
+eventplanner.ui.modal.EpModalPicture.prototype = Object.create(eventplanner.ui.modal.EpModal.prototype, {
+    constructor: {
+        value: eventplanner.ui.modal.EpModalPicture,
         enumerable: false,
         writable: true,
         configurable: true

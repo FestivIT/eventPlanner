@@ -24,13 +24,17 @@
 					<input type="text" class="form-control msgFormInput input-sm" placeholder="Déposer un message...">
 					<span class="input-group-btn">
 						<button type="submit" class="btn btn-default btn-sm">Poster</button>
+						<button class="fileinput-button btn btn-success btn-sm"><i class="glyphicon glyphicon-camera"></i><input class="uploadPhotoFile" type="file" name="file"></button>
 					</span>
 				</div>
+				<div class="progress progressPhotoUpload" style="display: none; margin-bottom: -10px; height: 10px;">
+	              <div class="progress-bar progress-bar-success progress-bar-striped"></div>
+	            </div>
 			</form>
 
-			<div class="nav navbar-nav navbar-right hidden-xs">
-				<button type="button" class="btn navbar-btn btn-info btn-sm previous"><span class="glyphicon glyphicon-triangle-left small"></span></button>
-		    	<button type="button" class="btn navbar-btn btn-info btn-sm next"><span class="glyphicon glyphicon-triangle-right small"></span></button>
+			<div class="navbar-form navbar-right hidden-xs">
+				<button type="button" class="btn btn-info btn-sm previous"><span class="glyphicon glyphicon-triangle-left small"></span></button>
+		    	<button type="button" class="btn btn-info btn-sm next"><span class="glyphicon glyphicon-triangle-right small"></span></button>
 		    </div>
 		</div>
 	</nav>
@@ -59,6 +63,6 @@
 	  	<p data-content="value"></p>
 	</script>
 	<script type="text/html" class="templateMsgContent" msg-content-type="msgPhoto">
-	  	<img class="img-rounded msgPhoto" data-template-bind='[{"attribute": "src", "value": "fileName", "formatter": "prepend", "formatOptions": "ressources/msgPhoto/"}]'/>
+	  	<img class="img-rounded msgPhoto" data-template-bind='[{"attribute": "src", "value": "fileName", "formatter": "prepend", "formatOptions": "ressources/msgPhoto/"},{"attribute": "data-fileName", "value": "fileName"}]'/>
 	</script>
 </div>
