@@ -83,7 +83,7 @@ class eqLogic {
         			$eqLogic->setState($_state);
         			$eqLogic->save(false);
         			
-	        		msg::add($eqLogic->getEvent()->getOrganisationId(), $eqLogic->getDisciplineId(), $eqLogic->getEventId(), $eqLogic->getZoneId(), $eqLogic->getId(), $_SESSION['user']->getId(), "Changement d'état de '" . getStateText($oldState) . "' à '" . getStateText($eqLogic->getState()) . "'", 'eqLogic', 'update', $eqLogic);
+	        		msg::add($eqLogic->getEvent()->getOrganisationId(), $eqLogic->getDisciplineId(), $eqLogic->getEventId(), $eqLogic->getZoneId(), $eqLogic->getId(), $_SESSION['user']->getId(), "Changement d'état de '" . getStateText($oldState) . "' à '" . getStateText($eqLogic->getState()) . "'", 'eqLogic', 'update', $eqLogic, 3);
 
 	        		$sqlIdList .= $separator . $id;
 		    		$separator = ', ';

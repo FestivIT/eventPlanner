@@ -384,6 +384,7 @@ try {
 		$msg->setEqId(init('eqLogicId', null));
 		$msg->setUserId($_SESSION['user']->getId());
 		$msg->setContent('');
+		$msg->setLevel(6);
 		$msg->save();
 		$msg->refresh();
 		$msg->setContent(array(

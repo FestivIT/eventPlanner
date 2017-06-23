@@ -16,6 +16,16 @@ class msg {
 	private $date;
 	private $content;
 	private $data;
+	private $level;
+	/*
+		0: messages system
+		1: ajout/modification/suppression
+		2: connexion utilisateur
+		3: modification de status
+		4: création mission
+		5: 
+		6: photo/texte saisi utilisateur
+	*/
 
 
 	/*     * ***********************Méthodes statiques*************************** */
@@ -134,7 +144,7 @@ class msg {
 		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
 	}
 
-	public static function add($_organisationId, $_disciplineId, $_eventId, $_zoneId, $_eqId, $_userId, $_content, $_type, $_op, $_data) {
+	public static function add($_organisationId, $_disciplineId, $_eventId, $_zoneId, $_eqId, $_userId, $_content, $_type, $_op, $_data, $_level = 0) {
 		switch ($_op) {
 		    case 'add':
 		    case 'update':
@@ -173,6 +183,7 @@ class msg {
 		$message->setEqId($_eqId);
 		$message->setUserId($_userId);
 		$message->setContent($_content);
+		$message->setLevel($_level);
 		$message->setData($data);
 		if($_type == 'msg'){
 			$message->save(true);
@@ -238,6 +249,9 @@ class msg {
 	public function getDate() {
 		return $this->date;
 	}
+	public function getLevel() {
+		return $this->level;
+	}
 	public function getContent() {
 		return $this->content;
 	}
@@ -268,6 +282,12 @@ class msg {
 	}
 	public function setDate($date) {
 		$this->date = $date;
+	}
+	public function setLevel($level) {
+		if(!is_integer($level)){
+			$level = 0;
+		}
+		$this->level = $level;
 	}
 	public function setContent($content) {
 		if(!is_array($content) || (is_array($content) && !array_key_exists('type', $content))){

@@ -70,7 +70,7 @@ class eqReal {
 	        		$eqReal->setState($_state);
 	        		$eqReal->save(false);
 
-	        		msg::add($_SESSION['user']->getDiscipline()->getOrganisationId(), $_SESSION['user']->getDisciplineId(), null, null, null, $_SESSION['user']->getId(), "Matériel [" . $eqReal->getName() . "]: Changement d'état de '" . getStateText($oldState) . "' à '" . getStateText($_state) . "'", 'eqReal', 'update', $eqReal);
+	        		msg::add($_SESSION['user']->getDiscipline()->getOrganisationId(), $_SESSION['user']->getDisciplineId(), null, null, null, $_SESSION['user']->getId(), "Matériel [" . $eqReal->getName() . "]: Changement d'état de '" . getStateText($oldState) . "' à '" . getStateText($_state) . "'", 'eqReal', 'update', $eqReal, 3);
 
 	        		$sqlIdList .= $separator . $id;
 		    		$separator = ', ';

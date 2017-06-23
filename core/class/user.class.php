@@ -45,7 +45,7 @@ class user {
 		if (is_object($user)) {
 			$user->setLastConnection(date('Y-m-d H:i:s'));
 			$user->save(false);
-			msg::add($user->getDiscipline()->getOrganisationId(), $user->getDisciplineId(), null, null, null, $user->getId(), "Connection de l'utilisateur: " . $user->getName(), 'user', 'update', $user);
+			msg::add($user->getDiscipline()->getOrganisationId(), $user->getDisciplineId(), null, null, null, $user->getId(), "Connexion de l'utilisateur: " . $user->getName(), 'user', 'update', $user, 2);
 			//eventPlanner::event('user_connect');
 			//log::add('event', 'info', __('Connexion de l\'utilisateur ', __FILE__) . $_login);
 		}

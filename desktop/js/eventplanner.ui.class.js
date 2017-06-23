@@ -167,6 +167,7 @@ eventplanner.ui = {
 				eventId: eventplanner.ui.currentUser.userEventId,
 				userId: eventplanner.ui.currentUser.userId,
 				content: $(this).find('.msgFormInput').val(),
+				level: 6,
 				data:{}
 			}
 			
@@ -1544,7 +1545,7 @@ eventplanner.ui.maincourante = {
 
 		$('#maincourante .next').click(this, function (event) {
 			
-			if (event.data.currentPage * event.data.resultsPerPage < eventplanner.msg.all().length) {
+			if (event.data.currentPage * event.data.resultsPerPage < eventplanner.msg.all(false, 2).length) {
 				event.data.currentPage++;
 				event.data.constructMsgTable();
 			}
@@ -1588,9 +1589,9 @@ eventplanner.ui.maincourante = {
 			if(_searchKey){
 				this.currentPage = 1;
 			}
-			var msgList = eventplanner.msg.searchAll(searchVal);
+			var msgList = eventplanner.msg.searchAll(searchVal, 2);
 		}else{
-			var msgList = eventplanner.msg.all(true);
+			var msgList = eventplanner.msg.all(true, 2);
 		}
 
 		if (this.currentPage <= 1) {
@@ -3192,7 +3193,7 @@ eventplanner.ui.modal.EpModalZone = function(_zone, presetEqLogicId = null){
 
 		this.modal.find('.next').click(this, function (event) {
 			
-			if (event.data.currentPage * event.data.resultsPerPage < eventplanner.msg.byZoneId(event.data.data.zoneId).length) {
+			if (event.data.currentPage * event.data.resultsPerPage < eventplanner.msg.byZoneId(event.data.data.zoneId, false, 2).length) {
 				event.data.currentPage++;
 				event.data.constructMsgTable();
 			}
@@ -3300,7 +3301,7 @@ eventplanner.ui.modal.EpModalZone = function(_zone, presetEqLogicId = null){
 	}
 
 	this.constructMsgTable = function(){
-		var listeMsg = eventplanner.msg.byZoneId(this.data.zoneId, true);
+		var listeMsg = eventplanner.msg.byZoneId(this.data.zoneId, true, 2);
 
 		if (this.currentPage <= 1) {
             this.modal.find('.previous').attr('disabled','disabled');

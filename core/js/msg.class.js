@@ -170,36 +170,13 @@ eventplanner.msg = {
     },
 
     // Accés aux données
-    all: function(_fulldata = false){
-        if(this.dataReady.state() == 'resolved'){
-            // Selection des données à conserver dans le container:
-            var dataSelection = $.map(this.container, function(value, index) {
-                return [value];
-            });
-
-            // Tri
-            dataSelection.sort(this.compareIdDesc);
-
-            // Si on demande les data consolidées (pour l'utilisation avec les template)
-            if(_fulldata){
-                dataSelection = this.getFullData(dataSelection);
-            }
-            
-            return dataSelection;
-
-        }else{
-            return false;
-        }
-    },
-
-    // Accés aux données
-    byZoneId: function(_zoneId, _fulldata = false){
+    all: function(_fulldata = false, _minLevel = 0){
         if(this.dataReady.state() == 'resolved'){
             // Selection des données à conserver dans le container:
             var dataSelection = Array();
 
             Object.keys(this.container).forEach(function(id) {
-               if(eventplanner.msg.container[id].msgZoneId == _zoneId){
+               if((eventplanner.msg.container[id].msgLevel >= _minLevel)){
                     dataSelection.push(eventplanner.msg.container[id]);
                 }
             });
@@ -220,13 +197,13 @@ eventplanner.msg = {
     },
 
     // Accés aux données
-    byEqId: function(_eqId, _fulldata = false){
+    byZoneId: function(_zoneId, _fulldata = false, _minLevel = 0){
         if(this.dataReady.state() == 'resolved'){
             // Selection des données à conserver dans le container:
             var dataSelection = Array();
 
             Object.keys(this.container).forEach(function(id) {
-               if(eventplanner.msg.container[id].msgEqId == _eqId){
+               if((eventplanner.msg.container[id].msgZoneId == _zoneId) && (eventplanner.msg.container[id].msgLevel >= _minLevel)){
                     dataSelection.push(eventplanner.msg.container[id]);
                 }
             });
@@ -247,13 +224,13 @@ eventplanner.msg = {
     },
 
     // Accés aux données
-    byUserId: function(_userId, _fulldata = false){
+    byEqId: function(_eqId, _fulldata = false, _minLevel = 0){
         if(this.dataReady.state() == 'resolved'){
             // Selection des données à conserver dans le container:
             var dataSelection = Array();
 
             Object.keys(this.container).forEach(function(id) {
-               if(eventplanner.msg.container[id].msgUserId == _userId){
+               if((eventplanner.msg.container[id].msgEqId == _eqId) && (eventplanner.msg.container[id].msgLevel >= _minLevel)){
                     dataSelection.push(eventplanner.msg.container[id]);
                 }
             });
@@ -274,7 +251,34 @@ eventplanner.msg = {
     },
 
     // Accés aux données
-    searchAll: function(_searchVal){
+    byUserId: function(_userId, _fulldata = false, _minLevel = 0){
+        if(this.dataReady.state() == 'resolved'){
+            // Selection des données à conserver dans le container:
+            var dataSelection = Array();
+
+            Object.keys(this.container).forEach(function(id) {
+               if((eventplanner.msg.container[id].msgUserId == _userId) && (eventplanner.msg.container[id].msgLevel >= _minLevel)){
+                    dataSelection.push(eventplanner.msg.container[id]);
+                }
+            });
+
+            // Tri
+            dataSelection.sort(this.compareIdDesc);
+
+            // Si on demande les data consolidées (pour l'utilisation avec les template)
+            if(_fulldata){
+                dataSelection = this.getFullData(dataSelection);
+            }
+            
+            return dataSelection;
+
+        }else{
+            return false;
+        }
+    },
+
+    // Accés aux données
+    searchAll: function(_searchVal, _minLevel = 0){
         if(this.dataReady.state() == 'resolved'){
             var listAll = this.all(true);
 
@@ -282,16 +286,18 @@ eventplanner.msg = {
             var dataSelection = Array();
 
             listAll.forEach(function(msg){
-                if(msg.msgContentText.indexOf(_searchVal.toLowerCase()) !== -1){
-                    dataSelection.push(msg);
-                } else if(msg.hasOwnProperty('userName') && msg.userName.toLowerCase().indexOf(_searchVal.toLowerCase()) !== -1){
-                    dataSelection.push(msg);
-                } else if(msg.hasOwnProperty('zoneName') && msg.zoneName.toLowerCase().indexOf(_searchVal.toLowerCase()) !== -1){
-                    dataSelection.push(msg);
-                } else if(msg.hasOwnProperty('eqRealName') && msg.eqRealName.toLowerCase().indexOf(_searchVal.toLowerCase()) !== -1){
-                    dataSelection.push(msg);
-                } else if(msg.hasOwnProperty('matTypeName') && msg.matTypeName.toLowerCase().indexOf(_searchVal.toLowerCase()) !== -1){
-                    dataSelection.push(msg);
+                if(eventplanner.msg.container[id].msgLevel >= _minLevel){
+                    if(msg.msgContentText.indexOf(_searchVal.toLowerCase()) !== -1){
+                        dataSelection.push(msg);
+                    } else if(msg.hasOwnProperty('userName') && msg.userName.toLowerCase().indexOf(_searchVal.toLowerCase()) !== -1){
+                        dataSelection.push(msg);
+                    } else if(msg.hasOwnProperty('zoneName') && msg.zoneName.toLowerCase().indexOf(_searchVal.toLowerCase()) !== -1){
+                        dataSelection.push(msg);
+                    } else if(msg.hasOwnProperty('eqRealName') && msg.eqRealName.toLowerCase().indexOf(_searchVal.toLowerCase()) !== -1){
+                        dataSelection.push(msg);
+                    } else if(msg.hasOwnProperty('matTypeName') && msg.matTypeName.toLowerCase().indexOf(_searchVal.toLowerCase()) !== -1){
+                        dataSelection.push(msg);
+                    }
                 }
             });
             

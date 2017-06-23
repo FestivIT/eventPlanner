@@ -62,7 +62,7 @@ class zone {
         			$zone->setState($_state);
         			$zone->save(false);
         			
-	        		msg::add($zone->getEvent()->getOrganisationId(), null, $zone->getEventId(), $zone->getId(), null, $_SESSION['user']->getId(), "Changement d'état de '" . getStateText($oldState) . "' à '" . getStateText($zone->getState()) . "'", 'zone', 'update', $zone);
+	        		msg::add($zone->getEvent()->getOrganisationId(), null, $zone->getEventId(), $zone->getId(), null, $_SESSION['user']->getId(), "Changement d'état de '" . getStateText($oldState) . "' à '" . getStateText($zone->getState()) . "'", 'zone', 'update', $zone, 3);
 	     
 	        		$sqlIdList .= $separator . $id;
 		    		$separator = ', ';
