@@ -451,7 +451,7 @@ eventplanner.ui.search = {
 						var zone = eventplanner.zone.byId(eqLogic.eqLogicZoneId);
 					}
 					
-					eventplanner.ui.map.llMap.flyTo(zone.zoneLocalisation, 20);
+					eventplanner.ui.map.llMap.flyTo(zone.zoneLocalisation, 19);
 		    	},
 		    	onShowLayout:function (node) {
 				    $(".navbar-collapse.in").css("max-height", $(document).height() - $(".navbar-header").height());
