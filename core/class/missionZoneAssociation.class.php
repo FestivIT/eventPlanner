@@ -75,6 +75,9 @@ class missionZoneAssociation {
 	public function getZoneId() {
 		return $this->zoneId;
 	}
+	public function getZone() {
+		return zone::byId($this->zoneId);
+	}
 
 	public function setMissionId($missionId) {
 		$this->missionId = $missionId;

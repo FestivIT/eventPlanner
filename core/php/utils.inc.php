@@ -858,3 +858,9 @@ function getZoneStateEqLogic($state){
 		return false;
 	}
 }
+
+function getStateColorClass($state){
+	global $STATE;
+
+	return $STATE->stateList[$state]->colorClass;
+}

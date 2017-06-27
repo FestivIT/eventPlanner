@@ -68,6 +68,19 @@ class msg {
         WHERE (eventId=:eventId OR eventId IS NULL) AND id > \'' . $_id . '\' ';
 		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
 	}
+
+	public static function byEventIdInterval($_eventId, $_minuteInterval, $_minLevel = 2) {
+		$values = array(
+			'eventId' => $_eventId,
+			'level' => $_minLevel
+		);
+
+		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
+        FROM msg
+        WHERE eventId=:eventId AND level>=:level AND date>=DATE_ADD(NOW(), INTERVAL -' . $_minuteInterval . ' MINUTE) ORDER BY `msg`.`level`, `msg`.`date` DESC';
+
+		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
+	}
 	
 	public static function forUserIdSinceId($_id, $_userId) {
 		$user = user::byId($_userId);
@@ -240,11 +253,20 @@ class msg {
 	public function getZoneId() {
 		return $this->zoneId;
 	}
+	public function getZone() {
+		return zone::byId($this->zoneId);
+	}
 	public function getEqId() {
 		return $this->eqId;
 	}
+	public function getEqLogic() {
+		return eqLogic::byId($this->eqId);
+	}
 	public function getUserId() {
 		return $this->userId;
+	}
+	public function getUser() {
+		return user::byId($this->userId);
 	}
 	public function getDate() {
 		return $this->date;

@@ -75,6 +75,9 @@ class missionUserAssociation {
 	public function getUserId() {
 		return $this->userId;
 	}
+	public function getUser() {
+		return user::byId($this->userId);
+	}
 
 	public function setMissionId($missionId) {
 		$this->missionId = $missionId;
