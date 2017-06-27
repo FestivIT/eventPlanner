@@ -536,7 +536,6 @@ eventplanner.ui.search = {
 				    
 				    if(eventplanner.ui.currentPage == 'map'){
 				    	eventplanner.ui.map.lastBounds = eventplanner.ui.map.llMap.getBounds();
-				    	eventplanner.ui.map.lastZoom = eventplanner.ui.map.llMap.getZoom();
 				    }
 				  },
 		    	onHideLayout:function (node) {
@@ -545,7 +544,6 @@ eventplanner.ui.search = {
 				    
 				    if(eventplanner.ui.currentPage == 'map'){
 				    	eventplanner.ui.map.llMap.fitBounds(eventplanner.ui.map.lastBounds);
-				    	eventplanner.ui.map.llMap.setZoom(eventplanner.ui.map.lastZoom);
 				    }
 				  }
 		    }
